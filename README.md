@@ -6,7 +6,7 @@ In order to build and load the software onto the CC2651P3 MCU, the CCTUDIO-THEIA
 
 The download link for the IDE can be found on TI's website at the link below. Once CCS Theia is installed, the project can be added to the active workspace.
 
-CCS Theia - https://www.ti.com/tool/download/CCSTUDIO-THEIA/1.5.1
+CCS Theia - https://www.ti.com/tool/download/CCSTUDIO-THEIA
 
 # Setting up Version Control in CCS Theia
 TODO
