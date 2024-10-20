@@ -8,5 +8,5 @@ The download link for the IDE can be found on TI's website at the link below. On
 
 CCS Theia - https://www.ti.com/tool/download/CCSTUDIO-THEIA/1.5.1
 
-# Setting up version comtrol
+# Setting up Version Control
 TODO
