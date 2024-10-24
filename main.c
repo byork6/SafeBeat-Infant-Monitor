@@ -114,6 +114,7 @@ void *mainThread(void *arg0)
 
 void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
+<<<<<<< HEAD
     // Set GPIO Pins 5, 7-17 as output and low on startup for LCD.
     GPIO_setConfig(5, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
     GPIO_setConfig(7, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
@@ -128,6 +129,11 @@ void configGPIO(void){
     GPIO_setConfig(16, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
     GPIO_setConfig(17, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 
+=======
+    // Set GPIO Pins 5-X Low
+    GPIO_setConfig(DIO_5, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+    
+>>>>>>> 311bc6b464d07bc757ad23b950b7b091c6827e6b
 }
 
 void configSPI(void){
