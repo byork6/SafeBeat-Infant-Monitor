@@ -31,9 +31,10 @@
  */
 
 /*
- *  ======== empty.c ========
+ *  ======== empty.c template ========
  */
 
+// TI inlcusions
 /* For usleep() */
 #include <unistd.h>
 #include <stdint.h>
@@ -48,12 +49,19 @@
 /* Driver configuration */
 #include "ti_drivers_config.h"
 
+
+// PROJECT INCLUSIONS
+// Project Header Files
+#include "functions.h"
+
 /*
  *  ======== mainThread ========
  */
+
+
 void *mainThread(void *arg0)
 {
-    // EXAMPLE CODE
+    ////////// EXAMPLE CODE //////////
     /*
     // 1 second delay
     uint32_t time = 1;
@@ -76,28 +84,41 @@ void *mainThread(void *arg0)
         GPIO_toggle(CONFIG_GPIO_LED_0);
     }
     */
+    //////////////////////////////////
+
 
     //START OF PROJECT CODE
     // Init local variables
     uint32_t time = 1;
 
-    // Init functions
+    // TI Init functions
     GPIO_init();
     SPI_init();
 
-    // Init GPIO
-    // TODO: 
+    // Configure GPIO
+    configGPIO();
 
-    // Init SPI
-    // TODO: 
+    // Configure SPI
+    configSPI();
 
     while (1){
         // Loop delay of 1s
         sleep(1);
-
+        
         // Run-time code goes here
         // TODO
         
     }
 
+}
+
+void configGPIO(void){
+    // TODO: Set up initial config for GPIO pins
+    // Set GPIO Pins 5-X Low
+    GPIO_setConfig(DIO_5, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+    
+}
+
+void configSPI(void){
+    // TODO: Set up initial config for SPI pins
 }
