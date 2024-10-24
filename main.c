@@ -42,7 +42,7 @@
 /* Driver Header files */
 #include <ti/drivers/GPIO.h>
 // #include <ti/drivers/I2C.h>
-// #include <ti/drivers/SPI.h>
+#include <ti/drivers/SPI.h>
 // #include <ti/drivers/Watchdog.h>
 
 /* Driver configuration */
@@ -53,19 +53,21 @@
  */
 void *mainThread(void *arg0)
 {
-    /* 1 second delay */
+    // EXAMPLE CODE
+    /*
+    // 1 second delay
     uint32_t time = 1;
 
-    /* Call driver init functions */
+    // Call driver init functions
     GPIO_init();
     // I2C_init();
     // SPI_init();
     // Watchdog_init();
 
-    /* Configure the LED pin */
+    // Configure the LED pin
     GPIO_setConfig(CONFIG_GPIO_LED_0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
 
-    /* Turn on user LED */
+    // Turn on user LED
     GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);
 
     while (1)
@@ -73,4 +75,29 @@ void *mainThread(void *arg0)
         sleep(time);
         GPIO_toggle(CONFIG_GPIO_LED_0);
     }
+    */
+
+    //START OF PROJECT CODE
+    // Init local variables
+    uint32_t time = 1;
+
+    // Init functions
+    GPIO_init();
+    SPI_init();
+
+    // Init GPIO
+    // TODO: 
+
+    // Init SPI
+    // TODO: 
+
+    while (1){
+        // Loop delay of 1s
+        sleep(1);
+
+        // Run-time code goes here
+        // TODO
+        
+    }
+
 }
