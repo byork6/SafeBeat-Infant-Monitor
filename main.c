@@ -54,6 +54,10 @@
 // Project Header Files
 #include "functions.h"
 
+// Define GPIO Macros
+#define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+#define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+
 /*
  *  ======== mainThread ========
  */
@@ -114,19 +118,19 @@ void *mainThread(void *arg0)
 
 void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
-    // Set GPIO Pins 5, 7-17 as output and low on startup for LCD.
-    GPIO_setConfig(5, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(7, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(8, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(9, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(10, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(11, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(12, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(13, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(14, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(15, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(16, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-    GPIO_setConfig(17, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+    // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
+    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(8, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(9, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(10, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(11, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(12, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(13, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(14, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(15, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(16, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(17, GPIO_SET_OUT_AND_DRIVE_LOW)
 
 }
 
