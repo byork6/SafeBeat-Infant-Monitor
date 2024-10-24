@@ -45,6 +45,7 @@ extern const uint_least8_t CONFIG_GPIO_LED_0_CONST;
 #define CONFIG_GPIO_LED_0 6
 
 /* The range of pins available on this device */
+// For the CC2651P3 MCU GPIO_pinLowerBound = 5, GPIO_pinUpperBound = 30
 extern const uint_least8_t GPIO_pinLowerBound;
 extern const uint_least8_t GPIO_pinUpperBound;
 
