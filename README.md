@@ -21,11 +21,7 @@ The software development kit (SDK) for the CC2651P3 MCU was downloaded from TI's
 CC2651P3 on TI website -> https://www.ti.com/product/CC2651P3#software-development  
 
 # TI Drivers
-<<<<<<< HEAD
-The drivers for the TI microcontroller are located in the directory /SafeBeat-Infant-Monitor/Debug/sysconfig.  
-=======
 The drivers for the TI microcontroller are located in the directory \SafeBeat-Infant-Monitor\Debug\sysconfig. The header files from the SDK are located in the install directory \ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17  
->>>>>>> 311bc6b464d07bc757ad23b950b7b091c6827e6b
 ti_drivers_config.c contains the GPIO pin configurations and names.  
 GPIO.h contains GPIO functions included with the SDK.  
 SPI.h contains SPI functions included with the SDK.  
