@@ -55,6 +55,8 @@
 #include "functions.h"
 
 // Define GPIO Macros
+#define DRIVE_GPIO_HIGH (1)
+#define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
 
@@ -65,7 +67,31 @@
 
 void *mainThread(void *arg0)
 {
-    ////////// EXAMPLE CODE //////////
+    ////////// TEST CODE //////////
+    
+    // 1 second delay
+    uint32_t time = 1;
+
+    // Call driver init functions from SDK
+    GPIO_init();
+    // I2C_init();
+    // SPI_init();
+    // Watchdog_init();
+
+    // Initialize GPIO pins
+    // Test pins 5-30 for GPIO functionality
+    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW)
+
+    while (1)
+    {
+        sleep(time);
+        GPIO_toggle(5);
+    }
+}
+    
+    //////////////////////////////////
+
+    ////////// EXAMPLE CODE FROM TEMPLATE//////////
     /*
     // 1 second delay
     uint32_t time = 1;
@@ -90,8 +116,7 @@ void *mainThread(void *arg0)
     */
     //////////////////////////////////
 
-
-    //START OF PROJECT CODE
+    ////////// START OF PROJECT CODE //////////
     // Init local variables
     uint32_t time = 1;
 
@@ -114,7 +139,7 @@ void *mainThread(void *arg0)
         
     }
 
-}
+
 
 void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
