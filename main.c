@@ -87,7 +87,6 @@ void *mainThread(void *arg0)
         sleep(time);
         GPIO_toggle(5);
     }
-}
     
     //////////////////////////////////
 
@@ -138,6 +137,7 @@ void *mainThread(void *arg0)
         // TODO
         
     }
+}
 
 
 
