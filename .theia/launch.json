@@ -1,0 +1,25 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Control-Box Debug",
+          "type": "ccs-debug",
+          "request": "launch",
+          "program": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box/Debug/SafeBeat-Infant-Monitor.out",
+          "cwd": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box",
+          "target": "CC2651P3",
+          "targetConfig": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box/targetConfigs/CC2651P3.ccxml"
+      },
+      {
+          "name": "Monitor-Belt Debug",
+          "type": "ccs-debug",
+          "request": "launch",
+          "program": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt/Debug/SafeBeat-Infant-Monitor.out",
+          "cwd": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt",
+          "target": "CC2651P3",
+          "targetConfig": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt/targetConfigs/CC2651P3.ccxml"
+      }
+  ]
+}
