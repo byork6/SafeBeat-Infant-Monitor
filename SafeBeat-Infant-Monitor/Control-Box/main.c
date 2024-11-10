@@ -30,13 +30,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- *  ======== empty.c template ========
- */
 
-// TI inlcusions
+/////// SDK inlcusions ///////
 /* For usleep() */
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -50,7 +48,7 @@
 #include "ti_drivers_config.h"
 
 
-// PROJECT INCLUSIONS
+/////// PROJECT INCLUSIONS ///////
 // Project Header Files
 #include "functions.h"
 
@@ -60,38 +58,39 @@
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
 
-/*
- *  ======== mainThread ========
- */
-
 
 void *mainThread(void *arg0)
 {
-    ////////// TEST CODE //////////
-    
-    // 1 second delay
+    /////// TEST CODE ONLY ///////
+    // For testing GPIO pins one at a time.
+    testGPIO(5)
+
+    /////// PROJECT CODE ///////
+    // Init local variables
     uint32_t time = 1;
 
-    // Call driver init functions from SDK
+    // TI Init functions
     GPIO_init();
-    // I2C_init();
-    // SPI_init();
-    // Watchdog_init();
+    SPI_init();
 
-    // Initialize GPIO pins
-    // Test pins 5-30 for GPIO functionality
-    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW)
+    // Configure GPIO
+    configGPIO();
 
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(5);
+    // Configure SPI
+    configSPI();
+
+    while (1){
+        // Loop delay of 1s
+        sleep(1);
+        
+        // Run-time code goes here
+        // TODO
     }
-    
-    //////////////////////////////////
+}
 
+
+void exampleCode(void){
     ////////// EXAMPLE CODE FROM TEMPLATE//////////
-    /*
     // 1 second delay
     uint32_t time = 1;
 
@@ -112,34 +111,33 @@ void *mainThread(void *arg0)
         sleep(time);
         GPIO_toggle(CONFIG_GPIO_LED_0);
     }
-    */
+
     //////////////////////////////////
-
-    ////////// START OF PROJECT CODE //////////
-    // Init local variables
-    uint32_t time = 1;
-
-    // TI Init functions
-    GPIO_init();
-    SPI_init();
-
-    // Configure GPIO
-    configGPIO();
-
-    // Configure SPI
-    configSPI();
-
-    while (1){
-        // Loop delay of 1s
-        sleep(1);
-        
-        // Run-time code goes here
-        // TODO
-        
-    }
 }
 
+void testGPIO(uint32_t pin_config_index){
+    //////////////// TEST CODE  ONLY ////////////////
+    
+    // Input validation (Pins 5-30 only valid pins)
+    if (pin_config_index < 5 || pin_config_index > 30){
+        exit(1)
+    }
 
+    // 1 second delay
+    uint32_t time = 1;
+
+    // Call driver init functions from SDK
+    GPIO_init();
+
+    // Initialize GPIO pins
+    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW)
+
+    while (1)
+    {
+        sleep(time);
+        GPIO_toggle(pin_config_index);
+    }
+}
 
 void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
