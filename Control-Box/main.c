@@ -63,7 +63,7 @@ void *mainThread(void *arg0)
 {
     /////// TEST CODE ONLY ///////
     // For testing GPIO pins one at a time.
-    testGPIO(5)
+    testGPIO(5);
 
     /////// PROJECT CODE ///////
     // Init local variables
@@ -120,7 +120,7 @@ void testGPIO(uint32_t pin_config_index){
     
     // Input validation (Pins 5-30 only valid pins)
     if (pin_config_index < 5 || pin_config_index > 30){
-        exit(1)
+        exit(1);
     }
 
     // 1 second delay
@@ -130,7 +130,7 @@ void testGPIO(uint32_t pin_config_index){
     GPIO_init();
 
     // Initialize GPIO pins
-    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW)
+    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
 
     while (1)
     {
@@ -142,19 +142,18 @@ void testGPIO(uint32_t pin_config_index){
 void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
     // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
-    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(8, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(9, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(10, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(11, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(12, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(13, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(14, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(15, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(16, GPIO_SET_OUT_AND_DRIVE_LOW)
-    GPIO_setConfig(17, GPIO_SET_OUT_AND_DRIVE_LOW)
-
+    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(8, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(9, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(10, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(11, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(12, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(13, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(14, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(15, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(16, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(17, GPIO_SET_OUT_AND_DRIVE_LOW);
 }
 
 void configSPI(void){

@@ -7,19 +7,19 @@
           "name": "Control-Box Debug",
           "type": "ccs-debug",
           "request": "launch",
-          "program": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box/Debug/SafeBeat-Infant-Monitor.out",
-          "cwd": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box",
+          "program": "${workspaceFolder}/Control-Box/Debug/SafeBeat-Infant-Monitor.out",
+          "cwd": "${workspaceFolder}Control-Box",
           "target": "CC2651P3",
-          "targetConfig": "${workspaceFolder}/Safebeat-Infant-Monitor/Control-Box/targetConfigs/CC2651P3.ccxml"
+          "targetConfig": "${workspaceFolder}Control-Box/targetConfigs/CC2651P3.ccxml"
       },
       {
           "name": "Monitor-Belt Debug",
           "type": "ccs-debug",
           "request": "launch",
-          "program": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt/Debug/SafeBeat-Infant-Monitor.out",
-          "cwd": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt",
+          "program": "${workspaceFolder}Monitor-Belt/Debug/SafeBeat-Infant-Monitor.out",
+          "cwd": "${workspaceFolder}Monitor-Belt",
           "target": "CC2651P3",
-          "targetConfig": "${workspaceFolder}/Safebeat-Infant-Monitor/Monitor-Belt/targetConfigs/CC2651P3.ccxml"
+          "targetConfig": "${workspaceFolder}Monitor-Belt/targetConfigs/CC2651P3.ccxml"
       }
   ]
 }
