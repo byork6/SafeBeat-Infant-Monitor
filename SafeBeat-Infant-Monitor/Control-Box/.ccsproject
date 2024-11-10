@@ -8,7 +8,7 @@
 	<createSlaveProjects value=""/>
 	<ignoreDefaultDeviceSettings value="true"/>
 	<ignoreDefaultCCSSettings value="true"/>
-	<templateProperties value="id=empty_LP_CC2651P3_tirtos7_ticlang.projectspec.SafeBeat-Infant-Monitor,buildProfile=release,isHybrid=true"/>
+	<templateProperties value="id=empty_LP_CC2651P3_tirtos7_ticlang.projectspec.Control-Box,buildProfile=release,isHybrid=true"/>
 	<activeTargetConfiguration value="targetConfigs/CC2651P3.ccxml"/>
 	<isTargetConfigurationManual value="false"/>
 	<origin value="C:\ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17\examples\rtos\LP_CC2651P3\drivers\empty\tirtos7\ticlang\empty_LP_CC2651P3_tirtos7_ticlang.projectspec"/>
