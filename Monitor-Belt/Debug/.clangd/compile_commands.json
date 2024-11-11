@@ -1,0 +1,27 @@
+[
+   {
+      "directory" : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug",
+      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg\" -DDeviceFamily_CC26X1",
+      "file"      : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/main_tirtos.c"
+   },
+   {
+      "directory" : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug",
+      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg\" -DDeviceFamily_CC26X1",
+      "file"      : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/main.c"
+   },
+   {
+      "directory" : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug",
+      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg\" -DDeviceFamily_CC26X1",
+      "file"      : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg/ti_devices_config.c"
+   },
+   {
+      "directory" : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug",
+      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg\" -DDeviceFamily_CC26X1",
+      "file"      : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg/ti_drivers_config.c"
+   },
+   {
+      "directory" : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug",
+      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages\" -I\"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg\" -DDeviceFamily_CC26X1",
+      "file"      : "C:/Users/byork/workspace_ccstheia/Monitor-Belt/Debug/syscfg/ti_sysbios_config.c"
+   }
+]
