@@ -1,7 +1,3 @@
 # Ignore folders
 Debug/
-
-# Ignore files
-.settings/org.eclipse.core.resources.prefs
-
-# Ignore file types
+.settings/
