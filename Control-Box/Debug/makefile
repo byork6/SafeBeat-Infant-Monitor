@@ -6,14 +6,11 @@ SHELL = cmd.exe
 
 CG_TOOL_ROOT := C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS
 
-GEN_OPTS__FLAG := @"syscfg/ti_utils_build_compiler.opt" 
+GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
 "./main.o" \
-"./syscfg/ti_devices_config.o" \
-"./syscfg/ti_drivers_config.o" \
-"./syscfg/ti_sysbios_config.o" \
 "./main_tirtos.o" \
 "../cc13x1_cc26x1_tirtos7.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -139,15 +136,15 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 Control-Box.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/bin/tiarmclang.exe" -mcpu=cortex-m4 -mfloat-abi=soft -mfpu=none -mlittle-endian -mthumb -Oz -gdwarf-3 -march=armv7e-m -Wl,-m"Control-Box.map" -Wl,-i"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source" -Wl,-i"C:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos7/packages" -Wl,-i"C:/Users/byork/workspace_ccstheia/Control-Box/Debug/syscfg" -Wl,-i"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="Control-Box_linkInfo.xml" -Wl,--rom_model -o "Control-Box.out" $(ORDERED_OBJS)
+	"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/bin/tiarmclang.exe" -mcpu=cortex-m4 -mfloat-abi=soft -mfpu=none -mlittle-endian -mthumb -Oz -gdwarf-3 -march=armv7e-m -Wl,-m"Control-Box.map" -Wl,-i"/source" -Wl,-i"/kernel/tirtos7/packages" -Wl,-i"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg" -Wl,-i"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="Control-Box_linkInfo.xml" -Wl,--rom_model -o "Control-Box.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.o" "syscfg\ti_devices_config.o" "syscfg\ti_drivers_config.o" "syscfg\ti_sysbios_config.o" "main_tirtos.o" 
-	-$(RM) "main.d" "syscfg\ti_devices_config.d" "syscfg\ti_drivers_config.d" "syscfg\ti_sysbios_config.d" "main_tirtos.d" 
+	-$(RM) $(GEN_MISC_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
+	-$(RM) "main.o" "main_tirtos.o" 
+	-$(RM) "main.d" "main_tirtos.d" 
 	-$(RMDIR) $(GEN_MISC_DIRS__QUOTED)
 	-@echo 'Finished clean'
 	-@echo ' '

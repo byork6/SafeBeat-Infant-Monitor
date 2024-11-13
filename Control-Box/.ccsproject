@@ -11,6 +11,6 @@
 	<templateProperties value="id=empty_LP_CC2651P3_tirtos7_ticlang.projectspec.Control-Box,buildProfile=release,isHybrid=true"/>
 	<activeTargetConfiguration value="targetConfigs/CC2651P3.ccxml"/>
 	<isTargetConfigurationManual value="false"/>
-	<origin value="C:/Users/byork/Desktop/Control-Box"/>
+	<origin value="C:/Users/byork/OneDrive/Desktop/Control-Box"/>
 	<filesToOpen value=""/>
 </projectOptions>
