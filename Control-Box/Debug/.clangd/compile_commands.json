@@ -2,21 +2,6 @@
    {
       "directory" : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug",
       "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug\" -I\"/source\" -I\"/kernel/tirtos7/packages\" -I\"/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg\"",
-      "file"      : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg/ti_devices_config.c"
-   },
-   {
-      "directory" : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug",
-      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug\" -I\"/source\" -I\"/kernel/tirtos7/packages\" -I\"/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg\"",
-      "file"      : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg/ti_drivers_config.c"
-   },
-   {
-      "directory" : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug",
-      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug\" -I\"/source\" -I\"/kernel/tirtos7/packages\" -I\"/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg\"",
-      "file"      : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg/ti_sysbios_config.c"
-   },
-   {
-      "directory" : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug",
-      "command"   : "clang++ -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug\" -I\"/source\" -I\"/kernel/tirtos7/packages\" -I\"/source/ti/posix/ticlang\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c++/v1\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib/clang/18/include\" -isystem\"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/include/c\" -I\"C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/Debug/syscfg\"",
       "file"      : "C:/Users/byork/workspace_ccstheia/SafeBeat-Infant-Monitor/Control-Box/main.c"
    },
    {

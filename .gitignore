@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .cproject
 .ccsproject
 subdir_vars.mk
@@ -6,3 +7,6 @@ sources.mk
 makefile
 ccsObjs.opt
 compile_commands.json
+=======
+
+>>>>>>> 300ceaad1bd8dd57763cb605d09f6dc878a366d9
