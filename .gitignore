@@ -1,4 +1,7 @@
 # Ignore folders
 Debug/
-Debug/.clangd/
-Debug/.clangd/compile_commands.json
+
+# Ignore files
+.settings/org.eclipse.core.resources.prefs
+
+# Ignore file types
