@@ -1,3 +1,4 @@
 # Ignore folders
 Debug/
 Debug/.clangd/
+Debug/.clangd/compile_commands.json
