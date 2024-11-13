@@ -1,2 +1,5 @@
 # Ignore debug folder 
 Debug/
+
+# Ignore compile_commands.json
+compile_commands.json
