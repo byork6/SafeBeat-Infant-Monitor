@@ -1,5 +1,3 @@
-# Ignore debug folder 
+# Ignore folders
 Debug/
-
-# Ignore compile_commands.json
-compile_commands.json
+Debug/.clangd/
