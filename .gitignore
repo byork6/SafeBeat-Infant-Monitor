@@ -1,0 +1,15 @@
+# Ignore file types
+*.out
+*.opt
+*.o
+*.d
+*.map
+*.xml
+*.mk
+
+# Ignore syscfg folder 
+Debug/syscfg/
+
+# Ignore specific files
+makefile
+compile_commands.json
