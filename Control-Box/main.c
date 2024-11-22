@@ -53,7 +53,7 @@
 #include "ti_drivers_config.h"
 
 
-/////// PROJECT INCLUSIONS ///////
+/////// CUSTOM INCLUSIONS ///////
 // Project Header Files
 #include "functions.h"
 #include "test_functions.h"
