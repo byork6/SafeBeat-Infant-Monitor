@@ -37,12 +37,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 
-/* Driver Header files */
+/* TI Driver Header files */
+// #include <ti/drivers/GPIO.h>
 #include <ti/drivers/GPIO.h>
 // #include <ti/drivers/I2C.h>
 #include <ti/drivers/SPI.h>
-// #include <ti/drivers/Watchdog.h>
+// #include <ti/drivers/Display.h>
+#include <ti/display/Display.h>
+// #include <ti/drivers/NVS.h> (Non-Volatile Storage)
+#include <ti/drivers/NVS.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"
