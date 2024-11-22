@@ -9,19 +9,37 @@ The download link for the IDE can be found on TI's website at the link below. On
 CCS Theia -> https://www.ti.com/tool/download/CCSTUDIO-THEIA  
 
 # Setting up Version Control in CCS Theia (Devs Only)
-Alternative ways to setup version control are likely possible but the following instructions for this project use the GitHub desktop client.  
-1. Download GitHub Desktop here -> https://desktop.github.com/download/
-2. Connect/Create GitHub account if prompted.
-3. Once downloaded, open and click "Clone repository from the internet" to clone the project repo.
-4. Change the local path of the clone to the CCS Theia workspace, the directory will default to the following filepath -> C:\Users\[username]\workspace_ccstheia
-5. Click "clone" and the cloned repo should be insid eyour CCS Theia workspace ready to use. The source control tab is on the left similar to VS Code. This can be used for the various version control commands.  
+Alternative ways to setup version control are likely possible but the following instructions for this project use the GitHub desktop client.
+1. Make sure the workspace in CCS Theia is setup with the correct name you want.
+2. Download GitHub Desktop here -> https://desktop.github.com/download/
+3. Connect/Create GitHub account if prompted.
+4. Once downloaded, open and click "Clone repository from the internet" to clone the project repo. Make sure when a workspace and repository are selected, the local path looks like the picture below with the workspace name being the last item in the directory (When you select a repo it will try to make folder in the workspace with the repo name, but it messes up version control).
+
+<p align="center">
+<img src=https://i.imgur.com/EB93kvP.png height="40%" width="40%" alt="Login Screen"/>
+<br />
+<br />
+
+ 5. Click "clone" and the cloned repo should be inside your CCS Theia workspace ready to use. The source control tab is on the left similar to VS Code. This can be used for the various version control commands.  
+ 6. Once the repo is cloned to the workspace the project should appear like in the picture below. From here you can try to build the project, if everything is installed correctly it should build successfully.
+
+<p align="center">
+<img src=https://i.imgur.com/viacCcD.png height="40%" width="40%" alt="Login Screen"/>
+<br />
+<br />
 
 # SIMPLELINK SDK Download
 The software development kit (SDK) for the CC2651P3 MCU was downloaded from TI's website in order to utilize the SDK's software support. If the SDK is not installed some header files will not be included in the main.c source file. Do not change installation directory of the SDK during the installation proccess.  
-CC2651P3 on TI website -> https://www.ti.com/product/CC2651P3#software-development  
+1. Download the SDK from link below.
+   CC2651P3 on TI website -> https://www.ti.com/product/CC2651P3#software-development  
+2. The default directory for the SDK should be C:\ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17
+3. This directory will be added to the project in CCS Theie by navigating to the workspace with the cloned repo (Open the workspace from File -> Open Folder... -> Selecting the Workspace folder)
+4. Once you are in the workspace add the SDK by navigating to File -> Preferences -> Code Composer Studio Settings... -> General (On left) -> Products
+5. Once in the products window click the + in the top right and navigate to the SDK install location and click it... mine is C:\ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17
+7. The SDK should show up in the Product Discovery Path Window like in the image below
 
-# TI Drivers
-The drivers for the TI microcontroller are located in the directory \SafeBeat-Infant-Monitor\Debug\sysconfig. The header files from the SDK are located in the install directory \ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17  
-ti_drivers_config.c contains the GPIO pin configurations and names.  
-GPIO.h contains GPIO functions included with the SDK.  
-SPI.h contains SPI functions included with the SDK.  
+<p align="center">
+<img src=https://i.imgur.com/Sq5JZnz.png height="40%" width="40%" alt="Login Screen"/>
+<br />
+<br />
+ 
