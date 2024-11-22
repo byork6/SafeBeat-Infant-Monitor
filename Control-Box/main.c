@@ -51,19 +51,21 @@
 /////// PROJECT INCLUSIONS ///////
 // Project Header Files
 #include "functions.h"
+#include "test_functions.h"
 
 // Define GPIO Macros
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+#define LOOP_DELAY_US (250000)                                                  // 0.25 seconds
 
 
 void *mainThread(void *arg0)
 {
     /////// TEST CODE ONLY ///////
     // For testing GPIO pins one at a time.
-    testGPIO(5);
+    // testGPIO(5);
 
     /////// PROJECT CODE ///////
     // Init local variables
@@ -81,38 +83,11 @@ void *mainThread(void *arg0)
 
     while (1){
         // Loop delay of 1s
-        sleep(1);
+        usleep(LOOP_DELAY_US);
         
         // Run-time code goes here
         // TODO
     }
-}
-
-
-void exampleCode(void){
-    ////////// EXAMPLE CODE FROM TEMPLATE//////////
-    // 1 second delay
-    uint32_t time = 1;
-
-    // Call driver init functions
-    GPIO_init();
-    // I2C_init();
-    // SPI_init();
-    // Watchdog_init();
-
-    // Configure the LED pin
-    GPIO_setConfig(CONFIG_GPIO_LED_0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
-
-    // Turn on user LED
-    GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);
-
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(CONFIG_GPIO_LED_0);
-    }
-
-    //////////////////////////////////
 }
 
 void testGPIO(uint32_t pin_config_index){
@@ -123,9 +98,6 @@ void testGPIO(uint32_t pin_config_index){
         exit(1);
     }
 
-    // 1 second delay
-    uint32_t time = 1;
-
     // Call driver init functions from SDK
     GPIO_init();
 
@@ -134,7 +106,7 @@ void testGPIO(uint32_t pin_config_index){
 
     while (1)
     {
-        sleep(time);
+        usleep(LOOP_DELAY_US);
         GPIO_toggle(pin_config_index);
     }
 }

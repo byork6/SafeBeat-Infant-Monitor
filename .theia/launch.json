@@ -1,25 +1,32 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  "version": "0.2.0",
-  "configurations": [
-      {
-          "name": "Control-Box Debug",
-          "type": "ccs-debug",
-          "request": "launch",
-          "program": "${workspaceFolder}/Control-Box/Debug/SafeBeat-Infant-Monitor.out",
-          "cwd": "${workspaceFolder}Control-Box",
-          "target": "CC2651P3",
-          "targetConfig": "${workspaceFolder}Control-Box/targetConfigs/CC2651P3.ccxml"
-      },
-      {
-          "name": "Monitor-Belt Debug",
-          "type": "ccs-debug",
-          "request": "launch",
-          "program": "${workspaceFolder}Monitor-Belt/Debug/SafeBeat-Infant-Monitor.out",
-          "cwd": "${workspaceFolder}Monitor-Belt",
-          "target": "CC2651P3",
-          "targetConfig": "${workspaceFolder}Monitor-Belt/targetConfigs/CC2651P3.ccxml"
-      }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Control-Box Debug",
+            "type": "ccs-debug",
+            "request": "launch",
+            "program": "${workspaceFolder}/Control-Box/Debug/SafeBeat-Infant-Monitor.out",
+            "cwd": "${workspaceFolder}Control-Box",
+            "target": "CC2651P3",
+            "targetConfig": "${workspaceFolder}Control-Box/targetConfigs/CC2651P3.ccxml"
+        },
+        {
+            "name": "Monitor-Belt Debug",
+            "type": "ccs-debug",
+            "request": "launch",
+            "program": "${workspaceFolder}Monitor-Belt/Debug/SafeBeat-Infant-Monitor.out",
+            "cwd": "${workspaceFolder}Monitor-Belt",
+            "target": "CC2651P3",
+            "targetConfig": "${workspaceFolder}Monitor-Belt/targetConfigs/CC2651P3.ccxml"
+        },
+        {
+            "name": "Control-Box (1)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/main.c"
+            }
+        }
+    ]
 }
