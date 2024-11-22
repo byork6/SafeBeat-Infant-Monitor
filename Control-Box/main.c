@@ -65,7 +65,7 @@ void *mainThread(void *arg0)
 {
     /////// TEST CODE ONLY ///////
     // For testing GPIO pins one at a time.
-    // testGPIO(5);
+    testGPIO(5);
 
     /////// PROJECT CODE ///////
     // Init local variables
@@ -73,13 +73,13 @@ void *mainThread(void *arg0)
 
     // TI Init functions
     GPIO_init();
-    SPI_init();
+    // SPI_init();
 
     // Configure GPIO
     configGPIO();
 
     // Configure SPI
-    configSPI();
+    // configSPI();
 
     while (1){
         // Loop delay of 1s
