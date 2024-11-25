@@ -43,3 +43,19 @@ The software development kit (SDK) for the CC2651P3 MCU was downloaded from TI's
 <br />
 <br />
  
+# Project Setup
+All source files that can be edited are included in each projects src folder. The GitHub repo is set up so both projects can be compiled separately, since each will be loaded onto a separate MCU. Within the src folder, common.h contains any used libraries, header files, and macros used by the main project. Some of the header files in common.h include SDK driver inclusions that are required, while other header files are custom ones that can be changed. Within common.h the required SDK headers are shown in the first image below.
+<br />
+<br />
+FOR ANY INCLUSIONS FROM THE SDK, THE DRIVER FOR IT MUST BE CONFIGURED USING "main.sysconfig" FOR THAT PROJECT. This is shown in the second image below, and any drivers that need to be configured can be done using the sysconfig GUI.
+For example, in the first image we include the GPIO.h driver and SPI.h driver from the SDK, so when you go into the main.sysconfig GUI, both GPIO and SPI should have a green check by it, if they do not, the project will not compile.
+
+<p align="center">
+<img src=https://i.imgur.com/zj9DDPJ.png height="40%" width="40%" alt="Login Screen"/>
+<br />
+<br />
+
+<p align="center">
+<img src=https://i.imgur.com/wvmYZUw.png height="60%" width="60%" alt="Login Screen"/>
+<br />
+<br />
