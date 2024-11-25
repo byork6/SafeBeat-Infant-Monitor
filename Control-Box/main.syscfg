@@ -11,6 +11,8 @@
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
+const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
+const SPI1        = SPI.addInstance();
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -29,6 +31,10 @@ GPIO1.$hardware = system.deviceData.board.components.LED_RED;
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
+
+SPI1.$name     = "CONFIG_SPI_0";
+SPI1.$hardware = system.deviceData.board.components.LP_SPI;
+SPI1.mode      = "Four Pin CS Active Low";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -68,5 +74,12 @@ System.supportModule   = "SysCallback";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-GPIO1.gpioPin.$suggestSolution = "boosterpack.39";
-Timer.rtc.$suggestSolution     = "RTC0";
+GPIO1.gpioPin.$suggestSolution         = "boosterpack.39";
+SPI1.spi.$suggestSolution              = "SSI0";
+SPI1.spi.sclkPin.$suggestSolution      = "boosterpack.7";
+SPI1.spi.pociPin.$suggestSolution      = "boosterpack.14";
+SPI1.spi.picoPin.$suggestSolution      = "boosterpack.15";
+SPI1.spi.dmaRxChannel.$suggestSolution = "DMA_CH3";
+SPI1.spi.dmaTxChannel.$suggestSolution = "DMA_CH4";
+SPI1.spi.csnPin.$suggestSolution       = "boosterpack.18";
+Timer.rtc.$suggestSolution             = "RTC0";
