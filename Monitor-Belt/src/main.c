@@ -30,33 +30,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-/////// SDK inlcusions ///////
-/* For usleep() */
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stddef.h>
-
-/* Driver Header files */
-#include <ti/drivers/GPIO.h>
-// #include <ti/drivers/I2C.h>
-#include <ti/drivers/SPI.h>
-// #include <ti/drivers/Watchdog.h>
-
-/* Driver configuration */
-#include "ti_drivers_config.h"
-
-
-/////// PROJECT INCLUSIONS ///////
-// Project Header Files
-#include "functions.h"
-
-// Define GPIO Macros
-#define DRIVE_GPIO_HIGH (1)
-#define DRIVE_GPIO_LOW (0)
-#define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
-#define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+#include "common.h"
+#include "test_functions.h"
 
 
 void *mainThread(void *arg0)
@@ -71,7 +46,7 @@ void *mainThread(void *arg0)
 
     // TI Init functions
     GPIO_init();
-    SPI_init();
+    // SPI_init();
 
     // Configure GPIO
     configGPIO();
@@ -85,57 +60,6 @@ void *mainThread(void *arg0)
         
         // Run-time code goes here
         // TODO
-    }
-}
-
-
-void exampleCode(void){
-    ////////// EXAMPLE CODE FROM TEMPLATE//////////
-    // 1 second delay
-    uint32_t time = 1;
-
-    // Call driver init functions
-    GPIO_init();
-    // I2C_init();
-    // SPI_init();
-    // Watchdog_init();
-
-    // Configure the LED pin
-    GPIO_setConfig(CONFIG_GPIO_LED_0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
-
-    // Turn on user LED
-    GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);
-
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(CONFIG_GPIO_LED_0);
-    }
-
-    //////////////////////////////////
-}
-
-void testGPIO(uint32_t pin_config_index){
-    //////////////// TEST CODE  ONLY ////////////////
-    
-    // Input validation (Pins 5-30 only valid pins)
-    if (pin_config_index < 5 || pin_config_index > 30){
-        exit(1);
-    }
-
-    // 1 second delay
-    uint32_t time = 1;
-
-    // Call driver init functions from SDK
-    GPIO_init();
-
-    // Initialize GPIO pins
-    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
-
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(pin_config_index);
     }
 }
 
