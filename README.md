@@ -51,11 +51,11 @@ FOR ANY INCLUSIONS FROM THE SDK, THE DRIVER FOR IT MUST BE CONFIGURED USING "mai
 For example, in the first image we include the GPIO.h driver and SPI.h driver from the SDK, so when you go into the main.sysconfig GUI, both GPIO and SPI should have a green check by it, if they do not, the project will not compile.
 
 <p align="center">
-<img src=https://i.imgur.com/zj9DDPJ.png height="20%" width="20%" alt="Login Screen"/>
+<img src=https://i.imgur.com/zj9DDPJ.png height="40%" width="40%" alt="Login Screen"/>
 <br />
 <br />
 
 <p align="center">
-<img src=https://i.imgur.com/wvmYZUw.png height="80%" width="80%" alt="Login Screen"/>
+<img src=https://i.imgur.com/wvmYZUw.png height="100%" width="100%" alt="Login Screen"/>
 <br />
 <br />
