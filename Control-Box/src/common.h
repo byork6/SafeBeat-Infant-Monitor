@@ -17,6 +17,8 @@
 #include <ti/display/Display.h>
 // #include <ti/drivers/NVS.h> (Non-Volatile Storage)
 #include <ti/drivers/NVS.h>
+// #include BLE5 Header (Might be the right header file but not positive yet)
+#include <ti/ble5stack_flash/inc/bcomdef.h>
 
 /* Driver configuration */
 #include "ti_drivers_config.h"

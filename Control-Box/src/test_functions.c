@@ -25,3 +25,9 @@ void testGPIO(uint32_t pin_config_index){
         GPIO_toggle(pin_config_index);
     }
 }
+
+void testBLE5(){
+    /*TODO: write code that connects MCU to SimpleLink app based off "project_zero example". 
+    *       The ble connection should toggle LED when app writes to the MCU
+    */
+}

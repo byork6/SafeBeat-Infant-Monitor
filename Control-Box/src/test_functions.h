@@ -5,7 +5,7 @@
 
 ////////// DOC STRING TEMPLATE //////////
 /**
-* @brief Short description goes here.
+* @brief - Short description goes here.
 *
 * Long description goes here (optional).
 *
@@ -28,3 +28,14 @@
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGPIO(uint32_t pin_config_index);
+
+/**
+* @brief - Test code that uses BLE5 to connect to the SimpleLink Connect Application
+*
+* Long description goes here (optional).
+*
+* @param a - First param (optional).
+* @param b - Second param (optional).
+* @return  - What is returned goes here (optional).
+*/
+void testBLE5();
