@@ -59,3 +59,7 @@ For example, in the first image we include the GPIO.h driver and SPI.h driver fr
 <img src=https://i.imgur.com/wvmYZUw.png height="100%" width="100%" alt="Login Screen"/>
 <br />
 <br />
+
+# Helpful Links
+TI's SimpleLink Low Power F2 SDK Repo - https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk
+BLE5 Stack Example Repo - https://github.com/TexasInstruments/simplelink-ble5stack-examples
