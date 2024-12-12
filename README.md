@@ -4,14 +4,12 @@
 # CCS Theia
 In order to build and load the software onto the CC2651P3 MCU, the CCTUDIO-THEIA IDE was used for this project.  
 
-The download link for the IDE can be found on TI's website at the link below. Once CCS Theia is installed, the project can be added to the active workspace.  
-
-CCS Theia -> https://www.ti.com/tool/download/CCSTUDIO-THEIA  
+The download link for CCS Theia can be found on [TI's Website](https://www.ti.com/tool/download/CCSTUDIO-THEIA). Once CCS Theia is installed, the project can be added to the active workspace.  
 
 # Setting up Version Control in CCS Theia (Devs Only)
 Alternative ways to setup version control are likely possible but the following instructions for this project use the GitHub desktop client.
 1. Make sure the workspace in CCS Theia is setup with the correct name you want.
-2. Download GitHub Desktop here -> https://desktop.github.com/download/
+2. Download GitHub Desktop [here](https://desktop.github.com/download/).
 3. Connect/Create GitHub account if prompted.
 4. Once downloaded, open and click "Clone repository from the internet" to clone the project repo. Make sure when a workspace and repository are selected, the local path looks like the picture below with the workspace name being the last item in the directory (When you select a repo it will try to make folder in the workspace with the repo name, but it messes up version control).
 
@@ -30,8 +28,7 @@ Alternative ways to setup version control are likely possible but the following 
 
 # SIMPLELINK SDK Download
 The software development kit (SDK) for the CC2651P3 MCU was downloaded from TI's website in order to utilize the SDK's software support. If the SDK is not installed some header files will not be included in the main.c source file. Do not change installation directory of the SDK during the installation proccess.  
-1. Download the SDK from link below.
-   CC2651P3 on TI website -> https://www.ti.com/product/CC2651P3#software-development  
+1. Download the [SDK](https://www.ti.com/product/CC2651P3#software-development) from the TI website. 
 2. The default directory for the SDK should be C:\ti\simplelink_cc13xx_cc26xx_sdk_7_41_00_17
 3. This directory will be added to the project in CCS Theie by navigating to the workspace with the cloned repo (Open the workspace from File -> Open Folder... -> Selecting the Workspace folder)
 4. Once you are in the workspace add the SDK by navigating to File -> Preferences -> Code Composer Studio Settings... -> General (On left) -> Products
@@ -61,5 +58,6 @@ For example, in the first image we include the GPIO.h driver and SPI.h driver fr
 <br />
 
 # Helpful Links
-TI's SimpleLink Low Power F2 SDK Repo - https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk
-BLE5 Stack Example Repo - https://github.com/TexasInstruments/simplelink-ble5stack-examples
+[TI's SimpleLink Low Power F2 SDK Repository](https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk)
+<br />
+[BLE5 Stack Example Repository](https://github.com/TexasInstruments/simplelink-ble5stack-examples)
