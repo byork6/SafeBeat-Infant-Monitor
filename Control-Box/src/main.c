@@ -38,21 +38,17 @@ void *mainThread(void *arg0)
 {
     /////// TEST CODE ONLY ///////
     // For testing GPIO pins one at a time.
-    testGPIO(5);
+    // testGPIO(5);
 
     /////// PROJECT CODE ///////
     // Init local variables
     uint32_t time = 1;
 
-    // TI Init functions
-    GPIO_init();
-    // SPI_init();
+    // Call TI driver initializations
+    initBOARD();
 
-    // Configure GPIO
-    configGPIO();
-
-    // Configure SPI
-    // configSPI();
+    // Call custom board configurations
+    configBOARD();
 
     while (1){
         // Loop delay of 1s
@@ -61,6 +57,18 @@ void *mainThread(void *arg0)
         // Run-time code goes here
         // TODO
     }
+}
+
+void initBOARD(void){
+    GPIO_init();
+    // SPI_init();
+    // TODO: Add init drivers as needed.
+}
+
+void configBOARD(void){
+    configGPIO();
+    // configSPI();
+    // TODO: Add config calls as needed
 }
 
 void configGPIO(void){
