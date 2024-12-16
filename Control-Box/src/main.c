@@ -33,11 +33,9 @@
 #include "common.h"
 #include "test_functions.h"
 
-
 void *mainThread(void *arg0)
 {
-    /////// TEST CODE ONLY ///////
-    // For testing GPIO pins one at a time.
+    // For testing GPIO pins one at a time without using RTOS
     // testGPIO(5);
 
     /////// PROJECT CODE ///////
@@ -50,13 +48,14 @@ void *mainThread(void *arg0)
     // Call custom board configurations
     configBOARD();
 
-    while (1){
-        // Loop delay of 1s
-        usleep(LOOP_DELAY_US);
-        
-        // Run-time code goes here
-        // TODO
-    }
+    // Create tasks for RTOS
+    // For testing GPIO pins one at a time using RTOS
+    testGPIO_createTask();
+
+    // Start TI-RTOS BIOS execution
+    BIOS_start();
+
+    return NULL;
 }
 
 void initBOARD(void){
@@ -75,6 +74,7 @@ void configGPIO(void){
     // TODO: Set up initial config for GPIO pins
     // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
     GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW);
+    GPIO_setConfig(6, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_setConfig(8, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_setConfig(9, GPIO_SET_OUT_AND_DRIVE_LOW);

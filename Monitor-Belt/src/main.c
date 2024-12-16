@@ -38,7 +38,7 @@ void *mainThread(void *arg0)
 {
     /////// TEST CODE ONLY ///////
     // For testing GPIO pins one at a time.
-    testGPIO(5);
+    testGPIO(6);
 
     /////// PROJECT CODE ///////
     // Init local variables
