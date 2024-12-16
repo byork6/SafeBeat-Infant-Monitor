@@ -1,6 +1,30 @@
 #include "common.h"
 #include "test_functions.h"
 
+void testGPIO_createTask(void){
+  Task_Params taskParams;
+
+  Task_Params_init(&taskParams);
+  taskParams.stack = gpioTaskStack;
+  taskParams.stackSize = GPIO_TASK_STACK_SIZE;
+  taskParams.priority = GPIO_TASK_PRIORITY;
+  taskParams.arg0 = 6;
+
+  Task_construct(&gpioTask, testGPIO_executeTask, &taskParams, NULL);
+}
+
+void testGPIO_executeTask(UArg arg0, UArg arg1){
+    uint32_t pin = (uint32_t)arg0;  
+
+    GPIO_setConfig(pin, GPIO_SET_OUT_AND_DRIVE_LOW);
+
+    while (1)
+    {
+        GPIO_toggle(pin);  
+        // Clock_tickPeriod = 10 us --- delayTime in seconds
+        Task_sleep(DELAY_US(DELAY_DURATION_US)); 
+    }
+}
 
 void testGPIO(uint32_t pin_config_index){
     //////////////// TEST CODE  ONLY ////////////////
@@ -24,10 +48,4 @@ void testGPIO(uint32_t pin_config_index){
         sleep(time);
         GPIO_toggle(pin_config_index);
     }
-}
-
-void testBLE5(){
-    /*TODO: write code that connects MCU to SimpleLink app based off "project_zero example". 
-    *       The ble connection should toggle LED when app writes to the MCU
-    */
 }

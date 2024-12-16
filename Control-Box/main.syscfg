@@ -8,7 +8,6 @@
 /**
  * Import the modules used in this configuration.
  */
-const ble         = scripting.addModule("/ti/ble5stack/ble");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const NVS         = scripting.addModule("/ti/drivers/NVS", {}, false);
@@ -30,17 +29,6 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
-ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
-ble.connUpdateParamsPeripheral.$name   = "ti_ble5stack_general_ble_conn_update_params0";
-ble.advSet1.$name                      = "ti_ble5stack_broadcaster_advertisement_set0";
-ble.advSet1.advParam1.$name            = "ti_ble5stack_broadcaster_advertisement_params0";
-ble.advSet1.advData1.$name             = "ti_ble5stack_broadcaster_advertisement_data0";
-ble.advSet1.scanRes1.$name             = "ti_ble5stack_broadcaster_advertisement_data1";
-ble.advSet2.$name                      = "ti_ble5stack_broadcaster_advertisement_set1";
-ble.advSet2.advParam2.$name            = "ti_ble5stack_broadcaster_advertisement_params1";
-ble.advSet2.advData2.$name             = "ti_ble5stack_broadcaster_advertisement_data2";
-ble.advSet2.scanRes2.$name             = "ti_ble5stack_broadcaster_advertisement_data3";
-
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
 
