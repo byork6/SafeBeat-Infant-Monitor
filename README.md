@@ -57,6 +57,9 @@ For example, in the first image we include the GPIO.h driver and SPI.h driver fr
 <br />
 <br />
 
+# Naming Standard
+![image](https://github.com/user-attachments/assets/c1a33758-17f2-4f18-b4ec-6e7b8ec317fd)
+
 # Helpful Links
 [TI's SimpleLink Low Power F2 SDK Repository](https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk)
 <br />
