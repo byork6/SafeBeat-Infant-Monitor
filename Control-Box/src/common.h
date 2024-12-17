@@ -42,5 +42,5 @@
 // Define testGPIO RTOS task parameters
 #define GPIO_TASK_STACK_SIZE 1024
 #define GPIO_TASK_PRIORITY    1
-Task_Struct gpioTask;
-uint8_t gpioTaskStack[GPIO_TASK_STACK_SIZE];
+Task_Struct GpioTaskStruct;
+uint8_t g_gpioTaskStack[GPIO_TASK_STACK_SIZE];
