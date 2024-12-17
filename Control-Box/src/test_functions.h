@@ -25,7 +25,7 @@
 * @param b - Second param (optional).
 * @return  - What is returned goes here (optional).
 */
-void testGPIO_createTask(void);
+void testGpio_createTask(uint32_t pinNumber);
 
 /**
 * @brief Contains task execution functionality for the testGPIO task
@@ -36,7 +36,7 @@ void testGPIO_createTask(void);
 * @param b - Second param (optional).
 * @return  - What is returned goes here (optional).
 */
-void testGPIO_executeTask(UArg arg0, UArg arg1);
+void testGpio_executeTask(UArg arg0, UArg arg1);
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.
@@ -49,4 +49,4 @@ void testGPIO_executeTask(UArg arg0, UArg arg1);
 *
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
-void testGPIO(uint32_t pin_config_index);
+void testGpio(uint32_t pin_config_index);

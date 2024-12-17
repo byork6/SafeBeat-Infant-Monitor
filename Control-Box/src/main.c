@@ -49,8 +49,8 @@ void *mainThread(void *arg0)
     configBOARD();
 
     // Create tasks for RTOS
-    // For testing GPIO pins one at a time using RTOS
-    testGPIO_createTask();
+    uint32_t pinToTest = 6;
+    testGpio_createTask(pinToTest);
 
     // Start TI-RTOS BIOS execution
     BIOS_start();
