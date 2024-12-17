@@ -50,7 +50,10 @@ void *mainThread(void *arg0)
 
     // Create tasks for RTOS
     uint32_t pinToTest = 6;
+<<<<<<< HEAD
     // Task priority - 1
+=======
+>>>>>>> e6fb65f90831b6d2d194b8010a9f0ad03e752eca
     testGpio_createTask(pinToTest);
 
     // Start TI-RTOS BIOS execution
