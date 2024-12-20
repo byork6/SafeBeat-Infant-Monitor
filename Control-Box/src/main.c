@@ -49,9 +49,15 @@ void *mainThread(void *arg0)
     configBOARD();
 
     // Create tasks for TI-RTOS
+    // Task 1
     uint32_t pinToTest = 6;
-    // Task priority - 1
-    testGpio_createTask(pinToTest);
+    uint32_t taskPriority = 1;
+    testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+
+    // Task 2
+    pinToTest = 7;
+    taskPriority = 1;
+    testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
     // Start TI-RTOS BIOS execution
     BIOS_start();

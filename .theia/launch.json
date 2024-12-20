@@ -54,6 +54,33 @@
                 "name": "Monitor-Belt",
                 "resourceId": "/Monitor-Belt"
             }
+        },
+        {
+            "name": "Control-Box (4)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/Debug"
+            }
+        },
+        {
+            "name": "Control-Box (5)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/common.h"
+            }
+        },
+        {
+            "name": "Control-Box (6)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/config_functions.c"
+            }
         }
     ]
 }

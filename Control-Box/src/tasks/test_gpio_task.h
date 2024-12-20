@@ -1,26 +1,39 @@
 #pragma once
 
 // Define task parameters
-#define TEST_GPIO_TASK_STACK_SIZE 1024
-#define TEST_GPIO_TASK_PRIORITY    1
-Task_Struct TestGpioTaskStruct;
-uint8_t g_testGpioTaskStack[TEST_GPIO_TASK_STACK_SIZE];
+#define TEST_GPIO_TASK_STACK_SIZE   1024
+#define TEST_GPIO_TASK_PRIORITY     1
+Task_Struct g_TestGpioTaskStruct1;
+uint8_t g_testGpioTaskStack1[TEST_GPIO_TASK_STACK_SIZE];
+Task_Struct g_TestGpioTaskStruct2;
+uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 
 /**
-* @brief Creates an RTOS task for testGpio.
+* @brief Creates an RTOS task for GPIO operations.
 *
 * This function initializes a TI-RTOS task using the Task_construct API. It sets up 
 * the stack, priority, and parameters required for the RTOS task execution.
-* The task is statically allocated, making it suitable for real-time systems 
-* where dynamic memory allocation is not desirable. 
+* The task is statically allocated, making it suitable for real-time systems
+* where dynamic memory allocation is not desirable.
 *
 * @param pinNumber Specifies the GPIO pin number to be used by the task.
 *                  This value is passed to the task's execution function as
 *                  an argument for GPIO-specific operations.
+* @param taskPriority The priority of the task in the RTOS scheduler. Tasks
+*                     with lower numerical priority values have higher precedence.
+* @param taskStruct A pointer to a Task_Struct object used to manage the task's
+*                   control information. This must be statically allocated.
+* @param taskStack A pointer to a statically allocated memory array used as the
+*                  task's stack. The array size must match the stack size configured
+*                  in the task parameters.
 *
+* @note Example function call -> testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+*       If a task will not have multple instances you can remove the last two 
+*       parameters and refrence the global variables inside the function itself.
+* 
 * @return None
 */
-void testGpio_createTask(uint32_t pinNumber);
+void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
 
 /**
 * @brief Initializes a Task_Params structure with default values.
