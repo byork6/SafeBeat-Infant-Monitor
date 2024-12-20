@@ -15,29 +15,6 @@
 */
 /////////////////////////////////////////
 
-
-/**
-* @brief Creates RTOS task for testGPIO
-*
-* Long description goes here (optional).
-*
-* @param a - First param (optional).
-* @param b - Second param (optional).
-* @return  - What is returned goes here (optional).
-*/
-void testGpio_createTask(uint32_t pinNumber);
-
-/**
-* @brief Contains task execution functionality for the testGPIO task
-*
-* Long description goes here (optional).
-*
-* @param a - First param (optional).
-* @param b - Second param (optional).
-* @return  - What is returned goes here (optional).
-*/
-void testGpio_executeTask(UArg arg0, UArg arg1);
-
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.
 *

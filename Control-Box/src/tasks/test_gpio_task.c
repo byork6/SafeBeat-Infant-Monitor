@@ -1,0 +1,37 @@
+#include "../common.h"
+#include "test_gpio_task.h"
+
+void testGpio_createTask(uint32_t pinNumber){
+    // Declare TaskParams struct name
+    Task_Params TaskParams;
+
+
+    // Initialize TaskParams and set paramerters.
+    Task_Params_init(&TaskParams);
+    // Stack array
+    TaskParams.stack = g_testGpioTaskStack;
+    // Stack array size
+    TaskParams.stackSize = TEST_GPIO_TASK_STACK_SIZE;
+    // Stack task TI-RTOS priority
+    TaskParams.priority = TEST_GPIO_TASK_PRIORITY;
+    // arg0 and ar1 passed to exectution function for the created task. Use 0 if arg is unused.
+    // you can pass variables or pointers to structs for larger data objects.
+    TaskParams.arg0 = pinNumber;
+    TaskParams.arg1 = 0;    // 0 used if arg is unused.
+
+    // Construct the TI-RTOS task using the API
+    Task_construct(&TestGpioTaskStruct, testGpio_executeTask, &TaskParams, NULL);
+}
+
+void testGpio_executeTask(UArg arg0, UArg arg1){
+    (void)arg1;     // suppresses warnings for unused arg
+
+    GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
+
+    while (1)
+    {
+        GPIO_toggle(arg0);  
+        // Clock_tickPeriod = 10 us --- delayTime in seconds
+        Task_sleep(DELAY_US(DELAY_DURATION_US)); 
+    }
+}
