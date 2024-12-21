@@ -81,6 +81,24 @@
                 "name": "Control-Box",
                 "resourceId": "/Control-Box/src/config_functions.c"
             }
+        },
+        {
+            "name": "Control-Box (7)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/test_functions.h"
+            }
+        },
+        {
+            "name": "Control-Box (8)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/main_tirtos.c"
+            }
         }
     ]
 }

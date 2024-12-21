@@ -2,15 +2,14 @@
 
 // Built-ins
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdint.h>
-#include <stddef.h>
-#include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 /////// SDK inlcusions ///////
 // TI Driver Header files
 #include <ti/drivers/GPIO.h>
+#include <ti/drivers/rf/RF.h>
 #include <ti/drivers/SPI.h>
 #include <ti/display/Display.h>
 // #include <ti/drivers/NVS.h> (Non-Volatile Storage)
@@ -19,18 +18,26 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-// Driver configuration
-#include "ti_drivers_config.h"
-// For RTOS BIOS execution
+// For rf_packet_rx_task.c
+#include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
+#include <ti_radio_config.h>
+
+// For TIRTOS7 BIOS execution
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
 
-/////// CUSTOM INCLUSIONS ///////
-// Custom Header Files
-#include "config_functions.h"
+// Driver configuration
+#include "ti_drivers_config.h"
 
-// Cusotom Macros
+/////// CUSTOM INCLUSIONS ///////
+// Startup config
+#include "config_functions.h"
+// RF packet receive task
+#include "tasks/rf_packet_rx_task/rf_packet_rx_task.h"
+#include "tasks/rf_packet_rx_task/rf_queue.h"
+
+// Custom Macros
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)

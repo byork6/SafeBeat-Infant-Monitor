@@ -8,6 +8,7 @@
 /**
  * Import the modules used in this configuration.
  */
+const custom      = scripting.addModule("/ti/devices/radioconfig/custom");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const NVS         = scripting.addModule("/ti/drivers/NVS", {}, false);
@@ -29,6 +30,11 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
+custom.prop2                                        = ["custom2400"];
+custom.radioConfigcustom2400.$name                  = "ti_devices_radioconfig_settings_prop0";
+custom.radioConfigcustom2400.phyType2400            = "2gfsk100kbps";
+custom.radioConfigcustom2400.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
 
