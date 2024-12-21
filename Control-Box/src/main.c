@@ -32,6 +32,7 @@
 
 #include "common.h"
 #include "tasks/test_gpio_task.h"
+#include "test_functions.h"
 
 void *mainThread(void *arg0)
 {
@@ -41,6 +42,7 @@ void *mainThread(void *arg0)
     /////// PROJECT CODE ///////
     // Init local variables
     uint32_t time = 1;
+    printVar("time", &time, 'd');
 
     // Call TI driver initializations
     initBOARD();

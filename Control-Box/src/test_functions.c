@@ -24,3 +24,27 @@ void testGpio(uint32_t pin_config_index){
         GPIO_toggle(pin_config_index);
     }
 }
+
+void printVar(const char *varName, void *var, char type) {
+    if (varName == NULL) {
+        varName = "foo"; // Default name if none is provided
+    }
+
+    switch (type) {
+        case 'd': // Integer
+            printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
+            break;
+        case 'f': // Float
+            printf("Variable \"%s\" value: %.2f\n", varName, *(float *)var);
+            break;
+        case 'c': // Character
+            printf("Variable \"%s\" value: %c\n", varName, *(char *)var);
+            break;
+        case 's': // String
+            printf("Variable \"%s\" value: %s\n", varName, (char *)var);
+            break;
+        default:
+            printf("Unsupported type for variable \"%s\"\n", varName);
+    }
+    fflush(stdout); // Ensure output is flushed immediately
+}
