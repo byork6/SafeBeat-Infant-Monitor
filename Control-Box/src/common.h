@@ -18,10 +18,6 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-// For rf_packet_rx_task.c
-#include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
-#include <ti_radio_config.h>
-
 // For TIRTOS7 BIOS execution
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
@@ -33,9 +29,10 @@
 /////// CUSTOM INCLUSIONS ///////
 // Startup config
 #include "config_functions.h"
+// Include before rf_packet_rx_task.h
+#include "tasks/rf_packet_rx_task/rf_queue.h"
 // RF packet receive task
 #include "tasks/rf_packet_rx_task/rf_packet_rx_task.h"
-#include "tasks/rf_packet_rx_task/rf_queue.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)
