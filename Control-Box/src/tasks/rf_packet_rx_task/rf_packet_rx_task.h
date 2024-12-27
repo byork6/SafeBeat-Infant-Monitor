@@ -50,10 +50,31 @@ static uint8_t* packetDataPointer;
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
 
 // Define task parameters
-// TODO: finish params
-// #define TEST_GPIO_TASK_STACK_SIZE   1024
-// #define TEST_GPIO_TASK_PRIORITY     1
-// Task_Struct g_TestGpioTaskStruct1;
-// uint8_t g_testGpioTaskStack1[TEST_GPIO_TASK_STACK_SIZE];
-// Task_Struct g_TestGpioTaskStruct2;
-// uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
+// TODO: edit doc strings below here
+#define RF_PACKET_RX_TASK_STACK_SIZE   1024
+#define RF_PACKET_RX_TASK_PRIORITY     1
+Task_Struct g_RfPacketRxTaskStruct;
+uint8_t g_rfPacketRxTaskStruct[RF_PACKET_RX_TASK_STACK_SIZE];
+
+/**
+* @brief  Creates an RTOS task for rf packet receive operations.
+*
+* This function initializes a TI-RTOS task using the Task_construct API.
+* It sets up the stack, priority, and parameters required for the RTOS task execution.
+* The task is statically allocated, making it suitable for real-time systems
+* where dynamic memory allocation is undesirable.
+*
+*
+* @return None
+*/
+void rfPacketRx_createTask(NULL);
+
+/**
+* @brief Executes the rf packet receive task.
+*
+* @param arg0 Unused arg
+* @param arg1 Unused arg
+*
+* @return None
+*/
+void rfPacketRx_executeTask(UArg arg0, UArg arg1);

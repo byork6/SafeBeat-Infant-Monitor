@@ -36,6 +36,21 @@ uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
 
 /**
+ * @brief Executes the testGpio task by toggling the selected pin.
+ *
+ * This function contains the execution logic for the testGpio task. It configures
+ * the specified GPIO pin as output and toggles its state at a fixed interval.
+ * The function runs indefinitely as part of the RTOS task loop, using `Task_sleep`
+ * to introduce a delay between toggles.
+ *
+ * @param arg0 The GPIO pin number to configure and toggle (passed from TaskParams struct inside testGpio_createTask).
+ * @param arg1 Unused argument (can be set to 0).
+ *
+ * @return None
+ */
+void testGpio_executeTask(UArg arg0, UArg arg1);
+
+/**
 * @brief Initializes a Task_Params structure with default values.
 *
 * This function sets up a `Task_Params` structure with default values provided by the TI-RTOS library.
@@ -78,18 +93,3 @@ void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct 
 * @return None
 */
 // void Task_construct(*taskStruct, taskFunction, *taskParams, *eb)
-
-/**
- * @brief Executes the testGpio task by toggling the selected pin.
- *
- * This function contains the execution logic for the testGpio task. It configures
- * the specified GPIO pin as output and toggles its state at a fixed interval.
- * The function runs indefinitely as part of the RTOS task loop, using `Task_sleep`
- * to introduce a delay between toggles.
- *
- * @param arg0 The GPIO pin number to configure and toggle (passed from TaskParams struct inside testGpio_createTask).
- * @param arg1 Unused argument (can be set to 0).
- *
- * @return None
- */
-void testGpio_executeTask(UArg arg0, UArg arg1);
