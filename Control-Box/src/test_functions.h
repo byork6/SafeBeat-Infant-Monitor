@@ -29,7 +29,7 @@
 void testGpio(uint32_t pin_config_index);
 
 /**
-* @brief Print the value of a variable of various types with an optional name.
+* @brief Print the value of a variable of various types to the CIO with an optional name.
 *
 * This function prints the value of a variable based on its type.
 * Supported types include integer, float, character, and string.

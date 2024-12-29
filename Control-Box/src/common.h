@@ -1,12 +1,12 @@
 #pragma once
 
-// Built-ins
+// Built-in library inclusions
 #include <unistd.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-/////// SDK inlcusions ///////
+/////// SDK HEADER CONTENT ///////
 // TI Driver Header files
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/rf/RF.h>
@@ -26,7 +26,7 @@
 // Driver configuration
 #include "ti_drivers_config.h"
 
-/////// CUSTOM INCLUSIONS ///////
+/////// CUSTOM HEADER CONTENT ///////
 // Startup config
 #include "config_functions.h"
 // Include before rf_packet_rx_task.h
