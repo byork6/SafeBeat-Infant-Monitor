@@ -6,6 +6,9 @@ In order to build and load the software onto the CC2651P3 MCU, the CCTUDIO-THEIA
 
 The download link for CCS Theia can be found on [TI's Website](https://www.ti.com/tool/download/CCSTUDIO-THEIA). Once CCS Theia is installed, the project can be added to the active workspace.  
 
+# Kernel & Compiler
+When creating a project in CCS Theia you will be prompoted to select what microcontroller is being used, and then a kernel and compiler must be chosen for the project. For this project the kernel used is (TODO: FreeRTOS or TI-RTOS7) and the compolier used is the CCS - TI Arm Clang Compiler
+
 # Setting up Version Control in CCS Theia (Devs Only)
 Alternative ways to setup version control are likely possible but the following instructions for this project use the GitHub desktop client.
 1. Make sure the workspace in CCS Theia is setup with the correct name you want.
