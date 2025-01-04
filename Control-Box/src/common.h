@@ -12,8 +12,9 @@
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/SPI.h>
 #include <ti/display/Display.h>
-// #include <ti/drivers/NVS.h> (Non-Volatile Storage)
 #include <ti/drivers/NVS.h>
+#include <ti/drivers/SD.h>
+#include <ti/drivers/SDFatFS.h>
 // #include <ti/ble5stack_flash/inc/bcomdef.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
