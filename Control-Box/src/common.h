@@ -30,10 +30,6 @@
 /////// CUSTOM HEADER CONTENT ///////
 // Startup config
 #include "config_functions.h"
-// Include before rf_packet_rx_task.h
-#include "tasks/rf_packet_rx_task/rf_queue.h"
-// RF packet receive task
-#include "tasks/rf_packet_rx_task/rf_packet_rx_task.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)
