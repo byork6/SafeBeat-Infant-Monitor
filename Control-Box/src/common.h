@@ -9,10 +9,10 @@
 /////// SDK HEADER CONTENT ///////
 // TI Driver Header files
 #include <ti/drivers/GPIO.h>
-#include <ti/drivers/rf/RF.h>
+// #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/SPI.h>
 #include <ti/display/Display.h>
-#include <ti/drivers/NVS.h>
+// #include <ti/drivers/NVS.h>
 #include <ti/drivers/SD.h>
 #include <ti/drivers/SDFatFS.h>
 // #include <ti/ble5stack_flash/inc/bcomdef.h>

@@ -8,13 +8,9 @@
 /**
  * Import the modules used in this configuration.
  */
-const custom      = scripting.addModule("/ti/devices/radioconfig/custom");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
-const NVS         = scripting.addModule("/ti/drivers/NVS", {}, false);
-const NVS1        = NVS.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
-const RF          = scripting.addModule("/ti/drivers/RF");
 const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
@@ -32,38 +28,29 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
-custom.prop2                                        = ["custom2400"];
-custom.radioConfigcustom2400.$name                  = "ti_devices_radioconfig_settings_prop0";
-custom.radioConfigcustom2400.phyType2400            = "2gfsk100kbps";
-custom.radioConfigcustom2400.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
-
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
-
-NVS1.$name               = "CONFIG_NVS_INTERNAL";
-NVS1.nvsType             = "External";
-NVS1.externalFlash.$name = "ti_drivers_nvs_NVSSPI25X0";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
-RF.$hardware = system.deviceData.board.components.RTC6608OU;
+SD1.$name                         = "CONFIG_SD_0";
+SD1.useFatFS                      = true;
+SD1.sdCSPin.$assignAllowConflicts = "boosterpack.18";
+SD1.chipSelect.$name              = "CONFIG_GPIO_SD_CS";
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SD1, "sdCSPin");
 
-SD1.$name            = "CONFIG_SD_0";
-SD1.useFatFS         = true;
-SD1.chipSelect.$name = "CONFIG_GPIO_1";
-
-const NVSSPI25XDevice                        = scripting.addModule("/ti/drivers/nvs/NVSSPI25XDevice", {}, false);
-const NVSSPI25XDevice1                       = NVSSPI25XDevice.addInstance({}, false);
-NVSSPI25XDevice1.$name                       = "CONFIG_NVS_SPI_0";
-NVS1.externalFlash.spiFlashDevice            = NVSSPI25XDevice1;
-NVSSPI25XDevice1.chipSelectPinInstance.$name = "CONFIG_GPIO_0";
-
-SPI1.$name                         = "CONFIG_SPI_0";
-SPI1.$hardware                     = system.deviceData.board.components.LP_SPI;
-SPI1.mode                          = "Four Pin CS Active Low";
-NVSSPI25XDevice1.sharedSpiInstance = SPI1;
-SD1.spiInstance                    = SPI1;
+SPI1.$name                            = "CONFIG_SPI_0";
+SPI1.mode                             = "Four Pin CS Active Low";
+SD1.spiInstance                       = SPI1;
+SPI1.$hardware                        = system.deviceData.board.components.LP_SPI;
+SPI1.spi.sclkPin.$assign              = "boosterpack.7";
+SPI1.spi.pociPin.$assign              = "boosterpack.14";
+SPI1.spi.picoPin.$assign              = "boosterpack.15";
+SPI1.spi.csnPin.$assignAllowConflicts = "boosterpack.18";
+SPI1.spi.dmaRxChannel.$assign         = "DMA_CH3";
+SPI1.spi.dmaTxChannel.$assign         = "DMA_CH4";
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "csnPin");
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -103,16 +90,6 @@ System.supportModule   = "SysCallback";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-GPIO1.gpioPin.$suggestSolution               = "boosterpack.40";
-RF.rfAntennaPin0.$suggestSolution            = "DIO_28";
-RF.rfAntennaPin1.$suggestSolution            = "DIO_29";
-SD1.sdCSPin.$suggestSolution                 = "boosterpack.10";
-NVSSPI25XDevice1.chipSelect.$suggestSolution = "boosterpack.32";
-SPI1.spi.$suggestSolution                    = "SSI0";
-SPI1.spi.sclkPin.$suggestSolution            = "boosterpack.7";
-SPI1.spi.pociPin.$suggestSolution            = "boosterpack.14";
-SPI1.spi.picoPin.$suggestSolution            = "boosterpack.15";
-SPI1.spi.dmaRxChannel.$suggestSolution       = "DMA_CH3";
-SPI1.spi.dmaTxChannel.$suggestSolution       = "DMA_CH4";
-SPI1.spi.csnPin.$suggestSolution             = "boosterpack.18";
-Timer.rtc.$suggestSolution                   = "RTC0";
+GPIO1.gpioPin.$suggestSolution = "boosterpack.40";
+SPI1.spi.$suggestSolution      = "SSI0";
+Timer.rtc.$suggestSolution     = "RTC0";
