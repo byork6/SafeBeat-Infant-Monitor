@@ -60,8 +60,19 @@ For example, in the first image we include the GPIO.h driver and SPI.h driver fr
 <br />
 <br />
 
+Inside the .sysconfig for each project two GUI's can be shown by clicking the "Board View" and "Device View" buttons on the top right. These GUI's will show current pin assignments based on the .sysconfig setup along with showing other helpful information about the pinouts.
+
+<p align="center">
+<img src=https://github.com/user-attachments/assets/58e4dd2f-477c-466a-bfca-cef8c7aef21c height="100%" width="100%" alt="Login Screen"/>
+<br />
+<br />
+
+
 # Naming Standard
-![image](https://github.com/user-attachments/assets/c1a33758-17f2-4f18-b4ec-6e7b8ec317fd)
+<p align="center">
+<img src=https://github.com/user-attachments/assets/c1a33758-17f2-4f18-b4ec-6e7b8ec317fd height="100%" width="80%" alt="Login Screen"/>
+<br />
+<br />
 
 # Helpful Links
 [TI's SimpleLink Low Power F2 SDK Repository](https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk)
