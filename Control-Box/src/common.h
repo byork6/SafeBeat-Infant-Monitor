@@ -39,17 +39,12 @@
 /////// CUSTOM HEADER CONTENT ///////
 // Startup config
 #include "config_functions.h"
-#include "test_functions.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
-<<<<<<< HEAD
-#define DELAY_DURATION_US ((uint32_t)(1000000))                                  // 0.25 seconds --- 250,000 us
-#define DELAY_US(us) ((us) / Clock_tickPeriod)                                   // Macro to convert microseconds to ticks --- Clock_tickPeriod = 10
-=======
 #define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.25 seconds --- 250,000 us
 #define DELAY_US(us) ((us) / Clock_tickPeriod)                                  // Macro to convert microseconds to ticks
 
@@ -106,4 +101,3 @@ void testGpio(uint32_t pin_config_index);
 *          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
 */
 void printVar(const char *varName, void *var, char type);
->>>>>>> main
