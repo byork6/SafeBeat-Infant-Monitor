@@ -1,6 +1,5 @@
 #include "common.h"
 #include "tasks/test_gpio_task/test_gpio_task.h"
-#include "test_functions.h"
 
 void *mainThread(void *arg0){
     // For testing GPIO pins one at a time without using RTOS

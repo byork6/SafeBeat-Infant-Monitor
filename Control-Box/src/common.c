@@ -1,5 +1,4 @@
 #include "common.h"
-#include "test_functions.h"
 
 void testGpio(uint32_t pin_config_index){
     //////////////// TEST CODE  ONLY ////////////////
