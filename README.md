@@ -78,3 +78,5 @@ Inside the .sysconfig for each project two GUI's can be shown by clicking the "B
 [TI's SimpleLink Low Power F2 SDK Repository](https://github.com/TexasInstruments/simplelink-lowpower-f2-sdk)
 <br />
 [BLE5 Stack Example Repository](https://github.com/TexasInstruments/simplelink-ble5stack-examples)
+<br />
+[TI-RTOS Overview](https://software-dl.ti.com/simplelink/esd/simplelink_cc13x2_sdk/1.60.00.29_new/exports/docs/ti154stack/html/tirtos/rtos-overview.html)
