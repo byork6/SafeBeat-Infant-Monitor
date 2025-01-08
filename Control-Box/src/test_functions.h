@@ -45,6 +45,7 @@ void testGpio(uint32_t pin_config_index);
 *               - 'f' for floats
 *               - 'c' for characters
 *               - 's' for strings
+*               - 'u' for unsigned integers
 *
 * @note Ensure the correct type is passed to avoid undefined behavior.
 *       For example, if the type is 'd', ensure `var` points to an integer.
@@ -55,3 +56,17 @@ void testGpio(uint32_t pin_config_index);
 *          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
 */
 void printVar(const char *varName, void *var, char type);
+
+/**
+* @brief Print a string
+*
+* This function prints the value of a variable based on its type.
+* Supported types include integer, float, character, and string.
+* The function uses a `void*` pointer to handle different types dynamically.
+* Additionally, the variable name can be provided for descriptive output; if
+* no name is provided (`varName` is `NULL`), a default name ("Unnamed Variable") is used.
+*
+* @param str - Pointer to the string to be printed
+*
+*/
+void printStr(const char *str);

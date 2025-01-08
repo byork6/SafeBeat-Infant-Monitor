@@ -43,8 +43,16 @@ void printVar(const char *varName, void *var, char type) {
         case 's': // String
             printf("Variable \"%s\" value: %s\n", varName, (char *)var);
             break;
+        case 'u':
+            printf("Variable \"%s\" value: %s\n", varName, *(unsigned int *)var);
+            break;
         default:
             printf("Unsupported type for variable \"%s\"\n", varName);
     }
     fflush(stdout); // Ensure output is flushed immediately
+}
+
+void printStr(const char *str) {
+    printf("%s", str ? str : "NULL");
+    fflush(stdout);
 }
