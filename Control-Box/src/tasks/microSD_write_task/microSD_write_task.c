@@ -1,9 +1,5 @@
 #include "../../common.h"
 #include "microSD_write_task.h"
-#include <unistd.h>
-#include "third_party/fatfs/ff.h"
-#include <stdio.h>
-
 
 // File paths
 // #define STR_(n) #n
@@ -14,9 +10,9 @@ const char outputFile[] = "C:\\DevProjects\\CCSTheia\\workspace_safebeat_infant_
 
 // Mock memory section containing data
 const char *mock_memory_queue[] = {
-    "Data packet 1",
-    "Data packet 2",
-    "Data packet 3",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
     NULL // Indicates end of data
 };
 
@@ -42,6 +38,7 @@ void microSDWrite_createTask(){
     Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
 }
 
+// TODO: Refactor functionality into sub-functions
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg1;
     printStr("Entering microSDWrite_executeTask()");
