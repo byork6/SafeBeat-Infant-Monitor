@@ -64,8 +64,8 @@ const Timer = scripting.addModule("/ti/sysbios/family/arm/cc26xx/Timer", {}, fal
 Idle2.$name   = "powerIdle";
 Idle2.idleFxn = "Power_idleFunc";
 
-const Semaphore            = scripting.addModule("/ti/sysbios/knl/Semaphore", {}, false);
-Semaphore.supportsPriority = false;
+const Semaphore          = scripting.addModule("/ti/sysbios/knl/Semaphore", {}, false);
+Semaphore.supportsEvents = true;
 
 const Swi         = scripting.addModule("/ti/sysbios/knl/Swi", {}, false);
 Swi.numPriorities = 6;

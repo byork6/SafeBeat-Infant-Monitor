@@ -5,6 +5,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+// Added for microSD write
+#include <file.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+
+/* POSIX Header files */
+#include <pthread.h>
+#include <third_party/fatfs/ffcio.h>
 
 /////// SDK HEADER CONTENT ///////
 // TI Driver Header files
@@ -19,7 +28,7 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-// For TIRTOS7 BIOS execution
+// For TI-RTOS7 BIOS execution
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -30,11 +39,12 @@
 /////// CUSTOM HEADER CONTENT ///////
 // Startup config
 #include "config_functions.h"
+#include "test_functions.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
-#define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.25 seconds --- 250,000 us
-#define DELAY_US(us) ((us) / Clock_tickPeriod)                                  // Macro to convert microseconds to ticks
+#define DELAY_DURATION_US ((uint32_t)(1000000))                                  // 0.25 seconds --- 250,000 us
+#define DELAY_US(us) ((us) / Clock_tickPeriod)                                   // Macro to convert microseconds to ticks --- Clock_tickPeriod = 10

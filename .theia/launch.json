@@ -27,6 +27,33 @@
                 "name": "Control-Box",
                 "resourceId": "/Control-Box/main.c"
             }
+        },
+        {
+            "name": "Control-Box (2)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box"
+            }
+        },
+        {
+            "name": "Control-Box (3)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/common.h"
+            }
+        },
+        {
+            "name": "Control-Box (4)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/tasks/microSD_write_task/microSD_write_task.c"
+            }
         }
     ]
 }
