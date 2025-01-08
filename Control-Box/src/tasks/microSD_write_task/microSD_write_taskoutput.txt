@@ -4,3 +4,6 @@ Data packet 3
 Data packet 1
 Data packet 2
 Data packet 3
+Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx
+Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx
+Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx

@@ -39,6 +39,7 @@ void microSDWrite_createTask(){
 }
 
 // TODO: Refactor functionality into sub-functions
+// TODO: Data writes very slow - see if it can be optimized to write faster?
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg1;
     printStr("Entering microSDWrite_executeTask()");
