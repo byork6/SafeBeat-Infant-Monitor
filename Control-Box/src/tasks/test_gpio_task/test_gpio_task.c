@@ -28,9 +28,8 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     printStr("Entering testGpio_executeTask()");
 
     GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
-
     int i  = 0;
-    uint32_t tickVal = 0;
+    
     printStr("testGpio Initialized...");
     while (1){
         GPIO_toggle(arg0);  
