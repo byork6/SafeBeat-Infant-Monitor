@@ -101,3 +101,14 @@ void testGpio(uint32_t pin_config_index);
 *          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
 */
 void printVar(const char *varName, void *var, char type);
+
+
+/**
+* @brief Print a string to the CIO.
+*
+* @param str - Pointer to a string that will be printed to CIO.
+* 
+* @example Example usage:
+*          printStr("Printed String");
+*/
+void printStr(const char *str);
