@@ -13,7 +13,16 @@ const char *mock_memory_queue[] = {
     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    NULL // Indicates end of data
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+    NULL
 };
 
 void microSDWrite_createTask(){
@@ -37,7 +46,6 @@ void microSDWrite_createTask(){
     Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
 }
 
-// TODO: Data writes very slow - see if it can be optimized to write faster?
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg1;
     printStr("Entering microSDWrite_executeTask()");
@@ -54,11 +62,19 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
         /////////////////////////////
 
         /////// PROJECT CODE ///////
-        create_output_file();
+        FILE *file = fopen(outputFile, "a");
+        if(!file){
+            create_output_file();
 
-        export_queue_to_output_file(arg0);
-
-        printStr("All data from mock_memory_queue written to output file.");
+            FILE *file = fopen(outputFile, "a");
+            if (!file) {
+                printStr("Error: Failed to open output file after creation.");
+                Task_yield();
+                continue;
+            }
+        }
+        
+        export_queue_to_output_file(file, arg0);
 
         // Task_sleep(1000);
         Task_yield();
@@ -66,44 +82,39 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
 }
 
 void create_output_file(){
-    FILE *file;
-
-    file = fopen(outputFile, "r");
+    printStr("Output file does not exist. Creating it...");
+    
+    // Create the file in write mode
+    FILE *file = fopen(outputFile, "w");
     if (!file) {
-        printStr("Output file does not exist. Creating it...");
-        
-        // Create the file in write mode
-        file = fopen(outputFile, "w");
-        if (!file) {
-            printStr("Error: Failed to create output file.");
-            Task_yield();
-        }
-        fclose(file); // Close the file after creation
-        printStr("Output file created successfully.");
-    } 
-    else {
-        fclose(file); // Close the file if it already exists
+        printStr("Error: Failed to create output file.");
+        Task_yield();
     }
+    fclose(file);
+    printStr("Output file created successfully.");
 }
 
-void export_queue_to_output_file(UArg queue_data){
+void export_queue_to_output_file(FILE *file, UArg queue_data){
     // const char ** is a ptr to an array of string ptrs
     const char **queue = (const char **)queue_data;
     int i = 0;
-    FILE *file;
+    char buffer[1024];
+    buffer[0] = '\0';
 
-    file = fopen(outputFile, "a");
     if (!file) {
         printStr("Error: Failed to open output file in append mode.");
         Task_yield();
     }
 
     while (queue[i] != NULL) {
-        fprintf(file, "%s\n", queue[i]);
+        strcat(buffer, queue[i]);
+        strcat(buffer, "\n");
         queue[i] = NULL;
         i++;
     }
 
+    fprintf(file, "%s", buffer);
     fflush(file);
     fclose(file);
+    printStr("All data from mock_memory_queue written to output file.");
 }

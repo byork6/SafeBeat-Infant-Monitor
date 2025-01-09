@@ -63,6 +63,15 @@
                 "name": "Control-Box",
                 "resourceId": "/Control-Box/src/tasks/microSD_write_task/microSD_write_task.h"
             }
+        },
+        {
+            "name": "Control-Box (6)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Control-Box",
+                "resourceId": "/Control-Box/src/tasks/microSD_write_task/output_data.txt"
+            }
         }
     ]
 }
