@@ -2,4 +2,4 @@
 Debug/
 .settings/
 .clangd/
-.theia/launch.json
+/.theia/
