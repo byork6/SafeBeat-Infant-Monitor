@@ -43,4 +43,6 @@ void microSDWrite_createTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
-void createOutputFilePath(char *filePath, size_t size);
+void create_output_file();
+
+void export_queue_to_output_file (UArg queue_data);

@@ -6,7 +6,7 @@
 // #define STR(n)  STR_(n)
 // const char outputfile[] = "fat:" STR(DRIVE_NUM) ":output.txt";   // Have to use microSD with this line
 // File path in the same directory as the .c file for testing
-const char outputFile[] = "C:\\DevProjects\\CCSTheia\\workspace_safebeat_infant_monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
+const char outputFile[] = "C:\\devProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\output_data.txt";                             
 
 // Mock memory section containing data
 const char *mock_memory_queue[] = {
@@ -19,7 +19,6 @@ const char *mock_memory_queue[] = {
 void microSDWrite_createTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
-
 
     // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
@@ -38,67 +37,73 @@ void microSDWrite_createTask(){
     Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
 }
 
-// TODO: Refactor functionality into sub-functions
 // TODO: Data writes very slow - see if it can be optimized to write faster?
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg1;
     printStr("Entering microSDWrite_executeTask()");
-
-    const char **queue = (const char **)arg0; // Cast arg0 to the mock memory queue
-    FILE *file;
-    int queue_ptr = 0;
     int i = 0;
 
     printStr("microSDWrite Initialized...");
     while (1){
-        // Block used for testing
+        /// Block used for testing ///
         printVar("microSDWrite Count: ", &i, 'd');
         if (i == 0){
             Task_sleep(500);
         }
         i++;
+        /////////////////////////////
 
         /////// PROJECT CODE ///////
-        file = fopen(outputFile, "r");
-        if (!file) {
-            printStr("Output file does not exist. Creating it...");
-            
-            // Create the file in write mode
-            file = fopen(outputFile, "w");
-            if (!file) {
-                printStr("Error: Failed to create output file.");
-                Task_yield();
-                continue;
-            }
-            fclose(file); // Close the file after creation
-            printStr("Output file created successfully.");
-        } else {
-            fclose(file); // Close the file if it already exists
-        }
+        create_output_file();
 
-        // Now open the file in append mode to write data
-        file = fopen(outputFile, "a");
-        if (!file) {
-            printStr("Error: Failed to open output file in append mode.");
-            Task_yield();
-            continue;
-        }
-
-        // Write data from the queue to the file
-        while (queue[queue_ptr] != NULL) {
-            fprintf(file, "%s\n", queue[queue_ptr]); // Append data to the file
-            queue[queue_ptr] = NULL;                // Mark this queue entry as processed
-            queue_ptr++;
-        }
-
-
-        fflush(file);   // Ensure all data is written to the file
-        fclose(file);   // Close the file to release resources
-        queue_ptr = 0;  // Reset queue pointer
+        export_queue_to_output_file(arg0);
 
         printStr("All data from mock_memory_queue written to output file.");
 
         // Task_sleep(1000);
         Task_yield();
     }
+}
+
+void create_output_file(){
+    FILE *file;
+
+    file = fopen(outputFile, "r");
+    if (!file) {
+        printStr("Output file does not exist. Creating it...");
+        
+        // Create the file in write mode
+        file = fopen(outputFile, "w");
+        if (!file) {
+            printStr("Error: Failed to create output file.");
+            Task_yield();
+        }
+        fclose(file); // Close the file after creation
+        printStr("Output file created successfully.");
+    } 
+    else {
+        fclose(file); // Close the file if it already exists
+    }
+}
+
+void export_queue_to_output_file(UArg queue_data){
+    // const char ** is a ptr to an array of string ptrs
+    const char **queue = (const char **)queue_data;
+    int i = 0;
+    FILE *file;
+
+    file = fopen(outputFile, "a");
+    if (!file) {
+        printStr("Error: Failed to open output file in append mode.");
+        Task_yield();
+    }
+
+    while (queue[i] != NULL) {
+        fprintf(file, "%s\n", queue[i]);
+        queue[i] = NULL;
+        i++;
+    }
+
+    fflush(file);
+    fclose(file);
 }
