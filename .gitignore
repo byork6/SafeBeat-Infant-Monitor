@@ -1,5 +1,5 @@
 # Ignore folders
 Debug/
+.theia/
 .settings/
 .clangd/
-.theia/
