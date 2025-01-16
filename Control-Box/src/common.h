@@ -5,6 +5,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+// Added for microSD write
+#include <file.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+
+/* POSIX Header files */
+#include <pthread.h>
+#include <third_party/fatfs/ffcio.h>
 
 /////// SDK HEADER CONTENT ///////
 // TI Driver Header files
@@ -19,7 +28,7 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-// For TIRTOS7 BIOS execution
+// For TI-RTOS7 BIOS execution
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -92,3 +101,14 @@ void testGpio(uint32_t pin_config_index);
 *          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
 */
 void printVar(const char *varName, void *var, char type);
+
+
+/**
+* @brief Print a string to the CIO.
+*
+* @param str - Pointer to a string that will be printed to CIO.
+* 
+* @example Example usage:
+*          printStr("Printed String");
+*/
+void printStr(const char *str);

@@ -25,13 +25,22 @@ void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct 
 
 void testGpio_executeTask(UArg arg0, UArg arg1){
     (void)arg1;     // suppresses warnings for unused arg
+    printStr("Entering testGpio_executeTask()");
 
     GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
-
-    while (1)
-    {
+    int i  = 0;
+    
+    printStr("testGpio Initialized...");
+    while (1){
         GPIO_toggle(arg0);  
+        printVar("testGpio Count: ", &i, 'd');
+        if (i == 0){
+            Task_sleep(500);
+        }
+        i++;
+
         // Clock_tickPeriod = 10 us --- delayTime in seconds
-        Task_sleep(DELAY_US(DELAY_DURATION_US)); 
+        // Task_sleep(1000);
+        Task_yield();
     }
 }
