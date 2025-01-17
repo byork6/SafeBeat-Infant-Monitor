@@ -31,6 +31,7 @@
 // For TI-RTOS7 BIOS execution
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
+#include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Clock.h>
 
 // Driver configuration
