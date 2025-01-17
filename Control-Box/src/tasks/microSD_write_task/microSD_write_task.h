@@ -43,4 +43,27 @@ void microSDWrite_createTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
-void createOutputFilePath(char *filePath, size_t size);
+/**
+ * @brief Creates the output file if it does not exist.
+ *
+ * This function attempts to create the output file in write mode. 
+ * If the file already exists, it does nothing. Otherwise, it ensures 
+ * that the file is properly created for subsequent writing operations.
+ *
+ * @return None
+ */
+void create_output_file();
+
+/**
+ * @brief Exports data from a memory queue to the output file.
+ *
+ * This function takes a file pointer and queue data as inputs. 
+ * It processes the queue, writing each string to the specified file 
+ * in append mode. The file pointer must already point to an open file.
+ *
+ * @param file Pointer to the output file opened in append mode.
+ * @param queue_data Pointer to the mock memory queue containing the data.
+ *
+ * @return None
+ */
+void export_queue_to_output_file (FILE *file, UArg queue_data);
