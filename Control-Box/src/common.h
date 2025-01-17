@@ -33,6 +33,8 @@
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Clock.h>
+#include <ti/sysbios/hal/Hwi.h>
+
 
 // Driver configuration
 #include "ti_drivers_config.h"

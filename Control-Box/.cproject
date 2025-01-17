@@ -46,7 +46,7 @@
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_SYMBOLS}"/>
                                     <listOptionValue value="${SYSCONFIG_TOOL_SYMBOLS}"/>
                                 </option>
-                                <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL.645425972" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL.z" valueType="enumerated"/>
+                                <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL.645425972" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OPT_LEVEL.0" valueType="enumerated"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.1529165265" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.cortex-m4" valueType="enumerated"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OTHER_FLAGS.613616665" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.OTHER_FLAGS" valueType="stringList">
                                     <listOptionValue value="-march=armv7e-m"/>
