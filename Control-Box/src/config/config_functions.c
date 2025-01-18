@@ -1,4 +1,7 @@
-#include "common.h"
+#include "../common/common.h"
+
+// Declare variables before init calls
+char fatfsPrefix[] = "fat";
 
 void initBOARD(void){
     GPIO_init();
