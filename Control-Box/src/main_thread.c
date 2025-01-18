@@ -27,5 +27,5 @@ void *mainThread(void *arg0){
     // Task 3
     microSDWrite_createTask();
 
-    return (NULL);
+    return NULL;
 }

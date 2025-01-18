@@ -53,6 +53,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
 
     ///////// Attempt 2 ////////
     printStr("microSDWrite Initialized...");
+<<<<<<< HEAD
     while(1){
         i++;
         printVar("microSDWrite Count: ", &i, 'd');
@@ -174,4 +175,71 @@ void handleFileOperations(UArg queue_data) {
     printStr("Data successfully written to output file.");
 
     return;
+=======
+    while (1){
+        /// Block used for testing ///
+        printVar("microSDWrite Count: ", &i, 'd');
+        if (i == 0){
+            Task_sleep(500);
+        }
+        i++;
+        /////////////////////////////
+
+        /////// PROJECT CODE ///////
+        FILE *file = fopen(outputFile, "a");
+        if(!file){
+            create_output_file();
+
+            FILE *file = fopen(outputFile, "a");
+            if (!file) {
+                printStr("Error: Failed to open output file after creation.");
+                Task_yield();
+                continue;
+            }
+        }
+        
+        export_queue_to_output_file(file, arg0);
+
+        // Task_sleep(1000);
+        Task_yield();
+    }
+}
+
+void create_output_file(){
+    printStr("Output file does not exist. Creating it...");
+    
+    // Create the file in write mode
+    FILE *file = fopen(outputFile, "w");
+    if (!file) {
+        printStr("Error: Failed to create output file.");
+        Task_yield();
+    }
+    fclose(file);
+    printStr("Output file created successfully.");
+}
+
+void export_queue_to_output_file(FILE *file, UArg queue_data){
+    // const char ** is a ptr to an array of string ptrs
+    const char **queue = (const char **)queue_data;
+    int i = 0;
+    char buffer[1024];
+    buffer[0] = '\0';
+
+    if (!file) {
+        printStr("Error: Failed to open output file in append mode.");
+        Task_yield();
+    }
+
+    while (queue[i] != NULL) {
+        strcat(buffer, queue[i]);
+        strcat(buffer, "\n");
+        queue[i] = NULL;
+        i++;
+    }
+
+    fprintf(file, "%s", buffer);
+    fflush(file);
+    fclose(file);
+    printStr("All data from mock_memory_queue written to output file.");
+>>>>>>> main
 }
