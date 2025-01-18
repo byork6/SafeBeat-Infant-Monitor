@@ -3,10 +3,6 @@
 #include "tasks/test_gpio_task/test_gpio_task.h"
 
 void *mainThread(void *arg0){
-    // For testing GPIO pins one at a time without using RTOS
-    // testGPIO(5);
-
-    /////// PROJECT CODE ///////
     // Call TI driver initializations
     initBOARD();
 
@@ -25,7 +21,8 @@ void *mainThread(void *arg0){
     testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
     // Task 3
-    microSDWrite_createTask();
+    // TODO: Test microSD Driver with physical connection
+    // microSDWrite_createTask();
 
     return NULL;
 }
