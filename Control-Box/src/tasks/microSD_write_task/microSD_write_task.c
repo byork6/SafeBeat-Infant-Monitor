@@ -1,11 +1,7 @@
 #include "../../common.h"
 #include "microSD_write_task.h"
 
-// File paths
-// #define STR_(n) #n
-// #define STR(n)  STR_(n)
-// const char outputfile[] = "fat:" STR(DRIVE_NUM) ":output.txt";   // Have to use microSD with this line
-// File path in the same directory as the .c file for testing
+/////// TEST CODE ///////
 const char outputFile[] = "C:\\devProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
 
 // Mock memory section containing data
@@ -24,6 +20,10 @@ const char *mock_memory_queue[] = {
     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
     NULL
 };
+/////////////////////////
+
+static unsigned char sd_buff[SD_BUFF_SIZE] __attribute__((aligned(4)));
+const char outputfile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 
 void microSDWrite_createTask(){
     // Declare TaskParams struct name
@@ -51,39 +51,49 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     printStr("Entering microSDWrite_executeTask()");
     int i = 0;
 
+    ///////// Attempt 2 ////////
     printStr("microSDWrite Initialized...");
-    while (1){
-        /// Block used for testing ///
-        printVar("microSDWrite Count: ", &i, 'd');
-        if (i == 0){
-            Task_sleep(500);
-        }
-        i++;
-        /////////////////////////////
-
-        /////// PROJECT CODE ///////
-        FILE *file = fopen(outputFile, "a");
-        if(!file){
-            if (!create_output_file()) {
-                Task_sleep(100);
-                continue;
-            }
-            file = fopen(outputFile, "a");
-            if (!file) {
-                printStr("Error: Failed to open output file after creation.");
-                Task_sleep(100);
-                continue;
-            }
-        }
-        
-        export_queue_to_output_file(file, arg0);
-
-        // Task sleeps for limited time until data re-populates the queue
+    while(1){
+        handleFileOperations(arg0);
         Task_sleep(1000);
     }
+    ////////////////////////////
+
+    ////////// Attempt 1 /////////
+    // printStr("microSDWrite Initialized...");
+    // while (1){
+    //     /// Block used for testing ///
+    //     printVar("microSDWrite Count: ", &i, 'd');
+    //     if (i == 0){
+    //         Task_sleep(500);
+    //     }
+    //     i++;
+    //     /////////////////////////////
+
+    //     /////// PROJECT CODE ///////
+    //     FILE *file = fopen(outputFile, "a");
+    //     if(!file){
+    //         if (!createOutputFile()) {
+    //             Task_sleep(100);
+    //             continue;
+    //         }
+    //         file = fopen(outputFile, "a");
+    //         if (!file) {
+    //             printStr("Error: Failed to open output file after creation.");
+    //             Task_sleep(100);
+    //             continue;
+    //         }
+    //     }
+        
+    //     exportQueueToOutputFile(file, arg0);
+
+    //     // Task sleeps for limited time until data re-populates the queue
+    //     Task_sleep(1000);
+    // }
+    ///////////////////////////////////
 }
 
-bool create_output_file(){
+bool createOutputFile(){
     printStr("Output file does not exist. Creating it...");
 
     FILE *file = fopen(outputFile, "w");
@@ -96,7 +106,7 @@ bool create_output_file(){
     return true;
 }
 
-void export_queue_to_output_file(FILE *file, UArg queue_data){
+void exportQueueToOutputFile(FILE *file, UArg queue_data){
     // const char ** is a ptr to an array of string ptrs
     const char **queue = (const char **)queue_data;
     int i = 0;
@@ -130,4 +140,35 @@ void export_queue_to_output_file(FILE *file, UArg queue_data){
     fflush(file);
     fclose(file);
     printStr("All data from mock_memory_queue written to output file.");
+}
+
+/* Handle file copy and operations */
+void handleFileOperations(UArg queue_data) {
+    SDFatFS_Handle sdfatfsHandle;
+    FILE *dst;
+
+    /* Mount and register the SD Card */
+    sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
+    if (!sdfatfsHandle) {
+        printStr("microSD card not detected.");
+        Task_yield();
+    }
+
+    /* Open output file */
+    dst = fopen(outputfile, "a");
+    if (!dst) {
+        printStr("Error opening output file");
+        SDFatFS_close(sdfatfsHandle);
+        Task_yield();
+    }
+
+    // Write contents from buffer to the output file
+    exportQueueToOutputFile(dst, (UArg)queue_data);
+
+    /* Unmount SD Card */
+    SDFatFS_close(sdfatfsHandle);
+
+    printStr("Data successfully written to output file.");
+
+    return;
 }

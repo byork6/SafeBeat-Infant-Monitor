@@ -11,12 +11,13 @@
 #include <stddef.h>
 #include <string.h>
 
+
 /* POSIX Header files */
 #include <pthread.h>
 #include <third_party/fatfs/ffcio.h>
 
 /////// SDK HEADER CONTENT ///////
-// TI Driver Header files
+// SDK Driver Header files
 #include <ti/drivers/GPIO.h>
 // #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/SPI.h>
@@ -24,6 +25,7 @@
 // #include <ti/drivers/NVS.h>
 #include <ti/drivers/SD.h>
 #include <ti/drivers/SDFatFS.h>
+#include <time.h>
 // #include <ti/ble5stack_flash/inc/bcomdef.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
@@ -50,6 +52,8 @@
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
 #define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.25 seconds --- 250,000 us
 #define DELAY_US(us) ((us) / Clock_tickPeriod)                                  // Macro to convert microseconds to ticks
+extern char fatfsPrefix[];
+
 
 // Custom Function Prototypes
 ////////// DOC STRING TEMPLATE //////////
@@ -115,3 +119,28 @@ void printVar(const char *varName, void *var, char type);
 *          printStr("Printed String");
 */
 void printStr(const char *str);
+
+/**
+ * @brief Provides the current time in FAT file system format.
+ *
+ * This function converts the current system time into the FAT file system's 
+ * time format, which is used to record timestamps for file creation, modification, 
+ * and access within the FAT file system.
+ *
+ * FAT file system time format:
+ * - Bits 31-25: Year offset from 1980 (e.g., 0 = 1980, 1 = 1981, etc.)
+ * - Bits 24-21: Month (1 = January, 12 = December)
+ * - Bits 20-16: Day of the month (1-31)
+ * - Bits 15-11: Hour (0-23)
+ * - Bits 10-5: Minute (0-59)
+ * - Bits 4-0: Second divided by 2 (0-29)
+ *
+ * @return int32_t A 32-bit integer representing the current time in FAT file system format.
+ *
+ * @example Example usage:
+ *     int32_t fatTime = fatfs_getFatTime();
+ *     printf("FAT Time: 0x%08X\n", fatTime);
+ *
+ * @note This is required when using microSD_write_task.h
+ */
+int32_t fatfs_getFatTime(void);
