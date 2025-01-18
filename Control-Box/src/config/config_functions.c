@@ -7,9 +7,10 @@ void initBOARD(void){
     GPIO_init();
     SPI_init();
     SDFatFS_init();
-    // Display_init();  // Optional: API to print info to a UART terminal, must include Display.h in common 
-                        // and set up disply driver in the .sysconfig
     // TODO: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
+    
+    // Call custom board config after TI initialization if needed.
+    configBOARD();
 }
 
 void configBOARD(void){

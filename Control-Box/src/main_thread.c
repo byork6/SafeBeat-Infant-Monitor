@@ -3,13 +3,10 @@
 #include "tasks/test_gpio_task/test_gpio_task.h"
 
 void *mainThread(void *arg0){
-    // Call TI driver initializations
+    // Initialize the board with TI-Driver config & custom config if needed
     initBOARD();
 
-    // Call custom board configurations
-    configBOARD();
-
-    // Create tasks for TI-RTOS
+    // Create tasks for TI-RTOS7
     // Task 1
     uint32_t pinToTest = 6;
     uint32_t taskPriority = 2;
