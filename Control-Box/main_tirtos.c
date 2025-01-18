@@ -52,8 +52,7 @@ extern void *mainThread(void *arg0);
 /*
  *  ======== main ========
  */
-int main(void)
-{
+int main(void){
     pthread_t thread;
     pthread_attr_t attrs;
     struct sched_param priParam;

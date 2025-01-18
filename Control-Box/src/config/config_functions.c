@@ -1,5 +1,4 @@
-#include "common.h"
-#include "ti/drivers/SD.h"
+#include "../common/common.h"
 
 // Declare variables before init calls
 char fatfsPrefix[] = "fat";

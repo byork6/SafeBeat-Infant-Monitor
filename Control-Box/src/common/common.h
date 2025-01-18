@@ -2,7 +2,6 @@
 
 // Built-in library inclusions
 #include <unistd.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 // Added for microSD write
@@ -12,8 +11,7 @@
 #include <string.h>
 
 
-/* POSIX Header files */
-#include <pthread.h>
+/* Fatfs Header files */
 #include <third_party/fatfs/ffcio.h>
 
 /////// SDK HEADER CONTENT ///////
@@ -31,7 +29,6 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 
 // For TI-RTOS7 BIOS execution
-#include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -43,7 +40,7 @@
 
 /////// CUSTOM HEADER CONTENT ///////
 // Startup config
-#include "config_functions.h"
+#include "../config/config_functions.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)
