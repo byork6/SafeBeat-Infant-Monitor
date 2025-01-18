@@ -6,11 +6,10 @@ char fatfsPrefix[] = "fat";
 void initBOARD(void){
     GPIO_init();
     SPI_init();
-    SD_init();
     SDFatFS_init();
-    add_device(fatfsPrefix, _MSA, ffcio_open, ffcio_close, ffcio_read, ffcio_write, ffcio_lseek, ffcio_unlink, ffcio_rename);
     // Display_init();  // Optional: API to print info to a UART terminal, must include Display.h in common 
                         // and set up disply driver in the .sysconfig
+    // TODO: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
 }
 
 void configBOARD(void){

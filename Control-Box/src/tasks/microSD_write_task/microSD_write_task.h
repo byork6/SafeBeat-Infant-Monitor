@@ -1,8 +1,15 @@
 #pragma once
 
+// Inclusions used only by microSD_write_task.c
+#include <file.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+#include <third_party/fatfs/ffcio.h>
+
 // Define task parameters
 #define MICROSD_WRITE_TASK_STACK_SIZE   1024
-#define MICROSD_WRITE_TASK_PRIORITY     3
+#define MICROSD_WRITE_TASK_PRIORITY     1
 Task_Struct g_MicroSDWriteTaskStruct;
 uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 

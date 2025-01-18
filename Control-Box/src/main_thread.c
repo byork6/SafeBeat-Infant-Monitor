@@ -16,7 +16,7 @@ void *mainThread(void *arg0){
     // Create tasks for TI-RTOS
     // Task 1
     uint32_t pinToTest = 6;
-    uint32_t taskPriority = 1;
+    uint32_t taskPriority = 2;
     testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 
     // Task 2
