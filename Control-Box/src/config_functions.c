@@ -1,6 +1,7 @@
 #include "common.h"
 #include "ti/drivers/SD.h"
 
+// Declare variables before init calls
 char fatfsPrefix[] = "fat";
 
 void initBOARD(void){
