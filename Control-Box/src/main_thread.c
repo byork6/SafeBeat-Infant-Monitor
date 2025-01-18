@@ -27,8 +27,5 @@ void *mainThread(void *arg0){
     // Task 3
     microSDWrite_createTask();
 
-    // Start TI-RTOS BIOS execution
-    BIOS_start();
-
     return NULL;
 }

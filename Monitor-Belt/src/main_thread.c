@@ -33,8 +33,5 @@ void *mainThread(void *arg0){
 
     // TODO: Add Any more tasks here
 
-    // Start TI-RTOS BIOS execution
-    BIOS_start();
-
     return NULL;
 }
