@@ -55,3 +55,23 @@ void printStr(const char *str) {
     printf("%s", str ? str : "NULL");
     fflush(stdout);
 }
+
+int32_t fatfs_getFatTime(void) {
+    time_t rawTime;
+    struct tm *timeInfo;
+    uint32_t fatTime;
+
+    // Get the current time
+    time(&rawTime);
+    timeInfo = localtime(&rawTime);
+
+    // Convert to FAT time format
+    fatTime = ((uint32_t)(timeInfo->tm_year - 80) << 25) | // Year since 1980
+              ((uint32_t)(timeInfo->tm_mon + 1) << 21)    | // Month (1-12)
+              ((uint32_t)timeInfo->tm_mday << 16)        | // Day (1-31)
+              ((uint32_t)timeInfo->tm_hour << 11)        | // Hour (0-23)
+              ((uint32_t)timeInfo->tm_min << 5)          | // Minute (0-59)
+              ((uint32_t)(timeInfo->tm_sec / 2));          // Second / 2 (0-29)
+
+    return fatTime;
+}

@@ -14,8 +14,12 @@ Task_Struct g_MicroSDWriteTaskStruct;
 uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
 // Define microSD drive number and buffer size
-#define DRIVE_NUM 0
-#define SD_BUFF_SIZE 1024
+#define SD_DRIVE_NUM 0
+#ifndef SD_BUFF_SIZE
+    #define SD_BUFF_SIZE 2048
+#endif
+#define STR_(n) #n
+#define STR(n) STR_(n)
 
 /**
  * @brief Creates a TI-RTOS task for microSD write operations.
@@ -59,7 +63,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1);
  *
  * @return None
  */
-void create_output_file();
+bool createOutputFile();
 
 /**
  * @brief Exports data from a memory queue to the output file.
@@ -73,4 +77,6 @@ void create_output_file();
  *
  * @return None
  */
-void export_queue_to_output_file (FILE *file, UArg queue_data);
+void exportQueueToOutputFile(FILE *file, UArg queue_data);
+
+void handleFileOperations(UArg queue_data);

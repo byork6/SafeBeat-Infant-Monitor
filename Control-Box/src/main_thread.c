@@ -21,7 +21,7 @@ void *mainThread(void *arg0){
 
     // Task 2
     pinToTest = 7;
-    taskPriority = 1;
+    taskPriority = 2;
     testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
     // Task 3

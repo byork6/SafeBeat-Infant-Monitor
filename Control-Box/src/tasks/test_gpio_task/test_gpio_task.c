@@ -32,15 +32,12 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     
     printStr("testGpio Initialized...");
     while (1){
-        GPIO_toggle(arg0);  
-        printVar("testGpio Count: ", &i, 'd');
-        if (i == 0){
-            Task_sleep(500);
-        }
         i++;
+        printVar("testGpio Count: ", &i, 'd');
+        GPIO_toggle(arg0);  
 
         // Clock_tickPeriod = 10 us --- delayTime in seconds
-        // Task_sleep(1000);
-        Task_yield();
+        // 25,000 Ticks = 250 ms
+        Task_sleep(25000);
     }
 }
