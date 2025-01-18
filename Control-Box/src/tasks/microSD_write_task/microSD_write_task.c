@@ -54,8 +54,11 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     ///////// Attempt 2 ////////
     printStr("microSDWrite Initialized...");
     while(1){
+        i++;
+        printVar("microSDWrite Count: ", &i, 'd');
         handleFileOperations(arg0);
-        Task_sleep(1000);
+        // 500,000 Ticks = 5 s
+        Task_sleep(500000);
     }
     ////////////////////////////
 

@@ -2,7 +2,7 @@
 
 // Define task parameters
 #define MICROSD_WRITE_TASK_STACK_SIZE   1024
-#define MICROSD_WRITE_TASK_PRIORITY     1
+#define MICROSD_WRITE_TASK_PRIORITY     3
 Task_Struct g_MicroSDWriteTaskStruct;
 uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
