@@ -52,7 +52,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1);
  *
  * @return None
  */
-void create_output_file();
+bool create_output_file();
 
 /**
  * @brief Exports data from a memory queue to the output file.

@@ -6,7 +6,7 @@
 // #define STR(n)  STR_(n)
 // const char outputfile[] = "fat:" STR(DRIVE_NUM) ":output.txt";   // Have to use microSD with this line
 // File path in the same directory as the .c file for testing
-const char outputFile[] = "C:\\DevProjects\\CCSTheia\\workspace_safebeat_infant_monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
+const char outputFile[] = "C:\\devProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
 
 // Mock memory section containing data
 const char *mock_memory_queue[] = {
@@ -64,34 +64,36 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
         /////// PROJECT CODE ///////
         FILE *file = fopen(outputFile, "a");
         if(!file){
-            create_output_file();
-
-            FILE *file = fopen(outputFile, "a");
+            if (!create_output_file()) {
+                Task_sleep(100);
+                continue;
+            }
+            file = fopen(outputFile, "a");
             if (!file) {
                 printStr("Error: Failed to open output file after creation.");
-                Task_yield();
+                Task_sleep(100);
                 continue;
             }
         }
         
         export_queue_to_output_file(file, arg0);
 
-        // Task_sleep(1000);
-        Task_yield();
+        // Task sleeps for limited time until data re-populates the queue
+        Task_sleep(1000);
     }
 }
 
-void create_output_file(){
+bool create_output_file(){
     printStr("Output file does not exist. Creating it...");
-    
-    // Create the file in write mode
+
     FILE *file = fopen(outputFile, "w");
     if (!file) {
         printStr("Error: Failed to create output file.");
-        Task_yield();
+        return false;
     }
     fclose(file);
     printStr("Output file created successfully.");
+    return true;
 }
 
 void export_queue_to_output_file(FILE *file, UArg queue_data){
@@ -99,21 +101,32 @@ void export_queue_to_output_file(FILE *file, UArg queue_data){
     const char **queue = (const char **)queue_data;
     int i = 0;
     char buffer[1024];
-    buffer[0] = '\0';
+    int buffer_pos = 0;
 
     if (!file) {
         printStr("Error: Failed to open output file in append mode.");
-        Task_yield();
+        return;
     }
 
     while (queue[i] != NULL) {
-        strcat(buffer, queue[i]);
-        strcat(buffer, "\n");
+        int len = snprintf(&buffer[buffer_pos], sizeof(buffer) - buffer_pos, "%s\n", queue[i]);
+        if (len < 0 || buffer_pos + len >= sizeof(buffer)) {
+            // Flush the buffer if full
+            fwrite(buffer, 1, buffer_pos, file);
+            buffer_pos = 0;
+            // Retry the current string
+            continue;
+        }
+        buffer_pos += len;
         queue[i] = NULL;
         i++;
     }
 
-    fprintf(file, "%s", buffer);
+    // Write remaining data in the buffer
+    if (buffer_pos > 0) {
+        fwrite(buffer, 1, buffer_pos, file);
+    }
+
     fflush(file);
     fclose(file);
     printStr("All data from mock_memory_queue written to output file.");
