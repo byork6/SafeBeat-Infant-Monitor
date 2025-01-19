@@ -10,6 +10,7 @@
  */
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
+const GPIO7       = GPIO.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
 const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
@@ -30,6 +31,10 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
  */
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
+
+GPIO7.$hardware        = system.deviceData.board.components["BTN-1"];
+GPIO7.interruptTrigger = "Rising Edge";
+GPIO7.$name            = "CONFIG_GPIO_PWR_BTN";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
@@ -91,5 +96,6 @@ System.supportModule   = "SysCallback";
  * re-solve from scratch.
  */
 GPIO1.gpioPin.$suggestSolution = "boosterpack.40";
+GPIO7.gpioPin.$suggestSolution = "boosterpack.13";
 SPI1.spi.$suggestSolution      = "SSI0";
 Timer.rtc.$suggestSolution     = "RTC0";

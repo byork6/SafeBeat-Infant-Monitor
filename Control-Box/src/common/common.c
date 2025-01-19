@@ -1,5 +1,8 @@
 #include "common.h"
 
+// Declare global vars
+char g_fatfsPrefix[] = "fat";
+
 void testGpio(uint32_t pin_config_index){
     //////////////// TEST CODE  ONLY ////////////////
     
