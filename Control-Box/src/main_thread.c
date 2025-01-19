@@ -10,8 +10,8 @@ void *mainThread(void *arg0){
     Semaphore_Params powerToggleSemaphoreParams;
     Semaphore_Params_init(&powerToggleSemaphoreParams);
     g_powerToggleSemaphore = Semaphore_create(0, &powerToggleSemaphoreParams, NULL);
-    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerToggleISR);
     GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
+    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerToggleISR);
 
     powerToggle_createTask();
 

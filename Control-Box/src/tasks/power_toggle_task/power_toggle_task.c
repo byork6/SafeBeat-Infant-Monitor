@@ -28,18 +28,23 @@ void powerToggle_executeTask(UArg arg0, UArg arg1){
             Power_setConstraint(PowerCC26XX_DISALLOW_SHUTDOWN);
             // resume all tasks fxn here
             g_isSystemOff = false;
+            printStr("System state set to on.");
         }
         else{
+            // TODO: Problem - Never gets out of else statement here. Result - Button to turn system back on is unresponsive
             printStr("Turning power off...");
             // suspend all tasks fxn here
             Power_releaseConstraint(PowerCC26XX_DISALLOW_SHUTDOWN);
             uint_fast16_t shutdownState = 0;
             uint_fast32_t shutdownTime = 0;
             Power_shutdown(shutdownState, shutdownTime);
+            g_isSystemOff = true;
+            printStr("System state set to off.");
         }
     }
 }
 
 void powerToggleISR(uint_least8_t index){
+    printStr("Button Pressed!");
     Semaphore_post(g_powerToggleSemaphore);
 }

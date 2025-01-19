@@ -7,7 +7,7 @@ void initBOARD(void){
     // TODO: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
     
     // Call custom board config after TI initialization if needed.
-    configBOARD();
+    // configBOARD();
 }
 
 void configBOARD(void){
