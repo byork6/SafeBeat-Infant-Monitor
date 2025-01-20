@@ -3,17 +3,15 @@
 void initBOARD(void){
     GPIO_init();
     // SPI_init();
-    // TODO: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
 }
 
 void configBOARD(void){
     configGPIO();
     // configSPI();
-    // TODO: Add config calls as needed
 }
 
 void configGPIO(void){
-    // TODO: Set up initial config for GPIO pins
+    // GPIO INIT HERE
     // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
     GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_setConfig(6, GPIO_SET_OUT_AND_DRIVE_LOW);
@@ -31,5 +29,5 @@ void configGPIO(void){
 }
 
 void configSPI(void){
-    // TODO: Set up initial config for SPI pins
+    // CONFIG INIT HERE
 }

@@ -4,20 +4,20 @@ void initBOARD(void){
     GPIO_init();
     SPI_init();
     SDFatFS_init();
-    // TODO: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
+    // NOTE: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
     
-    // Call custom board config after TI initialization if needed.
+    // NOTE: We may not need custom calls for init since .sysconfig handles it -- commented out custom calls for now.
     // configBOARD();
 }
 
 void configBOARD(void){
+    // CUSTOM CONFIG CALLS BELOW GO HERE
     configGPIO();
     // configSPI();
-    // TODO: Add config calls as needed
 }
 
 void configGPIO(void){
-    // TODO: Set up initial config for GPIO pins
+    // GPIO CUSTOM INIT HERE
     // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
     GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_setConfig(6, GPIO_SET_OUT_AND_DRIVE_LOW);
@@ -35,5 +35,5 @@ void configGPIO(void){
 }
 
 void configSPI(void){
-    // TODO: Set up initial config for SPI pins
+    // SPI CUSTOM INIT HERE
 }
