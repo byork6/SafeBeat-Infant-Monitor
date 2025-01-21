@@ -3,6 +3,32 @@
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
 
+void createAllTasks() {
+    // Create power button semaphore
+    Semaphore_Params powerToggleSemaphoreParams;
+    Semaphore_Params_init(&powerToggleSemaphoreParams);
+    g_powerToggleSemaphore = Semaphore_create(0, &powerToggleSemaphoreParams, NULL);
+
+    // Enable power button interrupts and set callback
+    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
+    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerToggleISR);
+    
+
+    // Create tasks for TI-RTOS7
+    // Power Task
+    g_powerTaskHandle = powerShutdown_createTask();
+    
+    // Task 1
+    g_task1Handle = testGpio_createTask(6, 3, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+
+    // // Task 2
+    g_task2Handle = testGpio_createTask(7, 3, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
+    
+    // Task 3
+    // TODO: Test microSD Driver with physical connection
+    // microSDWrite_createTask();
+}
+
 void testGpio(uint32_t pin_config_index){
     //////////////// TEST CODE  ONLY ////////////////
     

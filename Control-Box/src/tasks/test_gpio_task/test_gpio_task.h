@@ -4,8 +4,10 @@
 #define TEST_GPIO_TASK_STACK_SIZE   1024
 #define TEST_GPIO_TASK_PRIORITY     1
 Task_Struct g_TestGpioTaskStruct1;
+Task_Handle g_task1Handle;
 uint8_t g_testGpioTaskStack1[TEST_GPIO_TASK_STACK_SIZE];
 Task_Struct g_TestGpioTaskStruct2;
+Task_Handle g_task2Handle;
 uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 
 /**

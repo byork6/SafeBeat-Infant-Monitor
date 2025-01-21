@@ -1,13 +1,6 @@
 #include "../../common/common.h"
-#include "ti/drivers/GPIO.h"
-#include "ti/drivers/power/PowerCC26XX.h"
-#include "ti/sysbios/BIOS.h"
-#include "ti_drivers_config.h"
-#include "power_toggle_task.h"
 
-volatile bool g_isSystemOff = false;
-
-void powerToggle_createTask(){
+Task_Handle powerShutdown_createTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -20,59 +13,25 @@ void powerToggle_createTask(){
     TaskParams.arg1 = 0;
 
     // Construct the TI-RTOS task using the API
-    Task_construct(&g_PowerToggleTaskStruct, powerToggle_executeTask, &TaskParams, NULL);
+    Task_construct(&g_PowerToggleTaskStruct, powerShutdown_executeTask, &TaskParams, NULL);
+    return (Task_Handle)&g_PowerToggleTaskStruct;
 }
 
-void powerToggle_executeTask(UArg arg0, UArg arg1){
-    // TODO: Resume and suspend tasks are entered but tasks never pause/resume.
-    printStr("POWER STATUS IS ACTIVE");
-    Semaphore_pend(g_powerToggleSemaphore, BIOS_WAIT_FOREVER);
-    printStr("Turning power off...");
-    GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
-    Power_shutdown(0, 0);
-    // Power_sleep(PowerCC26XX_STANDBY);
-    // Power_idleFunc();
-    printStr("SHOULD NOT PASS THIS.");
-    while(1){
-        if(g_isSystemOff){
-            printStr("Turning power on...");
-            // Task_enable();
-            // Power_setConstraint(PowerCC26XX_DISALLOW_SHUTDOWN);
+void powerShutdown_executeTask(UArg arg0, UArg arg1){
+    while (1){
+        Task_sleep(25000);
+        Semaphore_pend(g_powerToggleSemaphore, BIOS_WAIT_FOREVER);
 
-            // // Check for power constraints
-            // constraints = Power_getConstraintMask();
-            // printf("Active constraints: 0x%x\n", constraints);
+        printStr("Turning power off...");
+        destructAllTasks();
 
-            // if (constraints & PowerCC26XX_DISALLOW_STANDBY) {
-            //     printf("Standby is disallowed.\n");
-            // } else {
-            //     printf("Standby is allowed.\n");
-            // }
-            // resumeAllTasks();
-            g_isSystemOff = false;
-            printStr("System state set to on.");
-        }
-        else{
-            printStr("Turning power off...");
-            // Task_disable();
-            // suspendAllTasks();
-            // Power_releaseConstraint(PowerCC26XX_DISALLOW_SHUTDOWN);
-            // printStr("Disallow shutdown constraint released.");
+        // Set power button to wake device from power shutdown state
+        GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
+        Power_shutdown(0, 0);
 
-            // // Check for power constraints
-            // constraints = Power_getConstraintMask();
-            // printf("Active constraints: 0x%x\n", constraints);
-
-            // if (constraints & PowerCC26XX_DISALLOW_STANDBY) {
-            //     printf("Standby is disallowed.\n");
-            // } else {
-            //     printf("Standby is allowed.\n");
-            // }
-
-            // Power_sleep(PowerCC26XX_STANDBY);
-            g_isSystemOff = true;
-            printStr("System state set to off.");
-        }
+        printStr("SHOULD NOT PASS THIS.");
+        // If it does re-create all tasks for proper BIOS execution
+        createAllTasks();
     }
 }
 
@@ -82,24 +41,23 @@ void powerToggleISR(uint_least8_t index){
     Semaphore_post(g_powerToggleSemaphore);
 }
 
-void suspendAllTasks() {
-    if (task1Handle != NULL) {
-        Task_block(task1Handle);
-        printStr("Task 1 suspended.");
+void destructAllTasks() {
+    // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
+    // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
+    if (g_task1Handle != NULL) {
+        Task_destruct(g_task1Handle);
+        printStr("Task 1 destructed.");
     }
-    if (task2Handle != NULL) {
-        Task_block(task2Handle);
-        printStr("Task 2 suspended.");
+    if (g_task2Handle != NULL) {
+        Task_destruct(g_task2Handle);
+        printStr("Task 2 destructed.");
     }
-}
-
-void resumeAllTasks() {
-    if (task1Handle != NULL) {
-        Task_unblock(task1Handle);
-        printStr("Task 1 resumed.");
+    if (g_powerTaskHandle != NULL){
+        Task_destruct(g_powerTaskHandle);
+        printStr("Power task destructed.");
     }
-    if (task2Handle != NULL) {
-        Task_unblock(task2Handle);
-        printStr("Task 2 resumed.");
+    if (g_powerToggleSemaphore != NULL){
+        Semaphore_destruct(g_powerToggleSemaphore);
+        printStr("Power semaphore destructed.");
     }
 }

@@ -37,6 +37,8 @@ GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
 
+Power.policyFunction = "PowerCC26XX_doWFI";
+
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 

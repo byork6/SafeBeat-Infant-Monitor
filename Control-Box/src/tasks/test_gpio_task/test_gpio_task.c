@@ -1,5 +1,4 @@
 #include "../../common/common.h"
-#include "test_gpio_task.h"
 
 Task_Handle testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name

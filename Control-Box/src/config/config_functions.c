@@ -1,4 +1,3 @@
-#include "src/config/config_functions.h"
 #include "../common/common.h"
 
 void initBOARD(void){
