@@ -3,7 +3,7 @@
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
 
-void createAllTasks() {
+void createAllResources() {
     // Create power button semaphore
     Semaphore_Params powerShutdownSemaphoreParams;
     Semaphore_Params_init(&powerShutdownSemaphoreParams);

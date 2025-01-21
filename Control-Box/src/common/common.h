@@ -61,7 +61,7 @@
 * @note This function assumes that all task stacks and structures 
 *       are properly defined globally and available for use.
 */
-void createAllTasks();
+void createAllResources();
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.

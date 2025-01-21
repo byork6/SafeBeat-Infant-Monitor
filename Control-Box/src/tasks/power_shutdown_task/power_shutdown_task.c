@@ -32,7 +32,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 
         printStr("SHOULD NOT PASS THIS.");
         // If it does re-create all tasks for proper BIOS execution
-        createAllTasks();
+        createAllResources();
     }
 }
 

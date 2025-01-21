@@ -17,7 +17,7 @@ void *mainThread(void *arg0){
     // Enable the power policy -- If all tasks are blocked the idleLoop will executre power policy or if the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
 
-    createAllTasks();
+    createAllResources();
 
     return NULL;
 }
