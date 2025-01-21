@@ -28,10 +28,5 @@ void *mainThread(void *arg0){
     taskPriority = 1;
     testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
-    // Task 3
-    // TODO: RF Recieve task init goes here
-
-    // TODO: Add Any more tasks here
-
     return NULL;
 }

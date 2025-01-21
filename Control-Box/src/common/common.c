@@ -1,5 +1,34 @@
 #include "common.h"
 
+// Declare global vars
+char g_fatfsPrefix[] = "fat";
+
+void createAllResources() {
+    // Create power button semaphore
+    Semaphore_Params powerShutdownSemaphoreParams;
+    Semaphore_Params_init(&powerShutdownSemaphoreParams);
+    g_powerShutdownSemaphore = Semaphore_create(0, &powerShutdownSemaphoreParams, NULL);
+
+    // Enable power button interrupts and set callback
+    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
+    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
+    
+
+    // Create tasks for TI-RTOS7
+    // Power Task
+    g_powerTaskHandle = powerShutdown_createTask();
+    
+    // Task 1
+    g_task1Handle = testGpio_createTask(6, 3, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+
+    // // Task 2
+    g_task2Handle = testGpio_createTask(7, 3, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
+    
+    // Task 3
+    // TODO: Test microSD Driver with physical connection
+    // microSDWrite_createTask();
+}
+
 void testGpio(uint32_t pin_config_index){
     //////////////// TEST CODE  ONLY ////////////////
     
@@ -44,6 +73,12 @@ void printVar(const char *varName, void *var, char type) {
             break;
         case 'u':
             printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
+            break;
+        case 'U': // uint32_t
+            printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
+            break;
+        case 'i': // int_fast16_t or int16_t
+            printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
             break;
         default:
             printf("Unsupported type for variable \"%s\"\n", varName);

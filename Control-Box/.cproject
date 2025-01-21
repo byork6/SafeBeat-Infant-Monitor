@@ -79,6 +79,7 @@
                                     <listOptionValue value="ti_utils_build_linker.cmd.genlibs"/>
                                     <listOptionValue value="libc.a"/>
                                 </option>
+                                <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.VERBOSE_DIAGNOSTICS.2000780098" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.linkerID.VERBOSE_DIAGNOSTICS" value="true" valueType="boolean"/>
                             </tool>
                             <tool id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.hex.1581561271" name="Arm Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.hex"/>
                             <tool id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.objcopy.465615563" name="Arm Objcopy Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.objcopy"/>

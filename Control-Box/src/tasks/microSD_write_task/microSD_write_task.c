@@ -1,5 +1,4 @@
 #include "../../common/common.h"
-#include "microSD_write_task.h"
 
 /////// TEST CODE ///////
 const char outputFile[] = "C:\\devProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
