@@ -5,13 +5,13 @@ char g_fatfsPrefix[] = "fat";
 
 void createAllTasks() {
     // Create power button semaphore
-    Semaphore_Params powerToggleSemaphoreParams;
-    Semaphore_Params_init(&powerToggleSemaphoreParams);
-    g_powerToggleSemaphore = Semaphore_create(0, &powerToggleSemaphoreParams, NULL);
+    Semaphore_Params powerShutdownSemaphoreParams;
+    Semaphore_Params_init(&powerShutdownSemaphoreParams);
+    g_powerShutdownSemaphore = Semaphore_create(0, &powerShutdownSemaphoreParams, NULL);
 
     // Enable power button interrupts and set callback
     GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
-    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerToggleISR);
+    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
     
 
     // Create tasks for TI-RTOS7

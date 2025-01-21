@@ -26,7 +26,7 @@
 #include "../config/config_functions.h"
 #include "../tasks/microSD_write_task/microSD_write_task.h"
 #include "../tasks/test_gpio_task/test_gpio_task.h"
-#include "../tasks/power_toggle_task/power_toggle_task.h"
+#include "../tasks/power_shutdown_task/power_shutdown_task.h"
 
 // Custom Macros
 #define DRIVE_GPIO_HIGH (1)

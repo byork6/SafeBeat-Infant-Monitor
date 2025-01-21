@@ -1,14 +1,14 @@
 #pragma once
 
 // Define task parameters
-#define POWER_TOGGLE_TASK_STACK_SIZE   1024
-#define POWER_TOGGLE_TASK_PRIORITY     1
-Task_Struct g_PowerToggleTaskStruct;
+#define POWER_SHUTDOWN_TASK_STACK_SIZE   1024
+#define POWER_SHUTDOWN_TASK_PRIORITY     1
+Task_Struct g_PowerShutdownTaskStruct;
 Task_Handle g_powerTaskHandle;
-uint8_t g_powerToggleTaskStack[POWER_TOGGLE_TASK_STACK_SIZE];
+uint8_t g_powerShutdownTaskStack[POWER_SHUTDOWN_TASK_STACK_SIZE];
 
 // Define semaphore parameters
-Semaphore_Handle g_powerToggleSemaphore;
+Semaphore_Handle g_powerShutdownSemaphore;
 
 /**
 * @brief Constructs the power toggle task.
@@ -43,7 +43,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1);
 *
 * @param index - The index of the GPIO pin triggering the ISR.
 */
-void powerToggleISR(uint_least8_t index);
+void powerShutdownISR(uint_least8_t index);
 
 /**
 * @brief Destructs all tasks and releases resources before shutdown.
@@ -53,3 +53,14 @@ void powerToggleISR(uint_least8_t index);
 * be re-created upon wake-up or reboot.
 */
 void destructAllTasks();
+
+/**
+* @brief Resets all used GPIOs to their low-power state.
+*
+* This function ensures that all GPIO pins are set to a defined 
+* state before the device enters a low-power or shutdown state. 
+* It is typically used to turn off external components, such as LEDs 
+* or peripherals, to prevent them from remaining in an active state.
+*/
+void clearAllPeripherals();
+
