@@ -1,6 +1,8 @@
+#include "src/config/config_functions.h"
 #include "../common/common.h"
 
 void initBOARD(void){
+    Power_init();
     GPIO_init();
     SPI_init();
     SDFatFS_init();

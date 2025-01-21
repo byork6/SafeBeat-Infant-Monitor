@@ -8,7 +8,9 @@
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs
+#include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
+#include <ti/drivers/apps/Button.h>
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
@@ -16,6 +18,7 @@
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Semaphore.h>
+#include <ti/drivers/dpl/SemaphoreP.h>
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Idle.h>
 
@@ -32,8 +35,11 @@
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
-#define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.25 seconds --- 250,000 us
+#define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.000025 seconds --- 250,000 us
 #define DELAY_US(us) ((us) / Clock_tickPeriod)                                  // Macro to convert microseconds to ticks
+
+Task_Handle task1Handle;
+Task_Handle task2Handle;
 
 // Custom Function Prototypes
 ////////// DOC STRING TEMPLATE //////////
@@ -78,6 +84,9 @@ void testGpio(uint32_t pin_config_index);
 *               - 'f' for floats
 *               - 'c' for characters
 *               - 's' for strings
+*               - 'u' for unsigned int
+*               - 'U' for unisgned int 32
+*               - 'i' for fast int 16
 *
 * @note Ensure the correct type is passed to avoid undefined behavior.
 *       For example, if the type is 'd', ensure `var` points to an integer.

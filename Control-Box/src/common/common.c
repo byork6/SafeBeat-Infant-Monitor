@@ -48,6 +48,12 @@ void printVar(const char *varName, void *var, char type) {
         case 'u':
             printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
             break;
+        case 'U': // uint32_t
+            printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
+            break;
+        case 'i': // int_fast16_t or int16_t
+            printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
+            break;
         default:
             printf("Unsupported type for variable \"%s\"\n", varName);
     }

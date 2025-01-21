@@ -32,10 +32,10 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
 
-GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.$name            = "CONFIG_GPIO_PWR_BTN";
-GPIO2.pull             = "Pull Up";
+GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.interruptTrigger = "Falling Edge";
+GPIO2.pull             = "Pull Up";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";

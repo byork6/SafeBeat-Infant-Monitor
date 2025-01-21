@@ -1,10 +1,9 @@
 #include "../../common/common.h"
 #include "test_gpio_task.h"
 
-void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
+Task_Handle testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name
     Task_Params TaskParams;
-
 
     // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
@@ -21,6 +20,7 @@ void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct 
 
     // Construct the TI-RTOS task using the API
     Task_construct(taskStruct, testGpio_executeTask, &TaskParams, NULL);
+    return (Task_Handle)taskStruct;
 }
 
 void testGpio_executeTask(UArg arg0, UArg arg1){
