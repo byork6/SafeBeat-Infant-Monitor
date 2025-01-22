@@ -14,7 +14,7 @@ void *mainThread(void *arg0){
     // Initialize the board with TI-Driver config & custom config if needed
     initBOARD();
     
-    // Enable the power policy -- If all tasks are blocked the idleLoop will executre power policy or if the powerbutton is pushed Power_shutdown() will be forced.
+    // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
 
     createAllResources();
