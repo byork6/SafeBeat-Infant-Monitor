@@ -10,6 +10,7 @@ This project contains two types of licenses:
 
 2. Texas Instruments Incorporated Proprietary License:
    - Components of the Texas Instruments SimpleLink SDK are used in this project.
-   - These components are subject to the TI proprietary license. See license_simplelink_cc13xx_cc26xx_sdk_7_41_00_17.txt for details.
+   - These components are subject to the TI proprietary license.
+   - For more information, see license_simplelink_cc13xx_cc26xx_sdk_7_41_00_17.txt.
 
 By using this software, you agree to comply with both licenses.
