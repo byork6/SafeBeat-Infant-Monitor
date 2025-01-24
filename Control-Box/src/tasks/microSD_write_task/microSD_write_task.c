@@ -1,7 +1,7 @@
 #include "../../common/common.h"
 
 /////// TEST CODE ///////
-const char outputFile[] = "C:\\devProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
+const char outputFile[] = "C:\\DevProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
 
 // Mock memory section containing data
 const char *mock_memory_queue[] = {
