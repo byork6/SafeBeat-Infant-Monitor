@@ -7,6 +7,7 @@ void createAllResources() {
     // Create power button semaphore
     Semaphore_Params powerShutdownSemaphoreParams;
     Semaphore_Params_init(&powerShutdownSemaphoreParams);
+    // TODO: Change Semaphroe_create to Semaphore_construct for static memory allocation
     g_powerShutdownSemaphore = Semaphore_create(0, &powerShutdownSemaphoreParams, NULL);
 
     // Enable power button interrupts and set callback
