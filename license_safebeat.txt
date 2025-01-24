@@ -1,0 +1,17 @@
+
+ Copyright (C) SafeBeat - All Rights Reserved
+
+ This file and its associated software are proprietary and confidential.
+ Unauthorized copying, distribution, modification, or use of this file, 
+ via any medium, is strictly prohibited without prior written permission 
+ from SafeBeat.
+ 
+ Ownership of this software or its intellectual property (IP) rights 
+ may be transferred or licensed under specific agreements.
+ 
+ Written by:
+   - Brian York <byork041@outlook.com>, 01/24/2025
+   - Aaradanaa Sabitha Mohan <aaradanaa@tamu.edu>, 01/24/2025
+   - Venkata Sai Kotrike <charan_k@tamu.edu>, 01/24/2025
+   - Jonathan Zheng <j4130@tamu.edu>, 01/24/2025
+   - Anthony Dinh <a-73000@tamu.edu>, 01/24/2025
