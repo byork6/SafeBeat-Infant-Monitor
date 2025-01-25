@@ -52,7 +52,7 @@ void powerShutdownISR(uint_least8_t index);
 * resources to ensure a proper shutdown. These resources must
 * be re-created upon wake-up or reboot.
 */
-void destructAllTasks();
+void destructAllResources();
 
 /**
 * @brief Resets all used GPIOs to their low-power state.

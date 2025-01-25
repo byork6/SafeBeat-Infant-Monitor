@@ -31,10 +31,14 @@
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Custom Macros
+// GPIO
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+// Temperature monitoring
+#define HIGH_TEMP_THRESHOLD_CELSIUS 35
+#define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
 #define SECONDS_TO_TICKS(seconds) ((seconds) * 100000)                      
 #define MS_TO_TICKS(milliseconds) ((milliseconds) * 100)

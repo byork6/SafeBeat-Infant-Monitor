@@ -25,7 +25,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 
         printStr("Turning power off...");
         clearAllPeripherals();
-        destructAllTasks();
+        destructAllResources();
 
         // Set power button to wake device from power shutdown state
         GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
@@ -43,7 +43,7 @@ void powerShutdownISR(uint_least8_t index){
     Semaphore_post(g_powerShutdownSemaphore);
 }
 
-void destructAllTasks() {
+void destructAllResources() {
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
     if (g_powerShutdownSemaphore != NULL){
