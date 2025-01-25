@@ -1,4 +1,5 @@
 #include "common/common.h"
+#include "ti/sysbios/BIOS.h"
 
 void *mainThread(void *arg0){
 
@@ -17,6 +18,19 @@ void *mainThread(void *arg0){
     // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. 
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
+
+    Types_FreqHz cpuFreq;
+    uint32_t clockTicks = 0;
+    BIOS_getCpuFreq(&cpuFreq);
+    printVar("Starting cpu frequency:", &cpuFreq.lo, 'U');
+    cpuFreq.lo = cpuFreq.lo / 2048;
+    printVar("Set CPU frequency: ", &cpuFreq.lo, 'U');
+    BIOS_setCpuFreq(&cpuFreq);
+    clockTicks = Clock_getTickPeriod();
+    printVar("Starting clock tick period:", &clockTicks, 'U');
+    // TODO: Divide clock period and see if it slows down MCU.
+
+
 
     createAllResources();
 

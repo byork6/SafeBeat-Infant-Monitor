@@ -59,28 +59,36 @@ void printVar(const char *varName, void *var, char type) {
         varName = "foo"; // Default name if none is provided
     }
 
+
     switch (type) {
         case 'd': // Integer
             printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
             break;
+
         case 'f': // Float
             printf("Variable \"%s\" value: %.2f\n", varName, *(float *)var);
             break;
+
         case 'c': // Character
             printf("Variable \"%s\" value: %c\n", varName, *(char *)var);
             break;
+
         case 's': // String
             printf("Variable \"%s\" value: %s\n", varName, (char *)var);
             break;
-        case 'u':
+
+        case 'u': // Unsigned int
             printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
             break;
+
         case 'U': // uint32_t
             printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
             break;
+
         case 'i': // int_fast16_t or int16_t
             printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
             break;
+
         default:
             printf("Unsupported type for variable \"%s\"\n", varName);
     }

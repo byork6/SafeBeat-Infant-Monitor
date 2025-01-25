@@ -16,6 +16,7 @@ const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
+const Temperature = scripting.addModule("/ti/drivers/Temperature");
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
