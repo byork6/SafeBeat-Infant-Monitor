@@ -1,8 +1,8 @@
 #pragma once
 
 // Define task parameters
-#define TEMPERATURE_MONITORING_TASK_STACK_SIZE   512
-#define TEMPERATURE_MONITORING_TASK_PRIORITY     5
+#define TEMPERATURE_MONITORING_TASK_STACK_SIZE   1024
+#define TEMPERATURE_MONITORING_TASK_PRIORITY     3
 Task_Struct g_TemperatureMonitoringTaskStruct;
 Task_Handle g_temperatureMonitoringTaskHandle;
 uint8_t g_temperatureMonitoringTaskStack[TEMPERATURE_MONITORING_TASK_STACK_SIZE];

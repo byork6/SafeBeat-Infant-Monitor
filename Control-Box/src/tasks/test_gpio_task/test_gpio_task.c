@@ -33,7 +33,12 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     while (1){
         i++;
         printVar("testGpio Count: ", &i, 'd');
-        GPIO_toggle(arg0);  
+        GPIO_toggle(arg0);
+        // TODO: Remove this block later
+        int16_t currentTemp = 0;
+        currentTemp = Temperature_getTemperature();
+        printVar("Current temperature in C:", &currentTemp, 'I');  
+        ////////////////////
         Task_sleep(g_taskSleepDuration);
     }
 }
