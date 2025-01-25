@@ -1,14 +1,15 @@
 #pragma once
 
 // Define task parameters
-#define POWER_SHUTDOWN_TASK_STACK_SIZE   1024
-#define POWER_SHUTDOWN_TASK_PRIORITY     1
+#define POWER_SHUTDOWN_TASK_STACK_SIZE   (POWER_SHUTDOWN_STACK_SIZE)
+#define POWER_SHUTDOWN_TASK_PRIORITY     (POWER_SHUTDOWN_PRIORITY)
 Task_Struct g_PowerShutdownTaskStruct;
 Task_Handle g_powerShutdownTaskHandle;
 uint8_t g_powerShutdownTaskStack[POWER_SHUTDOWN_TASK_STACK_SIZE];
 
 // Define semaphore parameters
-Semaphore_Handle g_powerShutdownSemaphore;
+Semaphore_Struct g_PowerShutdownSemaphoreStruct;
+Semaphore_Handle g_powerShutdownSemaphoreHandle;
 
 /**
 * @brief Constructs the power toggle task.

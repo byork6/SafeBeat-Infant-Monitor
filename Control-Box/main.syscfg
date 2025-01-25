@@ -83,7 +83,7 @@ const Task             = scripting.addModule("/ti/sysbios/knl/Task", {}, false);
 Task.checkStackFlag    = false;
 Task.defaultStackSize  = 512;
 Task.idleTaskStackSize = 512;
-Task.numPriorities     = 6;
+Task.numPriorities     = 7;
 
 Error.policy       = "Error_SPIN";
 Error.printDetails = false;

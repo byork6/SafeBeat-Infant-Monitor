@@ -23,14 +23,22 @@
 #include "ti_sysbios_config.h"
 
 /////// CUSTOM HEADER CONTENT ///////
-// Custom startup config - might not need, sysconfig should init pins correctly.
-#include "../config/config_functions.h"
-#include "../tasks/microSD_write_task/microSD_write_task.h"
-#include "../tasks/test_gpio_task/test_gpio_task.h"
-#include "../tasks/power_shutdown_task/power_shutdown_task.h"
-#include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
-
-// Custom Macros
+// CUSTOM MACROS
+// Task Priorities
+// The max priority that can be used is currently 6 --- A priority of 0 is reserved for the idleLoop() and should not be used here.
+// This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
+// The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
+#define POWER_SHUTDOWN_PRIORITY     1
+#define MICROSD_WRITE_PRIORITY      2
+#define TEST_GPIO_PRIORITY          3
+#define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+#define TEMP_MONITORING_PRIORITY    6
+// Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
+#define POWER_SHUTDOWN_STACK_SIZE   512
+#define MICROSD_WRITE_STACK_SIZE    1024
+#define TEST_GPIO_STACK_SIZE        1024
+#define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
@@ -49,10 +57,17 @@
 #define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
 #define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
 
-// Global variables
+// GLOBAL VARIABLES
 extern int g_taskSleepDuration;
 
-// Custom Function Prototypes
+// CUSTOM INCLUSIONS
+#include "../config/config_functions.h"
+#include "../tasks/microSD_write_task/microSD_write_task.h"
+#include "../tasks/test_gpio_task/test_gpio_task.h"
+#include "../tasks/power_shutdown_task/power_shutdown_task.h"
+#include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
+
+// CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
 /**
 * @brief - Short description goes here.
