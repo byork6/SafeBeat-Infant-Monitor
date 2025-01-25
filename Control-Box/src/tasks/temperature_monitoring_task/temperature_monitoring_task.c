@@ -1,6 +1,6 @@
 #include "../../common/common.h"
 
-Task_Handle temperatureMonitoring_createTask(){
+Task_Handle temperatureMonitoring_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -19,4 +19,10 @@ Task_Handle temperatureMonitoring_createTask(){
 
 void temperatureMonitoring_executeTask(UArg arg0, UArg arg1){
     // TODO: Create the task here and make sure to implement into power shutdown framework.
+    while(1){
+        int16_t currentTemp = 0;
+        currentTemp = Temperature_getTemperature();
+        printVar("Current temperature in C:", &currentTemp, 'I');
+        Task_sleep(g_taskSleepDuration);
+    }
 }

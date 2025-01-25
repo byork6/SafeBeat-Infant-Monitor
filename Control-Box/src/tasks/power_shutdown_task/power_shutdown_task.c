@@ -1,6 +1,6 @@
 #include "../../common/common.h"
 
-Task_Handle powerShutdown_createTask(){
+Task_Handle powerShutdown_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 

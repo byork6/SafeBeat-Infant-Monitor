@@ -19,10 +19,6 @@ void *mainThread(void *arg0){
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
 
-    int16_t currentTemp = 0;
-    currentTemp = Temperature_getTemperature();
-    printVar("Current temperature in C:", &currentTemp, 'I');
-
     createAllResources();
 
     return NULL;

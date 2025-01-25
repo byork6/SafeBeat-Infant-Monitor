@@ -7,6 +7,6 @@ Task_Struct g_TemperatureMonitoringTaskStruct;
 Task_Handle g_temperatureMonitoringTaskHandle;
 uint8_t g_temperatureMonitoringTaskStack[TEMPERATURE_MONITORING_TASK_STACK_SIZE];
 
-Task_Handle temperatureMonitoring_createTask();
+Task_Handle temperatureMonitoring_constructTask();
 
 void temperatureMonitoring_executeTask(UArg arg0, UArg arg1);

@@ -20,7 +20,7 @@ Semaphore_Handle g_powerShutdownSemaphore;
 *
 * @return Task_Handle - A handle to the created power toggle task.
 */
-Task_Handle powerShutdown_createTask();
+Task_Handle powerShutdown_constructTask();
 
 /**
 * @brief Executes the power toggle task.

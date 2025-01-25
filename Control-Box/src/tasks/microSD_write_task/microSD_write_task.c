@@ -24,7 +24,7 @@ const char *mock_memory_queue[] = {
 static unsigned char sd_buff[SD_BUFF_SIZE] __attribute__((aligned(4)));
 const char outputfile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 
-void microSDWrite_createTask(){
+void microSDWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 

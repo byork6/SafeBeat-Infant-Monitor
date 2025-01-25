@@ -1,6 +1,6 @@
 #include "../../common/common.h"
 
-Task_Handle testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
+Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -34,11 +34,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
         i++;
         printVar("testGpio Count: ", &i, 'd');
         GPIO_toggle(arg0);
-        // TODO: Remove this block later
-        int16_t currentTemp = 0;
-        currentTemp = Temperature_getTemperature();
-        printVar("Current temperature in C:", &currentTemp, 'I');  
-        ////////////////////
         Task_sleep(g_taskSleepDuration);
     }
 }

@@ -31,7 +31,7 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
  *
  * @return None
  */
-void microSDWrite_createTask();
+void microSDWrite_constructTask();
 
 /**
  * @brief Executes the microSD write task by processing and writing data to the SD card.
@@ -42,7 +42,7 @@ void microSDWrite_createTask();
  * Delays are introduced using `Task_sleep` to manage timing between operations.
  *
  * @param arg0 Pointer to the mock memory queue containing the data to be written
- *             (passed from TaskParams struct inside microSDWrite_createTask).
+ *             (passed from TaskParams struct inside microSDWrite_constructTask).
  * @param arg1 Unused argument (can be set to 0).
  *
  * @note Example task behavior:
