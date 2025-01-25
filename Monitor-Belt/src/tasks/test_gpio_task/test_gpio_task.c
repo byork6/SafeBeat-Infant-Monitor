@@ -1,7 +1,7 @@
 #include "../../common.h"
 #include "test_gpio_task.h"
 
-void testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
+void testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -31,7 +31,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     while (1)
     {
         GPIO_toggle(arg0);  
-        // Clock_tickPeriod = 10 us --- delayTime in seconds
-        Task_sleep(DELAY_US(DELAY_DURATION_US)); 
+        Task_sleep(250000); 
     }
 }

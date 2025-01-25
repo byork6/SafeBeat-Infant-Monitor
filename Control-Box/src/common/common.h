@@ -12,6 +12,7 @@
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
+#include <ti/drivers/Temperature.h>
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
@@ -22,21 +23,51 @@
 #include "ti_sysbios_config.h"
 
 /////// CUSTOM HEADER CONTENT ///////
-// Custom startup config - might not need, sysconfig should init pins correctly.
-#include "../config/config_functions.h"
-#include "../tasks/microSD_write_task/microSD_write_task.h"
-#include "../tasks/test_gpio_task/test_gpio_task.h"
-#include "../tasks/power_shutdown_task/power_shutdown_task.h"
-
-// Custom Macros
+// CUSTOM MACROS
+// Task Priorities
+// The max priority that can be used is currently 6 --- A priority of 0 is reserved for the idleLoop() and should not be used here.
+// This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
+// The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
+#define POWER_SHUTDOWN_PRIORITY     1
+#define MICROSD_WRITE_PRIORITY      2
+#define TEST_GPIO_PRIORITY          3
+#define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+#define TEMP_MONITORING_PRIORITY    6
+// Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
+#define POWER_SHUTDOWN_STACK_SIZE   512
+#define MICROSD_WRITE_STACK_SIZE    1024
+#define TEST_GPIO_STACK_SIZE        1024
+#define TEMP_MONITORING_STACK_SIZE  1024
+// GPIO
 #define DRIVE_GPIO_HIGH (1)
 #define DRIVE_GPIO_LOW (0)
 #define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
-#define DELAY_DURATION_US ((uint32_t)(250000))                                  // 0.25 seconds --- 250,000 us
-#define DELAY_US(us) ((us) / Clock_tickPeriod)                                  // Macro to convert microseconds to ticks
+// Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
+#define SECONDS_TO_TICKS(seconds) ((seconds) * 100000)                      
+#define MS_TO_TICKS(milliseconds) ((milliseconds) * 100)
+#define US_TO_TICKS(microseconds) ((microseconds) * 10)
+// Default task sleep duration in ticks
+#define DEFAULT_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
+#define TEMP_MONITORING_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
+// Temperature monitoring
+#define HIGH_TEMP_THRESHOLD_CELSIUS 35
+#define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
+#define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
+#define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
 
-// Custom Function Prototypes
+// GLOBAL VARIABLES
+extern int g_taskSleepDuration;
+
+// CUSTOM INCLUSIONS
+#include "../config/config_functions.h"
+#include "../tasks/microSD_write_task/microSD_write_task.h"
+#include "../tasks/test_gpio_task/test_gpio_task.h"
+#include "../tasks/power_shutdown_task/power_shutdown_task.h"
+#include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
+
+// CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
 /**
 * @brief - Short description goes here.

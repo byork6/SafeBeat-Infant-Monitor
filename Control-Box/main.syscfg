@@ -16,6 +16,7 @@ const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
+const Temperature = scripting.addModule("/ti/drivers/Temperature");
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -82,7 +83,7 @@ const Task             = scripting.addModule("/ti/sysbios/knl/Task", {}, false);
 Task.checkStackFlag    = false;
 Task.defaultStackSize  = 512;
 Task.idleTaskStackSize = 512;
-Task.numPriorities     = 6;
+Task.numPriorities     = 7;
 
 Error.policy       = "Error_SPIN";
 Error.printDetails = false;

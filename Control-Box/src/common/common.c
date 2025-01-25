@@ -1,33 +1,28 @@
 #include "common.h"
+#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
+// Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
+int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
 void createAllResources() {
-    // Create power button semaphore
-    Semaphore_Params powerShutdownSemaphoreParams;
-    Semaphore_Params_init(&powerShutdownSemaphoreParams);
-    // TODO: Change Semaphroe_create to Semaphore_construct for static memory allocation
-    g_powerShutdownSemaphore = Semaphore_create(0, &powerShutdownSemaphoreParams, NULL);
+    // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
+    // Task 1 - Priority = 1
+    g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
-    // Enable power button interrupts and set callback
-    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
-    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
-    
-
-    // Create tasks for TI-RTOS7
-    // Power Task
-    g_powerTaskHandle = powerShutdown_createTask();
-    
-    // Task 1
-    g_task1Handle = testGpio_createTask(6, 3, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
-
-    // // Task 2
-    g_task2Handle = testGpio_createTask(7, 3, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
-    
-    // Task 3
+    // Task 2 --- Priority = 2
     // TODO: Test microSD Driver with physical connection
-    // microSDWrite_createTask();
+    // g_microSDWriteTaskHandle = microSDWrite_constructTask();
+    
+    // Task 3 --- Priority = 3
+    g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+
+    // Task 4 --- Priority = 3
+    g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
+
+    // Task 5 --- Priority = 4
+    g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 
 void testGpio(uint32_t pin_config_index){
@@ -63,24 +58,35 @@ void printVar(const char *varName, void *var, char type) {
         case 'd': // Integer
             printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
             break;
+
         case 'f': // Float
             printf("Variable \"%s\" value: %.2f\n", varName, *(float *)var);
             break;
+
         case 'c': // Character
             printf("Variable \"%s\" value: %c\n", varName, *(char *)var);
             break;
+
         case 's': // String
             printf("Variable \"%s\" value: %s\n", varName, (char *)var);
             break;
-        case 'u':
+
+        case 'u': // Unsigned int
             printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
             break;
+
         case 'U': // uint32_t
             printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
             break;
-        case 'i': // int_fast16_t or int16_t
+
+        case 'i': // int_fast16_t
             printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
             break;
+        
+        case 'I': // int16_t
+            printf("Variable \"%s\" value: %d\n", varName, *(int16_t *)var);
+            break;
+
         default:
             printf("Unsupported type for variable \"%s\"\n", varName);
     }

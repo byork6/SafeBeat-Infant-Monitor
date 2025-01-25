@@ -1,8 +1,8 @@
 #pragma once
 
 // Define task parameters
-#define TEST_GPIO_TASK_STACK_SIZE   1024
-#define TEST_GPIO_TASK_PRIORITY     1
+#define TEST_GPIO_TASK_STACK_SIZE   (TEST_GPIO_STACK_SIZE)
+#define TEST_GPIO_TASK_PRIORITY     (TEST_GPIO_PRIORITY)
 Task_Struct g_TestGpioTaskStruct1;
 Task_Handle g_task1Handle;
 uint8_t g_testGpioTaskStack1[TEST_GPIO_TASK_STACK_SIZE];
@@ -31,13 +31,13 @@ uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 *
 * @retval Returns the Task_Handle from Task_construct or Task_create
 *
-* @note Example function call -> testGpio_createTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
+* @note Example function call -> testGpio_constructTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 *       If a task will not have multple instances you can remove the last two 
 *       parameters and refrence the global variables inside the function itself.
 * 
 * @return None
 */
-Task_Handle testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
+Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
 
 /**
  * @brief Executes the testGpio task by toggling the selected pin.
@@ -47,7 +47,7 @@ Task_Handle testGpio_createTask(uint32_t pinNumber, uint32_t taskPriority, Task_
  * The function runs indefinitely as part of the RTOS task loop, using `Task_sleep`
  * to introduce a delay between toggles.
  *
- * @param arg0 The GPIO pin number to configure and toggle (passed from TaskParams struct inside testGpio_createTask).
+ * @param arg0 The GPIO pin number to configure and toggle (passed from TaskParams struct inside testGpio_constructTask).
  * @param arg1 Unused argument (can be set to 0).
  *
  * @return None

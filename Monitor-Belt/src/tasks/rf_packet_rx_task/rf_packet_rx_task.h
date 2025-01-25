@@ -68,7 +68,7 @@ uint8_t g_rfPacketRxTaskStruct[RF_PACKET_RX_TASK_STACK_SIZE];
 *
 * @return None
 */
-void rfPacketRx_createTask();
+void rfPacketRx_constructTask();
 
 /**
 * @brief Executes the rf packet receive task.

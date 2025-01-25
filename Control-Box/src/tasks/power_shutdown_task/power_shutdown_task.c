@@ -1,10 +1,19 @@
 #include "../../common/common.h"
 
-Task_Handle powerShutdown_createTask(){
-    // Declare TaskParams struct name
+Task_Handle powerShutdown_constructTask(){
+    // Construct semaphore
+    Semaphore_Params powerShutdownSemaphoreParams;
+    Semaphore_Params_init(&powerShutdownSemaphoreParams);
+    Semaphore_construct(&g_PowerShutdownSemaphoreStruct, 0, &powerShutdownSemaphoreParams);
+    g_powerShutdownSemaphoreHandle = Semaphore_handle(&g_PowerShutdownSemaphoreStruct);
+
+    // Enable power button interrupts and set callback
+    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
+    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
+    
+    // Construct task
     Task_Params TaskParams;
 
-    // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
     TaskParams.stack = g_powerShutdownTaskStack;
     TaskParams.stackSize = POWER_SHUTDOWN_TASK_STACK_SIZE;
@@ -12,19 +21,18 @@ Task_Handle powerShutdown_createTask(){
     TaskParams.arg0 = 0;
     TaskParams.arg1 = 0;
 
-    // Construct the TI-RTOS task using the API
     Task_construct(&g_PowerShutdownTaskStruct, powerShutdown_executeTask, &TaskParams, NULL);
     return (Task_Handle)&g_PowerShutdownTaskStruct;
 }
 
 void powerShutdown_executeTask(UArg arg0, UArg arg1){
     while (1){
-        Task_sleep(25000);
-        Semaphore_pend(g_powerShutdownSemaphore, BIOS_WAIT_FOREVER);
+        Task_sleep(g_taskSleepDuration);
+        Semaphore_pend(g_powerShutdownSemaphoreHandle, BIOS_WAIT_FOREVER);
 
         printStr("Turning power off...");
         clearAllPeripherals();
-        destructAllTasks();
+        destructAllResources();
 
         // Set power button to wake device from power shutdown state
         GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
@@ -39,12 +47,28 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 // Button_Handle buttonHandle, Button_EventMask buttonEvents
 void powerShutdownISR(uint_least8_t index){
     printStr("Button Pressed!");
-    Semaphore_post(g_powerShutdownSemaphore);
+    Semaphore_post(g_powerShutdownSemaphoreHandle);
 }
 
-void destructAllTasks() {
+void destructAllResources() {
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
+    if (g_powerShutdownSemaphoreHandle != NULL){
+        Semaphore_destruct(g_powerShutdownSemaphoreHandle);
+        printStr("Power shutdown semaphore destructed.");
+    }
+    if (g_powerShutdownTaskHandle != NULL){
+        Task_destruct(g_powerShutdownTaskHandle);
+        printStr("Power shutdown task destructed.");
+    }
+    if (g_microSDWriteTaskHandle != NULL){
+        Task_destruct(g_microSDWriteTaskHandle);
+        printStr("MicroSD write task destructed.");
+    }
+    if (g_temperatureMonitoringTaskHandle != NULL){
+        Task_destruct(g_temperatureMonitoringTaskHandle);
+        printStr("Temperature monitoring task destructed.");
+    }
     if (g_task1Handle != NULL) {
         Task_destruct(g_task1Handle);
         printStr("Task 1 destructed.");
@@ -52,14 +76,6 @@ void destructAllTasks() {
     if (g_task2Handle != NULL) {
         Task_destruct(g_task2Handle);
         printStr("Task 2 destructed.");
-    }
-    if (g_powerTaskHandle != NULL){
-        Task_destruct(g_powerTaskHandle);
-        printStr("Power task destructed.");
-    }
-    if (g_powerShutdownSemaphore != NULL){
-        Semaphore_destruct(g_powerShutdownSemaphore);
-        printStr("Power semaphore destructed.");
     }
 }
 

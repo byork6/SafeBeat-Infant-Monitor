@@ -24,7 +24,7 @@ const char *mock_memory_queue[] = {
 static unsigned char sd_buff[SD_BUFF_SIZE] __attribute__((aligned(4)));
 const char outputfile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 
-void microSDWrite_createTask(){
+void microSDWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -57,7 +57,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
         printVar("microSDWrite Count: ", &i, 'd');
         handleFileOperations(arg0);
         // 500,000 Ticks = 5 s
-        Task_sleep(500000);
+        Task_sleep(g_taskSleepDuration);
     }
     ////////////////////////////
 
@@ -67,7 +67,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     //     /// Block used for testing ///
     //     printVar("microSDWrite Count: ", &i, 'd');
     //     if (i == 0){
-    //         Task_sleep(500);
+    //         Task_sleep(g_taskSleepDuration);
     //     }
     //     i++;
     //     /////////////////////////////
@@ -76,13 +76,13 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     //     FILE *file = fopen(outputFile, "a");
     //     if(!file){
     //         if (!createOutputFile()) {
-    //             Task_sleep(100);
+    //             Task_sleep(g_taskSleepDuration);
     //             continue;
     //         }
     //         file = fopen(outputFile, "a");
     //         if (!file) {
     //             printStr("Error: Failed to open output file after creation.");
-    //             Task_sleep(100);
+    //             Task_sleep(g_taskSleepDuration);
     //             continue;
     //         }
     //     }
@@ -90,7 +90,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     //     exportQueueToOutputFile(file, arg0);
 
     //     // Task sleeps for limited time until data re-populates the queue
-    //     Task_sleep(1000);
+    //     Task_sleep(g_taskSleepDuration);
     // }
     ///////////////////////////////////
 }

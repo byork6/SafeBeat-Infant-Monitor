@@ -5,6 +5,7 @@ void initBOARD(void){
     GPIO_init();
     SPI_init();
     SDFatFS_init();
+    Temperature_init();
     // NOTE: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
     
     // NOTE: We may not need custom calls for init since .sysconfig handles it -- commented out custom calls for now.
