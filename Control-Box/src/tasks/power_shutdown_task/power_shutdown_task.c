@@ -1,5 +1,4 @@
 #include "../../common/common.h"
-#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 Task_Handle powerShutdown_constructTask(){
     // Declare TaskParams struct name

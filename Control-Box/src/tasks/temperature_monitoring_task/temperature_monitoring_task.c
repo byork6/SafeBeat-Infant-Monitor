@@ -18,11 +18,30 @@ Task_Handle temperatureMonitoring_constructTask(){
 }
 
 void temperatureMonitoring_executeTask(UArg arg0, UArg arg1){
-    // TODO: Create the task here and make sure to implement into power shutdown framework.
+    int16_t currentTemp = 0;
+
     while(1){
-        int16_t currentTemp = 0;
+        // Get current temperature for debugging
         currentTemp = Temperature_getTemperature();
-        printVar("Current temperature in C:", &currentTemp, 'I');
-        Task_sleep(g_taskSleepDuration);
+        printVar("Current temperature in celsius:", &currentTemp, 'I');
+
+        // Adjust sleep duration based on temperature thresholds
+        if (currentTemp >= CRITICAL_TEMP_THRESHOLD_CELSIUS) {
+            if (g_taskSleepDuration != CRITICAL_TEMP_TASK_SLEEP_DURATION){
+                g_taskSleepDuration = CRITICAL_TEMP_TASK_SLEEP_DURATION;
+            }
+        } 
+        else if (currentTemp >= HIGH_TEMP_THRESHOLD_CELSIUS) {
+            if (g_taskSleepDuration != HIGH_TEMP_TASK_SLEEP_DURATION){
+                g_taskSleepDuration = HIGH_TEMP_TASK_SLEEP_DURATION;
+            }
+        } 
+        else {
+            if (g_taskSleepDuration != DEFAULT_TASK_SLEEP_DURATION){
+                g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
+            }
+        }
+
+        Task_sleep(TEMP_MONITORING_TASK_SLEEP_DURATION);
     }
 }
