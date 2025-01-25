@@ -11,6 +11,7 @@
 #define MICROSD_WRITE_TASK_STACK_SIZE   1024
 #define MICROSD_WRITE_TASK_PRIORITY     2
 Task_Struct g_MicroSDWriteTaskStruct;
+Task_Handle g_microSDWriteTaskHandle;
 uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
 // Define microSD drive number and buffer size

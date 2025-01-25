@@ -1,4 +1,5 @@
 #include "../../common/common.h"
+#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 Task_Handle powerShutdown_constructTask(){
     // Declare TaskParams struct name
@@ -45,6 +46,22 @@ void powerShutdownISR(uint_least8_t index){
 void destructAllTasks() {
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
+    if (g_powerShutdownSemaphore != NULL){
+        Semaphore_destruct(g_powerShutdownSemaphore);
+        printStr("Power shutdown semaphore destructed.");
+    }
+    if (g_powerShutdownTaskHandle != NULL){
+        Task_destruct(g_powerShutdownTaskHandle);
+        printStr("Power shutdown task destructed.");
+    }
+    if (g_microSDWriteTaskHandle != NULL){
+        Task_destruct(g_microSDWriteTaskHandle);
+        printStr("MicroSD write task destructed.");
+    }
+    if (g_temperatureMonitoringTaskHandle != NULL){
+        Task_destruct(g_temperatureMonitoringTaskHandle);
+        printStr("Temperature monitoring task destructed.");
+    }
     if (g_task1Handle != NULL) {
         Task_destruct(g_task1Handle);
         printStr("Task 1 destructed.");
@@ -52,14 +69,6 @@ void destructAllTasks() {
     if (g_task2Handle != NULL) {
         Task_destruct(g_task2Handle);
         printStr("Task 2 destructed.");
-    }
-    if (g_powerTaskHandle != NULL){
-        Task_destruct(g_powerTaskHandle);
-        printStr("Power task destructed.");
-    }
-    if (g_powerShutdownSemaphore != NULL){
-        Semaphore_destruct(g_powerShutdownSemaphore);
-        printStr("Power semaphore destructed.");
     }
 }
 

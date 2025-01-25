@@ -4,7 +4,7 @@
 #define POWER_SHUTDOWN_TASK_STACK_SIZE   1024
 #define POWER_SHUTDOWN_TASK_PRIORITY     1
 Task_Struct g_PowerShutdownTaskStruct;
-Task_Handle g_powerTaskHandle;
+Task_Handle g_powerShutdownTaskHandle;
 uint8_t g_powerShutdownTaskStack[POWER_SHUTDOWN_TASK_STACK_SIZE];
 
 // Define semaphore parameters

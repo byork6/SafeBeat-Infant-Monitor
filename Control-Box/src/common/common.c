@@ -1,4 +1,5 @@
 #include "common.h"
+#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
@@ -7,7 +8,7 @@ int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
 void createAllResources() {
     // Create power button semaphore
-    // TODO: Change Semaphroe_create to Semaphore_construct for static memory allocation and move to power task creation
+    // TODO: Change Semaphore_create to Semaphore_construct for static memory allocation and move creation to power task creation task
     Semaphore_Params powerShutdownSemaphoreParams;
     Semaphore_Params_init(&powerShutdownSemaphoreParams);
     g_powerShutdownSemaphore = Semaphore_create(0, &powerShutdownSemaphoreParams, NULL);
@@ -15,21 +16,22 @@ void createAllResources() {
     GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
     GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
 
-    // Create tasks for TI-RTOS7
-    // Power Task
-    g_powerTaskHandle = powerShutdown_constructTask();
+    // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
+    // Task 1 - Pri = 1
+    g_powerShutdownTaskHandle = powerShutdown_constructTask();
+
+    // Task 2 --- Priority = 2
+    // TODO: Test microSD Driver with physical connection
+    // g_microSDWriteTaskHandle = microSDWrite_constructTask();
+
+    // Task 3 --- Priority = 3
+    g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
     
-    // Task 1
+    // Task 4 --- Priority = 3
     g_task1Handle = testGpio_constructTask(6, 3, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 
-    // // Task 2
+    // Task 5 --- Priority = 3
     g_task2Handle = testGpio_constructTask(7, 3, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
-
-
-    
-    // Task 3
-    // TODO: Test microSD Driver with physical connection
-    // microSDWrite_constructTask();
 }
 
 void testGpio(uint32_t pin_config_index){
