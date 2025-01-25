@@ -31,6 +31,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     while (1)
     {
         GPIO_toggle(arg0);  
-        Task_sleep(g_taskSleepDuration); 
+        Task_sleep(250000); 
     }
 }

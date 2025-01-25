@@ -8,7 +8,7 @@
 #include <third_party/fatfs/ffcio.h>
 
 // Define task parameters
-#define MICROSD_WRITE_TASK_STACK_SIZE   1024
+#define MICROSD_WRITE_TASK_STACK_SIZE   512
 #define MICROSD_WRITE_TASK_PRIORITY     2
 Task_Struct g_MicroSDWriteTaskStruct;
 uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];

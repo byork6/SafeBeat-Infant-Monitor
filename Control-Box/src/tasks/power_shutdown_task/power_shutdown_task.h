@@ -1,7 +1,7 @@
 #pragma once
 
 // Define task parameters
-#define POWER_SHUTDOWN_TASK_STACK_SIZE   1024
+#define POWER_SHUTDOWN_TASK_STACK_SIZE   512
 #define POWER_SHUTDOWN_TASK_PRIORITY     1
 Task_Struct g_PowerShutdownTaskStruct;
 Task_Handle g_powerTaskHandle;

@@ -2,7 +2,7 @@
 
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
-// 
+// Default task_sleep() duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
 void createAllResources() {
@@ -61,7 +61,6 @@ void printVar(const char *varName, void *var, char type) {
         varName = "foo"; // Default name if none is provided
     }
 
-
     switch (type) {
         case 'd': // Integer
             printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
@@ -87,8 +86,12 @@ void printVar(const char *varName, void *var, char type) {
             printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
             break;
 
-        case 'i': // int_fast16_t or int16_t
+        case 'i': // int_fast16_t
             printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
+            break;
+        
+        case 'I': // int16_t
+            printf("Variable \"%s\" value: %d\n", varName, *(int16_t *)var);
             break;
 
         default:
