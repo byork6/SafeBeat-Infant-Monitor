@@ -19,7 +19,7 @@ Task_Handle powerShutdown_createTask(){
 
 void powerShutdown_executeTask(UArg arg0, UArg arg1){
     while (1){
-        Task_sleep(25000);
+        Task_sleep(g_taskSleepDuration);
         Semaphore_pend(g_powerShutdownSemaphore, BIOS_WAIT_FOREVER);
 
         printStr("Turning power off...");

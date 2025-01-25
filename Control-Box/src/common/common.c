@@ -2,6 +2,8 @@
 
 // Declare global vars
 char g_fatfsPrefix[] = "fat";
+// 
+int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
 void createAllResources() {
     // Create power button semaphore

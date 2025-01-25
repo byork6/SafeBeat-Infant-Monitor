@@ -34,9 +34,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
         i++;
         printVar("testGpio Count: ", &i, 'd');
         GPIO_toggle(arg0);  
-
-        // Clock_tickPeriod = 10 us --- delayTime in seconds
-        // 25,000 Ticks = 250 ms
-        Task_sleep(25000);
+        Task_sleep(g_taskSleepDuration);
     }
 }

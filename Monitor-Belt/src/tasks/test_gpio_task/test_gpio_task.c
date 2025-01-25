@@ -31,7 +31,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     while (1)
     {
         GPIO_toggle(arg0);  
-        // Clock_tickPeriod = 10 us --- delayTime in seconds
-        Task_sleep(DELAY_US(DELAY_DURATION_US)); 
+        Task_sleep(g_taskSleepDuration); 
     }
 }
