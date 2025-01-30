@@ -1,10 +1,8 @@
-#include "../../common.h"
-#include "test_gpio_task.h"
+#include "../../common/common.h"
 
-void testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
+Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name
     Task_Params TaskParams;
-
 
     // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
@@ -21,16 +19,21 @@ void testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Stru
 
     // Construct the TI-RTOS task using the API
     Task_construct(taskStruct, testGpio_executeTask, &TaskParams, NULL);
+    return (Task_Handle)taskStruct;
 }
 
 void testGpio_executeTask(UArg arg0, UArg arg1){
     (void)arg1;     // suppresses warnings for unused arg
+    printStr("Entering testGpio_executeTask()");
 
     GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
-
-    while (1)
-    {
-        GPIO_toggle(arg0);  
-        Task_sleep(250000); 
+    int i  = 0;
+    
+    printStr("testGpio Initialized...");
+    while (1){
+        i++;
+        printVar("testGpio Count: ", &i, 'd');
+        GPIO_toggle(arg0);
+        Task_sleep(g_taskSleepDuration);
     }
 }
