@@ -1,8 +1,6 @@
 #include "common.h"
 #include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
-// Declare global vars
-char g_fatfsPrefix[] = "fat";
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 

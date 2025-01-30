@@ -61,10 +61,6 @@ void destructAllResources() {
         Task_destruct(g_powerShutdownTaskHandle);
         printStr("Power shutdown task destructed.");
     }
-    if (g_microSDWriteTaskHandle != NULL){
-        Task_destruct(g_microSDWriteTaskHandle);
-        printStr("MicroSD write task destructed.");
-    }
     if (g_temperatureMonitoringTaskHandle != NULL){
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printStr("Temperature monitoring task destructed.");

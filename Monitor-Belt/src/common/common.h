@@ -11,7 +11,6 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
-#include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 
 // TI-RTOS7 BIOS execution
@@ -29,14 +28,12 @@
 // This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
-#define MICROSD_WRITE_PRIORITY      2
 #define TEST_GPIO_PRIORITY          3
 #define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
-#define MICROSD_WRITE_STACK_SIZE    1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
@@ -62,7 +59,6 @@ extern int g_taskSleepDuration;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
-#include "../tasks/microSD_write_task/microSD_write_task.h"
 #include "../tasks/test_gpio_task/test_gpio_task.h"
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
