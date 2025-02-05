@@ -28,20 +28,20 @@ void initBOARD(void);
 /**
 * @brief contains all custom board configurations for things like GPIO, SPI, etc.
 *
-* TODO: Add long description once function is complete.
+* NOTE: Add long description once function is complete.
 */
 void configBOARD(void);
 
 /**
 * @brief Sets startup state for GPIO pins.
 *
-* TODO: Add long description once function is complete.
+* NOTE: Add long description once function is complete.
 */
 void configGPIO(void);
 
 /**
 * @brief Initializes SPI during startup.
 *
-* TODO: Add long description once function is complete.
+* NOTE: Add long description once function is complete.
 */
 void configSPI(void);

@@ -1,32 +1,24 @@
-#include "common.h"
-#include "tasks/test_gpio_task/test_gpio_task.h"
-#include "test_functions.h"
+#include "common/common.h"
 
 void *mainThread(void *arg0){
-    // For testing GPIO pins one at a time without using RTOS
-    // testGPIO(5);
 
-    /////// PROJECT CODE ///////
-    // Init local variables
-    uint32_t time = 1;
-    printVar("time", &time, 'd');
+    // Retrieve power-reset reason
+    PowerCC26X2_ResetReason resetReason = PowerCC26X2_getResetReason();
 
-    // Call TI driver initializations
+    // If we are waking up from shutdown, we do something extra.
+    if (resetReason == PowerCC26X2_RESET_SHUTDOWN_IO){
+        // Application code must always disable the IO latches when coming out of shutdown
+        PowerCC26X2_releaseLatches();
+    }
+
+    // Initialize the board with TI-Driver config & custom config if needed
     initBOARD();
+    
+    // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. 
+    // If the powerbutton is pushed Power_shutdown() will be forced.
+    Power_enablePolicy();
 
-    // Call custom board configurations
-    configBOARD();
-
-    // Create tasks for TI-RTOS
-    // Task 1
-    uint32_t pinToTest = 6;
-    uint32_t taskPriority = 1;
-    testGpio_constructTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
-
-    // Task 2
-    pinToTest = 7;
-    taskPriority = 1;
-    testGpio_constructTask(pinToTest, taskPriority, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
+    createAllResources();
 
     return NULL;
 }

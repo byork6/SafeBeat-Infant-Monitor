@@ -1,5 +1,4 @@
 #include "common/common.h"
-#include "ti/sysbios/BIOS.h"
 
 void *mainThread(void *arg0){
 

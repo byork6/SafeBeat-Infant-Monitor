@@ -1,11 +1,13 @@
 #pragma once
 
 // Define task parameters
-#define TEST_GPIO_TASK_STACK_SIZE   1024
-#define TEST_GPIO_TASK_PRIORITY     1
+#define TEST_GPIO_TASK_STACK_SIZE   (TEST_GPIO_STACK_SIZE)
+#define TEST_GPIO_TASK_PRIORITY     (TEST_GPIO_PRIORITY)
 Task_Struct g_TestGpioTaskStruct1;
+Task_Handle g_task1Handle;
 uint8_t g_testGpioTaskStack1[TEST_GPIO_TASK_STACK_SIZE];
 Task_Struct g_TestGpioTaskStruct2;
+Task_Handle g_task2Handle;
 uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 
 /**
@@ -27,13 +29,15 @@ uint8_t g_testGpioTaskStack2[TEST_GPIO_TASK_STACK_SIZE];
 *                  task's stack. The array size must match the stack size configured
 *                  in the task parameters.
 *
+* @retval Returns the Task_Handle from Task_construct or Task_create
+*
 * @note Example function call -> testGpio_constructTask(pinToTest, taskPriority, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 *       If a task will not have multple instances you can remove the last two 
 *       parameters and refrence the global variables inside the function itself.
 * 
 * @return None
 */
-void testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
+Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack);
 
 /**
  * @brief Executes the testGpio task by toggling the selected pin.
