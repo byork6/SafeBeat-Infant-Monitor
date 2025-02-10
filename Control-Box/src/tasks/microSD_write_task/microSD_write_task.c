@@ -1,20 +1,16 @@
 #include "../../common/common.h"
 
-/////// TEST CODE ///////
-// Mock memory section containing data
-const char mock_memory_queue[]
-    __attribute__((aligned(4))) = "***********************************************************************\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
-                                  "***********************************************************************\n";
+#define SD_QUEUE_SIZE 1024  // Adjust size based on your needs
 
-/////////////////////////
+typedef struct {
+    char buffer[SD_QUEUE_SIZE];
+    int head;  // Points to the start of valid data
+    int tail;  // Points to the next available space
+    int size;  // Current size of valid data
+} CircularQueue;
 
-static unsigned char g_sdBuff[SD_BUFF_SIZE] __attribute__((aligned(4)));
+CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
+
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
@@ -34,7 +30,7 @@ Task_Handle microSDWrite_constructTask(){
     TaskParams.priority = MICROSD_WRITE_TASK_PRIORITY;
     // arg0 and ar1 passed to exectution function for the created task. Use 0 if arg is unused.
     // you can pass variables or pointers to structs for larger data objects.
-    TaskParams.arg0 = (UArg)mock_memory_queue;
+    TaskParams.arg0 = 0;
     TaskParams.arg1 = 0;
 
     // Construct the TI-RTOS task using the API
@@ -43,7 +39,9 @@ Task_Handle microSDWrite_constructTask(){
 }
 
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
+    (void)arg0;
     (void)arg1;
+
     printStr("Entering microSDWrite_executeTask()");
     int i = 0;
 
@@ -51,61 +49,12 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     while(1){
         i++;
         printVar("microSDWrite Count: ", &i, 'd');
-        handleFileOperations(arg0);
+        handleFileOperations();
         Task_sleep(g_taskSleepDuration);
     }
 }
 
-bool createOutputFile(){
-    printStr("Output file does not exist. Creating it...");
-
-    FILE *file = fopen(g_outputFile, "w");
-    if (!file) {
-        printStr("Error: Failed to create output file.");
-        return false;
-    }
-    fclose(file);
-    printStr("Output file created successfully.");
-    return true;
-}
-
-void exportQueueToOutputFile(FILE *file, UArg queue_data){
-    // const char ** is a ptr to an array of string ptrs
-    const char **queue = (const char **)queue_data;
-    int i = 0;
-    char buffer[1024];
-    int buffer_pos = 0;
-
-    if (!file) {
-        printStr("Error: Failed to open output file in append mode.");
-        return;
-    }
-
-    while (queue[i] != NULL) {
-        int len = snprintf(&buffer[buffer_pos], sizeof(buffer) - buffer_pos, "%s\n", queue[i]);
-        if (len < 0 || buffer_pos + len >= sizeof(buffer)) {
-            // Flush the buffer if full
-            fwrite(buffer, 1, buffer_pos, file);
-            buffer_pos = 0;
-            // Retry the current string
-            continue;
-        }
-        buffer_pos += len;
-        queue[i] = NULL;
-        i++;
-    }
-
-    // Write remaining data in the buffer
-    if (buffer_pos > 0) {
-        fwrite(buffer, 1, buffer_pos, file);
-    }
-
-    fflush(file);
-    fclose(file);
-    printStr("All data from mock_memory_queue written to output file.");
-}
-
-void handleFileOperations(UArg queue_data) {
+void handleFileOperations() {
     int internalBuffHandle;
 
     add_device(g_fatfsPrefix,
@@ -145,18 +94,68 @@ void handleFileOperations(UArg queue_data) {
             printStr("Call to setvbuf failed!");
         }
 
-        // Write contents from buffer to the output file
-        // exportQueueToOutputFile(g_dst, (UArg)queue_data);
-        fwrite(mock_memory_queue, 1, strlen(mock_memory_queue), g_dst);
-        fflush(g_dst);
-        rewind(g_dst);
+        // TESTING: Append line of data to circular queue
+        // logData(120, 20, "12:30:00 02/10/2025");
+        // logData(121, 20, "12:30:01 02/10/2025");
+        // logData(122, 20, "12:30:02 02/10/2025");
+        // logData(123, 20, "12:30:03 02/10/2025");
 
-        // Unmount SD Card
+        // Write contents from circular queue to the output file
+        writeQueueToSD(g_dst);
+
+        // Close and unmount SD Card
         fclose(g_dst);
         SDFatFS_close(g_sdfatfsHandle);
         printStr("Data successfully written to output file.");
         return;
     }
+}
+
+void appendToQueue(const char *data) {
+    int len = strlen(data);
+    if (memQueue.size + len >= SD_QUEUE_SIZE) {
+        printStr("Queue full! Data loss possible.");
+        return;
+    }
+
+    for (int i = 0; i < len; i++) {
+        memQueue.buffer[memQueue.tail] = data[i];
+        memQueue.tail = (memQueue.tail + 1) % SD_QUEUE_SIZE;  // Wrap around
+    }
+    memQueue.size += len;
+    memQueue.buffer[memQueue.tail] = '\0';
+}
+
+void writeQueueToSD(FILE *file) {
+    if (memQueue.size == 0) {
+        printStr("Queue empty. Nothing to write.");
+        return;
+    }
+
+    // Write data from head to tail
+    int bytes_written = fwrite(&memQueue.buffer[memQueue.head], 1, memQueue.size, file);
+    fflush(file);
+    rewind(file);
+
+
+    if (bytes_written > 0) {
+        // Remove written data from queue
+        memQueue.head = (memQueue.head + bytes_written) % SD_QUEUE_SIZE;
+        memQueue.size -= bytes_written;
+    }
+
+    memQueue.buffer[memQueue.head] = '\0';
+
+    printVar("bytes_written: ", &bytes_written, 'd');
+}
+
+void logData(int heartRate, int respiratoryRate, const char* timestamp) {
+    char logEntry[128] = {0};  // Temporary buffer for formatted string
+
+    snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
+            heartRate, respiratoryRate, timestamp);
+
+    appendToQueue(logEntry);  // Append formatted string to queue
 }
 
 void cleanupSDCard() {
