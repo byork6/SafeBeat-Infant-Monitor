@@ -51,6 +51,9 @@ void powerShutdownISR(uint_least8_t index){
 }
 
 void destructAllResources() {
+    // Force close and unmounting of sd card before shutdown
+    cleanupSDCard();
+    
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
     if (g_powerShutdownSemaphoreHandle != NULL){

@@ -81,3 +81,5 @@ bool createOutputFile();
 void exportQueueToOutputFile(FILE *file, UArg queue_data);
 
 void handleFileOperations(UArg queue_data);
+
+void cleanupSDCard();

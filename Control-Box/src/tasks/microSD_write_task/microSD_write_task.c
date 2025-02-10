@@ -17,6 +17,8 @@ const char mock_memory_queue[]
 static unsigned char g_sdBuff[SD_BUFF_SIZE] __attribute__((aligned(4)));
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
+SDFatFS_Handle g_sdfatfsHandle;
+FILE *g_dst;
 
 Task_Handle microSDWrite_constructTask(){
     // Declare TaskParams struct name
@@ -104,8 +106,6 @@ void exportQueueToOutputFile(FILE *file, UArg queue_data){
 }
 
 void handleFileOperations(UArg queue_data) {
-    SDFatFS_Handle sdfatfsHandle;
-    FILE *dst;
     int internalBuffHandle;
 
     add_device(g_fatfsPrefix,
@@ -122,8 +122,8 @@ void handleFileOperations(UArg queue_data) {
     GPIO_write(11, 0);
 
     // Mount and register the SD Card
-    sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
-    if (sdfatfsHandle == NULL) {
+    g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
+    if (g_sdfatfsHandle == NULL) {
         printStr("Drive 0 not detected.");
         Task_yield();
     }
@@ -132,29 +132,44 @@ void handleFileOperations(UArg queue_data) {
     }
 
     // Open output file
-    dst = fopen(g_outputFile, "a");
-    if (!dst) {
+    g_dst = fopen(g_outputFile, "a");
+    if (!g_dst) {
         printStr("Error opening output file");
-        SDFatFS_close(sdfatfsHandle);
+        SDFatFS_close(g_sdfatfsHandle);
         Task_yield();
     }
     else{
         // Disable internal buffering
-        internalBuffHandle = setvbuf(dst, NULL, _IONBF, 0);
+        internalBuffHandle = setvbuf(g_dst, NULL, _IONBF, 0);
         if (internalBuffHandle != 0){
             printStr("Call to setvbuf failed!");
         }
 
         // Write contents from buffer to the output file
-        // exportQueueToOutputFile(dst, (UArg)queue_data);
-        fwrite(mock_memory_queue, 1, strlen(mock_memory_queue), dst);
-        fflush(dst);
-        rewind(dst);
+        // exportQueueToOutputFile(g_dst, (UArg)queue_data);
+        fwrite(mock_memory_queue, 1, strlen(mock_memory_queue), g_dst);
+        fflush(g_dst);
+        rewind(g_dst);
 
         // Unmount SD Card
-        fclose(dst);
-        SDFatFS_close(sdfatfsHandle);
+        fclose(g_dst);
+        SDFatFS_close(g_sdfatfsHandle);
         printStr("Data successfully written to output file.");
         return;
+    }
+}
+
+void cleanupSDCard() {
+    if (g_dst != NULL) {
+        fflush(g_dst);  // Ensure data is written
+        fclose(g_dst);  // Close the file
+        g_dst = NULL;   // Reset pointer
+        printStr("output.txt file closed for shutdown.");
+    }
+
+    if (g_sdfatfsHandle != NULL) {
+        SDFatFS_close(g_sdfatfsHandle);  // Unmount SD card
+        g_sdfatfsHandle = NULL;          // Reset pointer
+        printStr("SD card unmounted for shutdown.");
     }
 }
