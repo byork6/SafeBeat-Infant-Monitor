@@ -32,7 +32,7 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
  *
  * @return None
  */
-void microSDWrite_constructTask();
+Task_Handle microSDWrite_constructTask();
 
 /**
  * @brief Executes the microSD write task by processing and writing data to the SD card.

@@ -2,7 +2,6 @@
 #include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Declare global vars
-char g_fatfsPrefix[] = "fat";
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
@@ -13,7 +12,7 @@ void createAllResources() {
 
     // Task 2 --- Priority = 2
     // TODO: Test microSD Driver with physical connection
-    // g_microSDWriteTaskHandle = microSDWrite_constructTask();
+    g_microSDWriteTaskHandle = microSDWrite_constructTask();
     
     // Task 3 --- Priority = 3
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);

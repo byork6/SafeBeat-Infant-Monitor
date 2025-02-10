@@ -1,30 +1,42 @@
 #include "../../common/common.h"
 
 /////// TEST CODE ///////
-const char outputFile[] = "C:\\DevProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
+const char outputFile[] = "C:\\DevProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";               
+// const char outputFile[] = "H:\\microSD_write_taskoutput.txt";      
 
 // Mock memory section containing data
-const char *mock_memory_queue[] = {
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    NULL
-};
+// const char *mock_memory_queue[] = {
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
+//     NULL
+// };
+const char mock_memory_queue[]
+    __attribute__((aligned(4))) = "***********************************************************************\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx\n"
+                                  "***********************************************************************\n";
+
+char g_fatfsPrefix[] = "fat";
 /////////////////////////
 
 static unsigned char sd_buff[SD_BUFF_SIZE] __attribute__((aligned(4)));
 const char outputfile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 
-void microSDWrite_constructTask(){
+Task_Handle microSDWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
@@ -43,6 +55,7 @@ void microSDWrite_constructTask(){
 
     // Construct the TI-RTOS task using the API
     Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
+    return (Task_Handle)&g_MicroSDWriteTaskStruct;
 }
 
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
@@ -148,29 +161,55 @@ void exportQueueToOutputFile(FILE *file, UArg queue_data){
 void handleFileOperations(UArg queue_data) {
     SDFatFS_Handle sdfatfsHandle;
     FILE *dst;
+    int internalBuffHandle;
+
+    add_device(g_fatfsPrefix,
+               _MSA,
+               ffcio_open,
+               ffcio_close,
+               ffcio_read,
+               ffcio_write,
+               ffcio_lseek,
+               ffcio_unlink,
+               ffcio_rename);
 
     /* Mount and register the SD Card */
+    // CSN = DIO11 for microSD card
+    GPIO_write(11, 0);
     sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
-    if (!sdfatfsHandle) {
-        printStr("microSD card not detected.");
+    if (sdfatfsHandle == NULL) {
+        printStr("Drive 0 not detected.");
         Task_yield();
+    }
+    else{
+        printStr("Drive 0 mounted successfully.");
     }
 
     /* Open output file */
-    dst = fopen(outputfile, "a");
+    dst = fopen(outputfile, "w+");
     if (!dst) {
         printStr("Error opening output file");
+        fclose(dst);
         SDFatFS_close(sdfatfsHandle);
         Task_yield();
     }
+    else{
+        // Disable internal buffering
+        internalBuffHandle = setvbuf(dst, NULL, _IONBF, 0);
+        if (internalBuffHandle != 0){
+            printStr("Call to setvbuf failed!");
+        }
 
-    // Write contents from buffer to the output file
-    exportQueueToOutputFile(dst, (UArg)queue_data);
+        // Write contents from buffer to the output file
+        // exportQueueToOutputFile(dst, (UArg)queue_data);
 
-    /* Unmount SD Card */
-    SDFatFS_close(sdfatfsHandle);
+        fwrite(mock_memory_queue, 1, strlen(mock_memory_queue), dst);
+        fflush(dst);
+        rewind(dst);
 
-    printStr("Data successfully written to output file.");
-
-    return;
+        /* Unmount SD Card */
+        SDFatFS_close(sdfatfsHandle);
+        printStr("Data successfully written to output file.");
+        return;
+    }
 }
