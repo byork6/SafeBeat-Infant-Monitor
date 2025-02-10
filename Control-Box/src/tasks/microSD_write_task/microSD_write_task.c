@@ -95,10 +95,10 @@ void handleFileOperations() {
         }
 
         // TESTING: Append line of data to circular queue
-        // logData(120, 20, "12:30:00 02/10/2025");
-        // logData(121, 20, "12:30:01 02/10/2025");
-        // logData(122, 20, "12:30:02 02/10/2025");
-        // logData(123, 20, "12:30:03 02/10/2025");
+        logData(120, 20, "12:30:00 02/10/2025");
+        logData(121, 20, "12:30:01 02/10/2025");
+        logData(122, 20, "12:30:02 02/10/2025");
+        logData(123, 20, "12:30:03 02/10/2025");
 
         // Write contents from circular queue to the output file
         writeQueueToSD(g_dst);

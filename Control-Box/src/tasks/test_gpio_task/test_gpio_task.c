@@ -34,10 +34,6 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
         i++;
         printVar("testGpio Count: ", &i, 'd');
         GPIO_toggle(arg0);
-        logData(120, 20, "12:30:00 02/10/2025");
-        logData(121, 20, "12:30:01 02/10/2025");
-        logData(122, 20, "12:30:02 02/10/2025");
-        logData(123, 20, "12:30:03 02/10/2025");
         Task_sleep(g_taskSleepDuration);
     }
 }
