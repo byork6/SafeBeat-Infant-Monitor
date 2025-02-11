@@ -24,15 +24,15 @@ Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Ta
 
 void testGpio_executeTask(UArg arg0, UArg arg1){
     (void)arg1;     // suppresses warnings for unused arg
-    printStr("Entering testGpio_executeTask()");
+    printf("Entering testGpio_executeTask()...\n");
 
     GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
     int i  = 0;
     
-    printStr("testGpio Initialized...");
+    printf("TestGpio Initialized.\n");
     while (1){
         i++;
-        printVar("testGpio Count: ", &i, 'd');
+        printf("testGpio Count: %d\n", i);
         GPIO_toggle(arg0);
         Task_sleep(g_taskSleepDuration);
     }

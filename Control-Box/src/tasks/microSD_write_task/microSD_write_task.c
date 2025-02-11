@@ -42,13 +42,14 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg0;
     (void)arg1;
 
-    printStr("Entering microSDWrite_executeTask()");
+    printf("Entering microSDWrite_executeTask()...\n");
     int i = 0;
 
-    printStr("microSDWrite Initialized...");
+    printf("MicroSDWrite Initialized.\n");
     while(1){
         i++;
-        printVar("microSDWrite Count: ", &i, 'd');
+        // printVar("microSDWrite Count: ", &i, 'd');
+        printf("MicroSDWrite Count: %d\n", i);
         handleFileOperations();
         Task_sleep(g_taskSleepDuration);
     }
@@ -73,17 +74,17 @@ void handleFileOperations() {
     // Mount and register the SD Card
     g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
     if (g_sdfatfsHandle == NULL) {
-        printStr("Drive 0 not detected.");
+        printf("SD card not detected.\n");
         Task_yield();
     }
     else{
-        printStr("Drive 0 mounted successfully.");
+        printf("SD card mounted successfully.\n");
     }
 
     // Open output file
     g_dst = fopen(g_outputFile, "a");
     if (!g_dst) {
-        printStr("Error opening output file");
+        printf("Error opening OUTPUT.TXT\n");
         SDFatFS_close(g_sdfatfsHandle);
         Task_yield();
     }
@@ -91,7 +92,7 @@ void handleFileOperations() {
         // Disable internal buffering
         internalBuffHandle = setvbuf(g_dst, NULL, _IONBF, 0);
         if (internalBuffHandle != 0){
-            printStr("Call to setvbuf failed!");
+            printf("Call to setvbuf failed!\n");
         }
 
         // TESTING: Append line of data to circular queue
@@ -106,7 +107,7 @@ void handleFileOperations() {
         // Close and unmount SD Card
         fclose(g_dst);
         SDFatFS_close(g_sdfatfsHandle);
-        printStr("Data successfully written to output file.");
+        printf("Data successfully written to output file.\n");
         return;
     }
 }
@@ -114,7 +115,7 @@ void handleFileOperations() {
 void appendToQueue(const char *data) {
     int len = strlen(data);
     if (memQueue.size + len >= SD_QUEUE_SIZE) {
-        printStr("Queue full! Data loss possible.");
+        printf("Queue full! Data loss possible.\n");
         return;
     }
 
@@ -128,7 +129,7 @@ void appendToQueue(const char *data) {
 
 void writeQueueToSD(FILE *file) {
     if (memQueue.size == 0) {
-        printStr("Queue empty. Nothing to write.");
+        printf("Queue empty. Nothing to write.\n");
         return;
     }
 
@@ -146,7 +147,7 @@ void writeQueueToSD(FILE *file) {
 
     memQueue.buffer[memQueue.head] = '\0';
 
-    printVar("bytes_written: ", &bytes_written, 'd');
+    printf("Bytes written: %d B\n", bytes_written);
 }
 
 void logData(int heartRate, int respiratoryRate, const char* timestamp) {
@@ -163,12 +164,12 @@ void cleanupSDCard() {
         fflush(g_dst);  // Ensure data is written
         fclose(g_dst);  // Close the file
         g_dst = NULL;   // Reset pointer
-        printStr("output.txt file closed for shutdown.");
+        printf("OUTPUT.TXT file closed for shutdown.\n");
     }
 
     if (g_sdfatfsHandle != NULL) {
         SDFatFS_close(g_sdfatfsHandle);  // Unmount SD card
         g_sdfatfsHandle = NULL;          // Reset pointer
-        printStr("SD card unmounted for shutdown.");
+        printf("SD card unmounted for shutdown.\n");
     }
 }
