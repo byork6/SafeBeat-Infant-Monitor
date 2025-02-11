@@ -1,5 +1,4 @@
 #include "common.h"
-#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Declare global vars
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
@@ -7,11 +6,10 @@ int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 
 void createAllResources() {
     // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
-    // Task 1 - Priority = 1
+    // Task 1 --- Priority = 1
     g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
     // Task 2 --- Priority = 2
-    // TODO: Test microSD Driver with physical connection
     g_microSDWriteTaskHandle = microSDWrite_constructTask();
     
     // Task 3 --- Priority = 3
@@ -24,9 +22,7 @@ void createAllResources() {
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 
-void testGpio(uint32_t pin_config_index){
-    //////////////// TEST CODE  ONLY ////////////////
-    
+void testGpio(uint32_t pin_config_index){   
     // Input validation (Pins 5-30 only valid pins)
     if (pin_config_index < 5 || pin_config_index > 30){
         exit(1);
@@ -46,55 +42,6 @@ void testGpio(uint32_t pin_config_index){
         sleep(time);
         GPIO_toggle(pin_config_index);
     }
-}
-
-void printVar(const char *varName, void *var, char type) {
-    if (varName == NULL) {
-        varName = "foo"; // Default name if none is provided
-    }
-
-    switch (type) {
-        case 'd': // Integer
-            printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
-            break;
-
-        case 'f': // Float
-            printf("Variable \"%s\" value: %.2f\n", varName, *(float *)var);
-            break;
-
-        case 'c': // Character
-            printf("Variable \"%s\" value: %c\n", varName, *(char *)var);
-            break;
-
-        case 's': // String
-            printf("Variable \"%s\" value: %s\n", varName, (char *)var);
-            break;
-
-        case 'u': // Unsigned int
-            printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
-            break;
-
-        case 'U': // uint32_t
-            printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
-            break;
-
-        case 'i': // int_fast16_t
-            printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
-            break;
-        
-        case 'I': // int16_t
-            printf("Variable \"%s\" value: %d\n", varName, *(int16_t *)var);
-            break;
-
-        default:
-            printf("Unsupported type for variable \"%s\"\n", varName);
-    }
-    fflush(stdout); // Ensure output is flushed immediately
-}
-
-void printStr(const char *str) {
-    printf("%s", str ? str : "NULL");
-    fflush(stdout);
 }
 
 int32_t fatfs_getFatTime(void) {
