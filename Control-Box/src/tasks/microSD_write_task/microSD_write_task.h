@@ -26,6 +26,11 @@ typedef enum {
     SD_INIT_SUCCESS = 1
 } SdInitStatus;
 
+typedef enum {
+    OUTPUT_FILE_NOT_OPEN = 0;
+    OUTPUT_FILE_OPEN = 1;
+} OutputFileStatus;
+
 /**
  * @brief Creates a TI-RTOS task for microSD write operations.
  *
