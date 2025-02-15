@@ -59,6 +59,20 @@ Task_Handle microSDWrite_constructTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
+
+/**
+ * @brief Initializes the SD card and mounts the file system.
+ *
+ * This function configures the SD card interface, registers the file system 
+ * operations, and attempts to mount the SD card. It first resets the SPI 
+ * chip select for the SD card, then attempts to open the file system using 
+ * `SDFatFS_open()`. If the SD card is detected successfully, the function 
+ * returns `SD_INIT_SUCCESS`. Otherwise, it returns `SD_INIT_FAILED`.
+ *
+ * @return SdInitStatus 
+ *         - `SD_INIT_SUCCESS` if the SD card is successfully mounted.
+ *         - `SD_INIT_FAILED` if the SD card is not detected.
+ */
 SdInitStatus initSDCard();
 
 void openOutputFile();
