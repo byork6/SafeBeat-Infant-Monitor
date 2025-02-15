@@ -20,7 +20,17 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 #define STR_(n) #n
 #define STR(n) STR_(n)
 
+// Circular Queue Size
+#define SD_QUEUE_SIZE 1024
+
 // Type definitions
+typedef struct {
+    char buffer[SD_QUEUE_SIZE];
+    int head;  // Points to the start of valid data
+    int tail;  // Points to the next available space
+    int size;  // Current size of valid data
+} CircularQueue;
+
 typedef enum {
     SD_INIT_FAILED = 0,
     SD_INIT_SUCCESS = 1

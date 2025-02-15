@@ -1,17 +1,6 @@
-#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
 
-#define SD_QUEUE_SIZE 1024  // Adjust size based on your needs
-
-typedef struct {
-    char buffer[SD_QUEUE_SIZE];
-    int head;  // Points to the start of valid data
-    int tail;  // Points to the next available space
-    int size;  // Current size of valid data
-} CircularQueue;
-
 CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
-
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
