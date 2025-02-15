@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdint.h>
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs

@@ -1,3 +1,4 @@
+#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
 
 CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
@@ -39,7 +40,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     while(1){
         i++;
         printf("MicroSDWrite Count: %d\n", i);
-        if (initSDCard() = SD_INIT_FAILED){
+        if (initSDCard() == SD_INIT_FAILED){
             Task_sleep(g_taskSleepDuration);
             continue;
         }
@@ -75,14 +76,14 @@ SdInitStatus initSDCard(){
 }
 
 // TODO: Keep editing functions from here
-void openOutputFile(){
+OutputFileStatus openOutputFile(){
     int internalBuffHandle;
 
     g_dst = fopen(g_outputFile, "a");
     if (!g_dst) {
         printf("Error opening OUTPUT.TXT\n");
         SDFatFS_close(g_sdfatfsHandle);
-        Task_yield();
+        return OUTPUT_FILE_NOT_OPEN;
     }
     else{
         // Disable internal buffering
@@ -104,7 +105,7 @@ void openOutputFile(){
         fclose(g_dst);
         SDFatFS_close(g_sdfatfsHandle);
         printf("Data successfully written to output file.\n");
-        return;
+        return OUTPUT_FILE_OPEN;
     }
 }
 

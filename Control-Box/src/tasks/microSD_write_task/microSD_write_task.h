@@ -8,6 +8,12 @@
 #include <third_party/fatfs/ffcio.h>
 
 // Define task parameters
+// #define MICROSD_WRITE_TASK_STACK_SIZE   (MICROSD_WRITE_STACK_SIZE)
+// #define MICROSD_WRITE_TASK_PRIORITY     (MICROSD_WRITE_PRIORITY)
+// Task_Struct g_MicroSDWriteTaskStruct;
+// Task_Handle g_microSDWriteTaskHandle;
+// uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
+
 #define MICROSD_WRITE_TASK_STACK_SIZE   (MICROSD_WRITE_STACK_SIZE)
 #define MICROSD_WRITE_TASK_PRIORITY     (MICROSD_WRITE_PRIORITY)
 Task_Struct g_MicroSDWriteTaskStruct;
@@ -37,8 +43,8 @@ typedef enum {
 } SdInitStatus;
 
 typedef enum {
-    OUTPUT_FILE_NOT_OPEN = 0;
-    OUTPUT_FILE_OPEN = 1;
+    OUTPUT_FILE_NOT_OPEN = 0,
+    OUTPUT_FILE_OPEN = 1
 } OutputFileStatus;
 
 /**
@@ -90,7 +96,7 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1);
  */
 SdInitStatus initSDCard();
 
-void openOutputFile();
+OutputFileStatus openOutputFile();
 
 void appendToQueue(const char *data);
 
