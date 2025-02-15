@@ -16,9 +16,7 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
 // Define microSD drive number and buffer size
 #define SD_DRIVE_NUM 0
-#ifndef SD_BUFF_SIZE
-    #define SD_BUFF_SIZE 2048
-#endif
+#define SD_BUFF_SIZE 2048
 #define STR_(n) #n
 #define STR(n) STR_(n)
 
@@ -55,7 +53,9 @@ Task_Handle microSDWrite_constructTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
-void handleFileOperations();
+void initSDCard();
+
+void openOutputFile();
 
 void appendToQueue(const char *data);
 

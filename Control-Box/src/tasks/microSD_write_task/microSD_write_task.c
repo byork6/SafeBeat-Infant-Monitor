@@ -1,3 +1,4 @@
+#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
 
 #define SD_QUEUE_SIZE 1024  // Adjust size based on your needs
@@ -48,16 +49,14 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     printf("MicroSDWrite Initialized.\n");
     while(1){
         i++;
-        // printVar("microSDWrite Count: ", &i, 'd');
         printf("MicroSDWrite Count: %d\n", i);
-        handleFileOperations();
+        initSDCard();
+        openOutputFile();
         Task_sleep(g_taskSleepDuration);
     }
 }
 
-void handleFileOperations() {
-    int internalBuffHandle;
-
+void initSDCard(){
     add_device(g_fatfsPrefix,
                _MSA,
                ffcio_open,
@@ -79,9 +78,14 @@ void handleFileOperations() {
     }
     else{
         printf("SD card mounted successfully.\n");
+        return;
     }
+}
 
-    // Open output file
+// TODO: Keep editing functions from here
+void openOutputFile(){
+    int internalBuffHandle;
+
     g_dst = fopen(g_outputFile, "a");
     if (!g_dst) {
         printf("Error opening OUTPUT.TXT\n");
