@@ -50,13 +50,17 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     while(1){
         i++;
         printf("MicroSDWrite Count: %d\n", i);
-        initSDCard();
+        if (initSDCard() = SD_INIT_FAILED){
+            Task_sleep(g_taskSleepDuration);
+            continue;
+        }
+
         openOutputFile();
         Task_sleep(g_taskSleepDuration);
     }
 }
 
-void initSDCard(){
+SdInitStatus initSDCard(){
     add_device(g_fatfsPrefix,
                _MSA,
                ffcio_open,
@@ -74,12 +78,11 @@ void initSDCard(){
     g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
     if (g_sdfatfsHandle == NULL) {
         printf("SD card not detected.\n");
-        Task_yield();
+        return SD_INIT_FAILED;
     }
-    else{
-        printf("SD card mounted successfully.\n");
-        return;
-    }
+    
+    printf("SD card mounted successfully.\n");
+    return SD_INIT_SUCCESS;
 }
 
 // TODO: Keep editing functions from here

@@ -20,6 +20,12 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 #define STR_(n) #n
 #define STR(n) STR_(n)
 
+// Type definitions
+typedef enum {
+    SD_INIT_FAILED = 0,
+    SD_INIT_SUCCESS = 1
+} SdInitStatus;
+
 /**
  * @brief Creates a TI-RTOS task for microSD write operations.
  *
@@ -53,7 +59,7 @@ Task_Handle microSDWrite_constructTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
-void initSDCard();
+SdInitStatus initSDCard();
 
 void openOutputFile();
 
