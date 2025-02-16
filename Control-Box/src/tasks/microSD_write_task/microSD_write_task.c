@@ -1,3 +1,4 @@
+#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
 
 
@@ -41,13 +42,16 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1){
     while(1){
         i++;
         printf("MicroSDWrite Count: %d\n", i);
+        // Check for mounted header and proper FatFS init
         if (initSDCard() == SD_INIT_FAILED){
             Task_sleep(g_taskSleepDuration);
             continue;
         }
-
-        openOutputFile();
-        Task_sleep(g_taskSleepDuration);
+        // Check for output file --- will show up or be created as long as microSD card is inserted.
+        if (openOutputFile() == OUTPUT_FILE_NOT_OPEN){
+            Task_sleep(g_taskSleepDuration);
+            continue;
+        }
     }
 }
 
@@ -65,14 +69,14 @@ SdInitStatus initSDCard(){
     // Reset SPI chip select for microSD card
     GPIO_write(11, 0);
 
-    // Mount and register the SD Card
+    // Connect header and create FatFS instance
     g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
     if (g_sdfatfsHandle == NULL) {
-        printf("SD card not detected.\n");
+        printf("microSD header not connected.\n");
         return SD_INIT_FAILED;
     }
     
-    printf("SD card mounted successfully.\n");
+    printf("Header ready for microSD card.\n");
     return SD_INIT_SUCCESS;
 }
 
