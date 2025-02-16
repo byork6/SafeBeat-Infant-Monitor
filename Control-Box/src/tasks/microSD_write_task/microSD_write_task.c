@@ -1,5 +1,6 @@
-#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
+
+
 
 CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
@@ -111,14 +112,14 @@ OutputFileStatus openOutputFile(){
 
 void appendToQueue(const char *data) {
     int len = strlen(data);
-    if (memQueue.size + len >= SD_QUEUE_SIZE) {
+    if (memQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
         printf("Queue full! Data loss possible.\n");
         return;
     }
 
     for (int i = 0; i < len; i++) {
         memQueue.buffer[memQueue.tail] = data[i];
-        memQueue.tail = (memQueue.tail + 1) % SD_QUEUE_SIZE;  // Wrap around
+        memQueue.tail = (memQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;  // Wrap around
     }
     memQueue.size += len;
     memQueue.buffer[memQueue.tail] = '\0';
@@ -138,7 +139,7 @@ void writeQueueToSD(FILE *file) {
 
     if (bytes_written > 0) {
         // Remove written data from queue
-        memQueue.head = (memQueue.head + bytes_written) % SD_QUEUE_SIZE;
+        memQueue.head = (memQueue.head + bytes_written) % CIRCULAR_QUEUE_SIZE;
         memQueue.size -= bytes_written;
     }
 

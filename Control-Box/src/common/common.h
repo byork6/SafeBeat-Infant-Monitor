@@ -57,6 +57,8 @@
 #define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
 #define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
 #define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
+// Circular queue --- Used to buffer recieved data before transmission to Display & SD card
+#define CIRCULAR_QUEUE_SIZE 1024
 
 // GLOBAL VARIABLES
 extern int g_taskSleepDuration;
