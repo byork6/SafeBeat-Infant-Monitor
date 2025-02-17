@@ -88,14 +88,61 @@ void microSDWrite_executeTask(UArg arg0, UArg arg1);
  */
 SdInitStatus initSDCard();
 
+/**
+ * @brief Opens the output file on the SD card for writing.
+ *
+ * This function attempts to open the file specified by `g_outputFile` in append mode.
+ * If the file cannot be opened, the SD card is closed, and an error status is returned.
+ *
+ * @return OUTPUT_FILE_OPEN if the file was successfully opened.
+ * @return OUTPUT_FILE_NOT_OPEN if the file could not be opened.
+ */
 OutputFileStatus openOutputFile();
 
+/**
+ * @brief Writes data from the circular queue to the output file.
+ *
+ * This function disables internal buffering, appends data to the circular queue,
+ * writes queued data to the SD card, and then closes the file and unmounts the SD card.
+ */
 void writeToOutputFile();
 
+/**
+ * @brief Appends data to the circular queue.
+ *
+ * Stores the provided data in the circular queue for later writing to the SD card.
+ * If the queue is full, a warning message is printed, and the data is not stored.
+ *
+ * @param data Pointer to the null-terminated string to be added to the queue.
+ */
 void appendToQueue(const char *data);
 
+/**
+ * @brief Writes the queued data to the SD card file.
+ *
+ * This function writes data from the circular queue into the specified file.
+ * If the queue is empty, a message is printed, and nothing is written.
+ *
+ * @param file Pointer to the open file where data should be written.
+ */
 void writeQueueToSD(FILE *file);
 
+/**
+ * @brief Logs formatted data to the circular queue.
+ *
+ * Constructs a formatted log entry containing heart rate, respiratory rate, and timestamp.
+ * The formatted string is then added to the circular queue.
+ *
+ * @param heartRate The heart rate value to log.
+ * @param respiratoryRate The respiratory rate value to log.
+ * @param timestamp A string containing the timestamp of the log entry.
+ */
 void logData(int heartRate, int respiratoryRate, const char* timestamp);
 
+/**
+ * @brief Closes the output file and unmounts the SD card.
+ *
+ * Ensures all pending data is written to the file, closes it, and unmounts the SD card.
+ * Also resets the associated file and SD handle pointers.
+ */
 void cleanupSDCard();
