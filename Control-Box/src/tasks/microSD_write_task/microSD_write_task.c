@@ -1,7 +1,6 @@
 #include "../../common/common.h"
 
 // Global variables
-CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
@@ -116,21 +115,6 @@ void writeToOutputFile(){
         SDFatFS_close(g_sdfatfsHandle);
         printf("Data successfully written to output file.\n");
     }
-
-void appendToSDQueue(const char *data) {
-    int len = strlen(data);
-    if (sdMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
-        printf("Queue full! Data loss possible.\n");
-        return;
-    }
-
-    for (int i = 0; i < len; i++) {
-        sdMemQueue.buffer[sdMemQueue.tail] = data[i];
-        sdMemQueue.tail = (sdMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;  // Wrap around
-    }
-    sdMemQueue.size += len;
-    sdMemQueue.buffer[sdMemQueue.tail] = '\0';
-}
 
 void writeQueueToSD(FILE *file) {
     if (sdMemQueue.size == 0) {

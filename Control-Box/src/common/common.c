@@ -3,6 +3,8 @@
 // Declare global vars
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
+CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
+CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
 
 void createAllResources() {
     // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
@@ -28,8 +30,38 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
     snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
             heartRate, respiratoryRate, timestamp);
 
-    appendToSDQueue(logEntry);  // Append formatted string to queue
-    //TODO: Add appendToDisplayQueue(logEntry); function. This will use a separate circular queue for display screen.
+    appendToSDAndDisplayQueue(logEntry);  // Append formatted string to circular queues
+}
+
+void appendToSDAndDisplayQueue(const char *data) {
+    int len = strlen(data);
+
+    // Append to sd queue
+    if (sdMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+        printf("SD queue full! Data loss possible.\n");
+    }
+    else{
+        for (int i = 0; i < len; i++) {
+            sdMemQueue.buffer[sdMemQueue.tail] = data[i];
+            sdMemQueue.tail = (sdMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
+        }
+        sdMemQueue.size += len;
+        sdMemQueue.buffer[sdMemQueue.tail] = '\0';
+    }
+
+    // Append to display queue
+    if (displayMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+        printf("Display queue full! Data loss possible.\n");
+        return;
+    }
+    else{
+        for (int i = 0; i < len; i++) {
+            displayMemQueue.buffer[displayMemQueue.tail] = data[i];
+            displayMemQueue.tail = (displayMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
+        }
+        displayMemQueue.size += len;
+        displayMemQueue.buffer[displayMemQueue.tail] = '\0';
+    }
 }
 
 int32_t fatfs_getFatTime(void) {

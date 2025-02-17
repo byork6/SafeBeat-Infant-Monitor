@@ -60,8 +60,18 @@
 // Circular queue --- Used to buffer recieved data before transmission to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
 
+// TYPE DEFINITIONS
+typedef struct {
+    char buffer[CIRCULAR_QUEUE_SIZE];
+    int head;  // Points to the start of valid data
+    int tail;  // Points to the next available space
+    int size;  // Current size of valid data
+} CircularQueue;
+
 // GLOBAL VARIABLES
 extern int g_taskSleepDuration;
+extern CircularQueue sdMemQueue;
+extern CircularQueue displayMemQueue;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
@@ -108,6 +118,16 @@ void createAllResources();
  * @param timestamp A string containing the timestamp of the log entry.
  */
 void logData(int heartRate, int respiratoryRate, const char* timestamp);
+
+/**
+ * @brief Appends data to the circular queue.
+ *
+ * Stores the provided data in the circular queue for later writing to the SD card.
+ * If the queue is full, a warning message is printed, and the data is not stored.
+ *
+ * @param data Pointer to the null-terminated string to be added to the queue.
+ */
+void appendToSDAndDisplayQueue(const char *data);
 
 int32_t fatfs_getFatTime(void);
 

@@ -20,14 +20,6 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 #define STR_(n) #n
 #define STR(n) STR_(n)
 
-// Type Definitions
-typedef struct {
-    char buffer[CIRCULAR_QUEUE_SIZE];
-    int head;  // Points to the start of valid data
-    int tail;  // Points to the next available space
-    int size;  // Current size of valid data
-} CircularQueue;
-
 // Type definitions
 typedef enum {
     SD_INIT_FAILED = 0,
@@ -106,16 +98,6 @@ OutputFileStatus openOutputFile();
  * writes queued data to the SD card, and then closes the file and unmounts the SD card.
  */
 void writeToOutputFile();
-
-/**
- * @brief Appends data to the circular queue.
- *
- * Stores the provided data in the circular queue for later writing to the SD card.
- * If the queue is full, a warning message is printed, and the data is not stored.
- *
- * @param data Pointer to the null-terminated string to be added to the queue.
- */
-void appendToSDQueue(const char *data);
 
 /**
  * @brief Writes the queued data to the SD card file.
