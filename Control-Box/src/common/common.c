@@ -50,18 +50,19 @@ void appendToSDAndDisplayQueue(const char *data) {
     }
 
     // Append to display queue
-    if (displayMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
-        printf("Display queue full! Data loss possible.\n");
-        return;
-    }
-    else{
-        for (int i = 0; i < len; i++) {
-            displayMemQueue.buffer[displayMemQueue.tail] = data[i];
-            displayMemQueue.tail = (displayMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
-        }
-        displayMemQueue.size += len;
-        displayMemQueue.buffer[displayMemQueue.tail] = '\0';
-    }
+    // TODO: ONCE FUNCTION IS WRITTEN TO EMPTY THIS QUEUE YOU CAN UNCOMMENT
+    // if (displayMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+    //     printf("Display queue full! Data loss possible.\n");
+    //     return;
+    // }
+    // else{
+    //     for (int i = 0; i < len; i++) {
+    //         displayMemQueue.buffer[displayMemQueue.tail] = data[i];
+    //         displayMemQueue.tail = (displayMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
+    //     }
+    //     displayMemQueue.size += len;
+    //     displayMemQueue.buffer[displayMemQueue.tail] = '\0';
+    // }
 }
 
 int32_t fatfs_getFatTime(void) {
