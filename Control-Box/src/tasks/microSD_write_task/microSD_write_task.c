@@ -1,13 +1,10 @@
-#include "src/tasks/microSD_write_task/microSD_write_task.h"
 #include "../../common/common.h"
-
-
 
 CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
-FILE *g_dst;
+FILE *g_outputFileStatus;
 
 Task_Handle microSDWrite_constructTask(){
     // Declare TaskParams struct name
@@ -34,24 +31,28 @@ Task_Handle microSDWrite_constructTask(){
 void microSDWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg0;
     (void)arg1;
-
-    printf("Entering microSDWrite_executeTask()...\n");
     int i = 0;
 
+    printf("Entering microSDWrite_executeTask()...\n");
     printf("MicroSDWrite Initialized.\n");
     while(1){
         i++;
         printf("MicroSDWrite Count: %d\n", i);
+        
         // Check for mounted header and proper FatFS init
         if (initSDCard() == SD_INIT_FAILED){
             Task_sleep(g_taskSleepDuration);
             continue;
         }
+
         // Check for output file --- will show up or be created as long as microSD card is inserted.
         if (openOutputFile() == OUTPUT_FILE_NOT_OPEN){
             Task_sleep(g_taskSleepDuration);
             continue;
         }
+
+        writeToOutputFile();
+        Task_sleep(g_taskSleepDuration);
     }
 }
 
@@ -75,44 +76,45 @@ SdInitStatus initSDCard(){
         printf("microSD header not connected.\n");
         return SD_INIT_FAILED;
     }
-    
     printf("Header ready for microSD card.\n");
     return SD_INIT_SUCCESS;
 }
 
-// TODO: Keep editing functions from here
 OutputFileStatus openOutputFile(){
-    int internalBuffHandle;
-
-    g_dst = fopen(g_outputFile, "a");
-    if (!g_dst) {
+    g_outputFileStatus = fopen(g_outputFile, "a");
+    if (!g_outputFileStatus) {
         printf("Error opening OUTPUT.TXT\n");
         SDFatFS_close(g_sdfatfsHandle);
         return OUTPUT_FILE_NOT_OPEN;
     }
-    else{
+    printf("OUTPUT.TXT ready for data.\n");
+    return OUTPUT_FILE_OPEN;
+}
+
+void writeToOutputFile(){
+        int internalBuffHandle;
+
         // Disable internal buffering
-        internalBuffHandle = setvbuf(g_dst, NULL, _IONBF, 0);
+        internalBuffHandle = setvbuf(g_outputFileStatus, NULL, _IONBF, 0);
         if (internalBuffHandle != 0){
             printf("Call to setvbuf failed!\n");
         }
 
-        // TESTING: Append line of data to circular queue
+        // TESTING: Append line of data to circular queue ///
         logData(120, 20, "12:30:00 02/10/2025");
         logData(121, 20, "12:30:01 02/10/2025");
         logData(122, 20, "12:30:02 02/10/2025");
         logData(123, 20, "12:30:03 02/10/2025");
+        ////////////////////////////////////////////////////
 
         // Write contents from circular queue to the output file
-        writeQueueToSD(g_dst);
+        writeQueueToSD(g_outputFileStatus);
 
         // Close and unmount SD Card
-        fclose(g_dst);
+        fclose(g_outputFileStatus);
         SDFatFS_close(g_sdfatfsHandle);
         printf("Data successfully written to output file.\n");
-        return OUTPUT_FILE_OPEN;
     }
-}
 
 void appendToQueue(const char *data) {
     int len = strlen(data);
@@ -162,10 +164,10 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
 }
 
 void cleanupSDCard() {
-    if (g_dst != NULL) {
-        fflush(g_dst);  // Ensure data is written
-        fclose(g_dst);  // Close the file
-        g_dst = NULL;   // Reset pointer
+    if (g_outputFileStatus != NULL) {
+        fflush(g_outputFileStatus);  // Ensure data is written
+        fclose(g_outputFileStatus);  // Close the file
+        g_outputFileStatus = NULL;   // Reset pointer
         printf("OUTPUT.TXT file closed for shutdown.\n");
     }
 
