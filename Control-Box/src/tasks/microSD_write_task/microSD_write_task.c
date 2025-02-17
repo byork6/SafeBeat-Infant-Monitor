@@ -1,6 +1,7 @@
 #include "../../common/common.h"
 
-CircularQueue memQueue = { .head = 0, .tail = 0, .size = 0 };
+// Global variables
+CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
@@ -118,38 +119,38 @@ void writeToOutputFile(){
 
 void appendToSDQueue(const char *data) {
     int len = strlen(data);
-    if (memQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+    if (sdMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
         printf("Queue full! Data loss possible.\n");
         return;
     }
 
     for (int i = 0; i < len; i++) {
-        memQueue.buffer[memQueue.tail] = data[i];
-        memQueue.tail = (memQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;  // Wrap around
+        sdMemQueue.buffer[sdMemQueue.tail] = data[i];
+        sdMemQueue.tail = (sdMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;  // Wrap around
     }
-    memQueue.size += len;
-    memQueue.buffer[memQueue.tail] = '\0';
+    sdMemQueue.size += len;
+    sdMemQueue.buffer[sdMemQueue.tail] = '\0';
 }
 
 void writeQueueToSD(FILE *file) {
-    if (memQueue.size == 0) {
+    if (sdMemQueue.size == 0) {
         printf("Queue empty. Nothing to write.\n");
         return;
     }
 
     // Write data from head to tail
-    int bytes_written = fwrite(&memQueue.buffer[memQueue.head], 1, memQueue.size, file);
+    int bytes_written = fwrite(&sdMemQueue.buffer[sdMemQueue.head], 1, sdMemQueue.size, file);
     fflush(file);
     rewind(file);
 
 
     if (bytes_written > 0) {
         // Remove written data from queue
-        memQueue.head = (memQueue.head + bytes_written) % CIRCULAR_QUEUE_SIZE;
-        memQueue.size -= bytes_written;
+        sdMemQueue.head = (sdMemQueue.head + bytes_written) % CIRCULAR_QUEUE_SIZE;
+        sdMemQueue.size -= bytes_written;
     }
 
-    memQueue.buffer[memQueue.head] = '\0';
+    sdMemQueue.buffer[sdMemQueue.head] = '\0';
 
     printf("Bytes written: %d B\n", bytes_written);
 }
