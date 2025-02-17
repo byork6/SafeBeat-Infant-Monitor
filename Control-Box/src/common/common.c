@@ -22,26 +22,14 @@ void createAllResources() {
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 
-void testGpio(uint32_t pin_config_index){   
-    // Input validation (Pins 5-30 only valid pins)
-    if (pin_config_index < 5 || pin_config_index > 30){
-        exit(1);
-    }
+void logData(int heartRate, int respiratoryRate, const char* timestamp) {
+    char logEntry[128] = {0};  // Temporary buffer for formatted string
 
-    // 1 second delay
-    uint32_t time = 1;
+    snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
+            heartRate, respiratoryRate, timestamp);
 
-    // Call driver init functions from SDK
-    GPIO_init();
-
-    // Initialize GPIO pins
-    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
-
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(pin_config_index);
-    }
+    appendToSDQueue(logEntry);  // Append formatted string to queue
+    //TODO: Add appendToDisplayQueue(logEntry); function. This will use a separate circular queue for display screen.
 }
 
 int32_t fatfs_getFatTime(void) {
@@ -62,4 +50,26 @@ int32_t fatfs_getFatTime(void) {
               ((uint32_t)(timeInfo->tm_sec / 2));          // Second / 2 (0-29)
 
     return fatTime;
+}
+
+void testGpio(uint32_t pin_config_index){   
+    // Input validation (Pins 5-30 only valid pins)
+    if (pin_config_index < 5 || pin_config_index > 30){
+        exit(1);
+    }
+
+    // 1 second delay
+    uint32_t time = 1;
+
+    // Call driver init functions from SDK
+    GPIO_init();
+
+    // Initialize GPIO pins
+    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
+
+    while (1)
+    {
+        sleep(time);
+        GPIO_toggle(pin_config_index);
+    }
 }

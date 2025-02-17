@@ -98,6 +98,20 @@ extern int g_taskSleepDuration;
 void createAllResources();
 
 /**
+ * @brief Logs formatted data to the circular queue.
+ *
+ * Constructs a formatted log entry containing heart rate, respiratory rate, and timestamp.
+ * The formatted string is then added to the circular queue for both the SD card and display screen.
+ *
+ * @param heartRate The heart rate value to log.
+ * @param respiratoryRate The respiratory rate value to log.
+ * @param timestamp A string containing the timestamp of the log entry.
+ */
+void logData(int heartRate, int respiratoryRate, const char* timestamp);
+
+int32_t fatfs_getFatTime(void);
+
+/**
 * @brief - Test code that toggles a GPIO pin every 1 second.
 *
 * The function sets a single GPIO pin to output and toggles it
@@ -109,5 +123,3 @@ void createAllResources();
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGpio(uint32_t pin_config_index);
-
-int32_t fatfs_getFatTime(void);

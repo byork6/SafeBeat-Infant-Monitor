@@ -115,7 +115,7 @@ void writeToOutputFile();
  *
  * @param data Pointer to the null-terminated string to be added to the queue.
  */
-void appendToQueue(const char *data);
+void appendToSDQueue(const char *data);
 
 /**
  * @brief Writes the queued data to the SD card file.
@@ -126,18 +126,6 @@ void appendToQueue(const char *data);
  * @param file Pointer to the open file where data should be written.
  */
 void writeQueueToSD(FILE *file);
-
-/**
- * @brief Logs formatted data to the circular queue.
- *
- * Constructs a formatted log entry containing heart rate, respiratory rate, and timestamp.
- * The formatted string is then added to the circular queue.
- *
- * @param heartRate The heart rate value to log.
- * @param respiratoryRate The respiratory rate value to log.
- * @param timestamp A string containing the timestamp of the log entry.
- */
-void logData(int heartRate, int respiratoryRate, const char* timestamp);
 
 /**
  * @brief Closes the output file and unmounts the SD card.

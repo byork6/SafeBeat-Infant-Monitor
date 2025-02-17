@@ -116,7 +116,7 @@ void writeToOutputFile(){
         printf("Data successfully written to output file.\n");
     }
 
-void appendToQueue(const char *data) {
+void appendToSDQueue(const char *data) {
     int len = strlen(data);
     if (memQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
         printf("Queue full! Data loss possible.\n");
@@ -152,15 +152,6 @@ void writeQueueToSD(FILE *file) {
     memQueue.buffer[memQueue.head] = '\0';
 
     printf("Bytes written: %d B\n", bytes_written);
-}
-
-void logData(int heartRate, int respiratoryRate, const char* timestamp) {
-    char logEntry[128] = {0};  // Temporary buffer for formatted string
-
-    snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
-            heartRate, respiratoryRate, timestamp);
-
-    appendToQueue(logEntry);  // Append formatted string to queue
 }
 
 void cleanupSDCard() {
