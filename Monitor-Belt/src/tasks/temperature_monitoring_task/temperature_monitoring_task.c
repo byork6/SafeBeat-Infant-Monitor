@@ -23,7 +23,7 @@ void temperatureMonitoring_executeTask(UArg arg0, UArg arg1){
     while(1){
         // Get current temperature for debugging
         currentTemp = Temperature_getTemperature();
-        printVar("Current temperature in celsius:", &currentTemp, 'I');
+        printf("Current temperature: %d Celsius\n", currentTemp);
 
         // Adjust sleep duration based on temperature thresholds
         if (currentTemp >= CRITICAL_TEMP_THRESHOLD_CELSIUS) {

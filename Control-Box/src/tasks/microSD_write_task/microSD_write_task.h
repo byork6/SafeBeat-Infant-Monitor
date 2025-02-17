@@ -16,11 +16,20 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
 // Define microSD drive number and buffer size
 #define SD_DRIVE_NUM 0
-#ifndef SD_BUFF_SIZE
-    #define SD_BUFF_SIZE 2048
-#endif
+#define SD_BUFF_SIZE 2048
 #define STR_(n) #n
 #define STR(n) STR_(n)
+
+// Type definitions
+typedef enum {
+    SD_INIT_FAILED = 0,
+    SD_INIT_SUCCESS = 1
+} SdInitStatus;
+
+typedef enum {
+    OUTPUT_FILE_NOT_OPEN = 0,
+    OUTPUT_FILE_OPEN = 1
+} OutputFileStatus;
 
 /**
  * @brief Creates a TI-RTOS task for microSD write operations.
@@ -32,7 +41,7 @@ uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
  *
  * @return None
  */
-void microSDWrite_constructTask();
+Task_Handle microSDWrite_constructTask();
 
 /**
  * @brief Executes the microSD write task by processing and writing data to the SD card.
@@ -55,29 +64,55 @@ void microSDWrite_constructTask();
  */
 void microSDWrite_executeTask(UArg arg0, UArg arg1);
 
-/**
- * @brief Creates the output file if it does not exist.
- *
- * This function attempts to create the output file in write mode. 
- * If the file already exists, it does nothing. Otherwise, it ensures 
- * that the file is properly created for subsequent writing operations.
- *
- * @return None
- */
-bool createOutputFile();
 
 /**
- * @brief Exports data from a memory queue to the output file.
+ * @brief Initializes the SD card and mounts the file system.
  *
- * This function takes a file pointer and queue data as inputs. 
- * It processes the queue, writing each string to the specified file 
- * in append mode. The file pointer must already point to an open file.
+ * This function configures the SD card interface, registers the file system 
+ * operations, and attempts to mount the SD card. It first resets the SPI 
+ * chip select for the SD card, then attempts to open the file system using 
+ * `SDFatFS_open()`. If the SD card is detected successfully, the function 
+ * returns `SD_INIT_SUCCESS`. Otherwise, it returns `SD_INIT_FAILED`.
  *
- * @param file Pointer to the output file opened in append mode.
- * @param queue_data Pointer to the mock memory queue containing the data.
- *
- * @return None
+ * @return SdInitStatus 
+ *         - `SD_INIT_SUCCESS` if the SD card is successfully mounted.
+ *         - `SD_INIT_FAILED` if the SD card is not detected.
  */
-void exportQueueToOutputFile(FILE *file, UArg queue_data);
+SdInitStatus initSDCard();
 
-void handleFileOperations(UArg queue_data);
+/**
+ * @brief Opens the output file on the SD card for writing.
+ *
+ * This function attempts to open the file specified by `g_outputFile` in append mode.
+ * If the file cannot be opened, the SD card is closed, and an error status is returned.
+ *
+ * @return OUTPUT_FILE_OPEN if the file was successfully opened.
+ * @return OUTPUT_FILE_NOT_OPEN if the file could not be opened.
+ */
+OutputFileStatus openOutputFile();
+
+/**
+ * @brief Writes data from the circular queue to the output file.
+ *
+ * This function disables internal buffering, appends data to the circular queue,
+ * writes queued data to the SD card, and then closes the file and unmounts the SD card.
+ */
+void writeToOutputFile();
+
+/**
+ * @brief Writes the queued data to the SD card file.
+ *
+ * This function writes data from the circular queue into the specified file.
+ * If the queue is empty, a message is printed, and nothing is written.
+ *
+ * @param file Pointer to the open file where data should be written.
+ */
+void writeQueueToSD(FILE *file);
+
+/**
+ * @brief Closes the output file and unmounts the SD card.
+ *
+ * Ensures all pending data is written to the file, closes it, and unmounts the SD card.
+ * Also resets the associated file and SD handle pointers.
+ */
+void cleanupSDCard();

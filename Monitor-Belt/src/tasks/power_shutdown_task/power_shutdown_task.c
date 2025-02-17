@@ -30,7 +30,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
         Task_sleep(g_taskSleepDuration);
         Semaphore_pend(g_powerShutdownSemaphoreHandle, BIOS_WAIT_FOREVER);
 
-        printStr("Turning power off...");
+        printf("Turning power off...\n");
         clearAllPeripherals();
         destructAllResources();
 
@@ -38,7 +38,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
         GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
         Power_shutdown(0, 0);
 
-        printStr("SHOULD NOT PASS THIS.");
+        printf("SHOULD NOT PASS THIS.\n");
         // If it does re-create all tasks for proper BIOS execution
         createAllResources();
     }
@@ -46,7 +46,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 
 // Button_Handle buttonHandle, Button_EventMask buttonEvents
 void powerShutdownISR(uint_least8_t index){
-    printStr("Button Pressed!");
+    printf("Button Pressed!\n");
     Semaphore_post(g_powerShutdownSemaphoreHandle);
 }
 
@@ -55,23 +55,23 @@ void destructAllResources() {
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
     if (g_powerShutdownSemaphoreHandle != NULL){
         Semaphore_destruct(g_powerShutdownSemaphoreHandle);
-        printStr("Power shutdown semaphore destructed.");
+        printf("Power shutdown semaphore destructed.\n");
     }
     if (g_powerShutdownTaskHandle != NULL){
         Task_destruct(g_powerShutdownTaskHandle);
-        printStr("Power shutdown task destructed.");
+        printf("Power shutdown task destructed.\n");
     }
     if (g_temperatureMonitoringTaskHandle != NULL){
         Task_destruct(g_temperatureMonitoringTaskHandle);
-        printStr("Temperature monitoring task destructed.");
+        printf("Temperature monitoring task destructed.\n");
     }
     if (g_task1Handle != NULL) {
         Task_destruct(g_task1Handle);
-        printStr("Task 1 destructed.");
+        printf("Task 1 destructed.\n");
     }
     if (g_task2Handle != NULL) {
         Task_destruct(g_task2Handle);
-        printStr("Task 2 destructed.");
+        printf("Task 2 destructed.\n");
     }
 }
 

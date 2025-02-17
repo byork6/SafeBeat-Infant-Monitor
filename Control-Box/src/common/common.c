@@ -1,19 +1,18 @@
 #include "common.h"
-#include "src/tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 
 // Declare global vars
-char g_fatfsPrefix[] = "fat";
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
+CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
+CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
 
 void createAllResources() {
     // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
-    // Task 1 - Priority = 1
+    // Task 1 --- Priority = 1
     g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
     // Task 2 --- Priority = 2
-    // TODO: Test microSD Driver with physical connection
-    // g_microSDWriteTaskHandle = microSDWrite_constructTask();
+    g_microSDWriteTaskHandle = microSDWrite_constructTask();
     
     // Task 3 --- Priority = 3
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
@@ -25,77 +24,45 @@ void createAllResources() {
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 
-void testGpio(uint32_t pin_config_index){
-    //////////////// TEST CODE  ONLY ////////////////
-    
-    // Input validation (Pins 5-30 only valid pins)
-    if (pin_config_index < 5 || pin_config_index > 30){
-        exit(1);
-    }
+void logData(int heartRate, int respiratoryRate, const char* timestamp) {
+    char logEntry[128] = {0};  // Temporary buffer for formatted string
 
-    // 1 second delay
-    uint32_t time = 1;
+    snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
+            heartRate, respiratoryRate, timestamp);
 
-    // Call driver init functions from SDK
-    GPIO_init();
-
-    // Initialize GPIO pins
-    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
-
-    while (1)
-    {
-        sleep(time);
-        GPIO_toggle(pin_config_index);
-    }
+    appendToSDAndDisplayQueue(logEntry);  // Append formatted string to circular queues
 }
 
-void printVar(const char *varName, void *var, char type) {
-    if (varName == NULL) {
-        varName = "foo"; // Default name if none is provided
+void appendToSDAndDisplayQueue(const char *data) {
+    int len = strlen(data);
+
+    // Append to sd queue
+    if (sdMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+        printf("SD queue full! Data loss possible.\n");
+    }
+    else{
+        for (int i = 0; i < len; i++) {
+            sdMemQueue.buffer[sdMemQueue.tail] = data[i];
+            sdMemQueue.tail = (sdMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
+        }
+        sdMemQueue.size += len;
+        sdMemQueue.buffer[sdMemQueue.tail] = '\0';
     }
 
-    switch (type) {
-        case 'd': // Integer
-            printf("Variable \"%s\" value: %d\n", varName, *(int *)var);
-            break;
-
-        case 'f': // Float
-            printf("Variable \"%s\" value: %.2f\n", varName, *(float *)var);
-            break;
-
-        case 'c': // Character
-            printf("Variable \"%s\" value: %c\n", varName, *(char *)var);
-            break;
-
-        case 's': // String
-            printf("Variable \"%s\" value: %s\n", varName, (char *)var);
-            break;
-
-        case 'u': // Unsigned int
-            printf("Variable \"%s\" value: %u\n", varName, *(unsigned int *)var);
-            break;
-
-        case 'U': // uint32_t
-            printf("Variable \"%s\" value: %u\n", varName, *(uint32_t *)var);
-            break;
-
-        case 'i': // int_fast16_t
-            printf("Variable \"%s\" value: %d\n", varName, *(int_fast16_t *)var);
-            break;
-        
-        case 'I': // int16_t
-            printf("Variable \"%s\" value: %d\n", varName, *(int16_t *)var);
-            break;
-
-        default:
-            printf("Unsupported type for variable \"%s\"\n", varName);
-    }
-    fflush(stdout); // Ensure output is flushed immediately
-}
-
-void printStr(const char *str) {
-    printf("%s", str ? str : "NULL");
-    fflush(stdout);
+    // Append to display queue
+    // TODO: ONCE FUNCTION IS WRITTEN TO EMPTY THIS QUEUE YOU CAN UNCOMMENT
+    // if (displayMemQueue.size + len >= CIRCULAR_QUEUE_SIZE) {
+    //     printf("Display queue full! Data loss possible.\n");
+    //     return;
+    // }
+    // else{
+    //     for (int i = 0; i < len; i++) {
+    //         displayMemQueue.buffer[displayMemQueue.tail] = data[i];
+    //         displayMemQueue.tail = (displayMemQueue.tail + 1) % CIRCULAR_QUEUE_SIZE;
+    //     }
+    //     displayMemQueue.size += len;
+    //     displayMemQueue.buffer[displayMemQueue.tail] = '\0';
+    // }
 }
 
 int32_t fatfs_getFatTime(void) {
@@ -116,4 +83,26 @@ int32_t fatfs_getFatTime(void) {
               ((uint32_t)(timeInfo->tm_sec / 2));          // Second / 2 (0-29)
 
     return fatTime;
+}
+
+void testGpio(uint32_t pin_config_index){   
+    // Input validation (Pins 5-30 only valid pins)
+    if (pin_config_index < 5 || pin_config_index > 30){
+        exit(1);
+    }
+
+    // 1 second delay
+    uint32_t time = 1;
+
+    // Call driver init functions from SDK
+    GPIO_init();
+
+    // Initialize GPIO pins
+    GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
+
+    while (1)
+    {
+        sleep(time);
+        GPIO_toggle(pin_config_index);
+    }
 }

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdint.h>
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs
@@ -56,9 +57,21 @@
 #define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
 #define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
 #define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
+// Circular queue --- Used to buffer recieved data before transmission to Display & SD card
+#define CIRCULAR_QUEUE_SIZE 1024
+
+// TYPE DEFINITIONS
+typedef struct {
+    char buffer[CIRCULAR_QUEUE_SIZE];
+    int head;  // Points to the start of valid data
+    int tail;  // Points to the next available space
+    int size;  // Current size of valid data
+} CircularQueue;
 
 // GLOBAL VARIABLES
 extern int g_taskSleepDuration;
+extern CircularQueue sdMemQueue;
+extern CircularQueue displayMemQueue;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
@@ -95,6 +108,30 @@ extern int g_taskSleepDuration;
 void createAllResources();
 
 /**
+ * @brief Logs formatted data to the circular queue.
+ *
+ * Constructs a formatted log entry containing heart rate, respiratory rate, and timestamp.
+ * The formatted string is then added to the circular queue for both the SD card and display screen.
+ *
+ * @param heartRate The heart rate value to log.
+ * @param respiratoryRate The respiratory rate value to log.
+ * @param timestamp A string containing the timestamp of the log entry.
+ */
+void logData(int heartRate, int respiratoryRate, const char* timestamp);
+
+/**
+ * @brief Appends data to the circular queue.
+ *
+ * Stores the provided data in the circular queue for later writing to the SD card.
+ * If the queue is full, a warning message is printed, and the data is not stored.
+ *
+ * @param data Pointer to the null-terminated string to be added to the queue.
+ */
+void appendToSDAndDisplayQueue(const char *data);
+
+int32_t fatfs_getFatTime(void);
+
+/**
 * @brief - Test code that toggles a GPIO pin every 1 second.
 *
 * The function sets a single GPIO pin to output and toggles it
@@ -106,45 +143,3 @@ void createAllResources();
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGpio(uint32_t pin_config_index);
-
-/**
-* @brief Print the value of a variable of various types to the CIO with an optional name.
-*
-* This function prints the value of a variable based on its type.
-* Supported types include integer, float, character, and string.
-* The function uses a `void*` pointer to handle different types dynamically.
-* Additionally, the variable name can be provided for descriptive output; if
-* no name is provided (`varName` is `NULL`), a default name ("Unnamed Variable") is used.
-*
-* @param varName - Optional name of the variable to print. Pass `NULL` to use the default name.
-* @param var - Pointer to the variable to be printed. The actual type of the variable
-*              must match the specified type parameter (`type`).
-* @param type - A character specifying the type of the variable:
-*               - 'd' for integers
-*               - 'f' for floats
-*               - 'c' for characters
-*               - 's' for strings
-*               - 'u' for unsigned int
-*               - 'U' for unisgned int 32
-*               - 'i' for fast int 16
-*
-* @note Ensure the correct type is passed to avoid undefined behavior.
-*       For example, if the type is 'd', ensure `var` points to an integer.
-* 
-* @example Example usage:
-*          int num = 42;
-*          printVar("num", &num, 'd');       // Prints: Variable "num" value: 42
-*          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
-*/
-void printVar(const char *varName, void *var, char type);
-
-
-/**
-* @brief Print a string to the CIO.
-*
-* @param str - Pointer to a string that will be printed to CIO.
-* 
-* @example Example usage:
-*          printStr("Printed String");
-*/
-void printStr(const char *str);
