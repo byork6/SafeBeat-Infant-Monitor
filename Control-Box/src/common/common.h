@@ -31,9 +31,10 @@
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
-#define TEST_GPIO_PRIORITY          3
-#define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
-#define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+// #define DISPLAY_PRIORITY            3
+#define TEST_GPIO_PRIORITY          4
+#define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
@@ -57,7 +58,7 @@
 #define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
 #define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
 #define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
-// Circular queue --- Used to buffer recieved data before transmission to Display & SD card
+// Circular queue --- Used to buffer recieved data before output to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
 
 // TYPE DEFINITIONS
