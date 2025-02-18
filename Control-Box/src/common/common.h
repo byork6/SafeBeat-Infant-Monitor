@@ -134,7 +134,7 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp);
  *
  * @param data Pointer to the null-terminated string to be added to the queue.
  */
-void appendToSDAndDisplayQueue(const char *data);
+void appendToSdAndDisplayQueue(const char *data);
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.

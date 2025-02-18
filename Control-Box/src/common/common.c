@@ -12,7 +12,7 @@ void createAllResources() {
     g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
     // Task 2 --- Priority = 2
-    g_microSDWriteTaskHandle = microSDWrite_constructTask();
+    g_microSdWriteTaskHandle = microSdWrite_constructTask();
     
     // Task 3 --- Priority = 3
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
@@ -30,10 +30,10 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
     snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
             heartRate, respiratoryRate, timestamp);
 
-    appendToSDAndDisplayQueue(logEntry);  // Append formatted string to circular queues
+    appendToSdAndDisplayQueue(logEntry);  // Append formatted string to circular queues
 }
 
-void appendToSDAndDisplayQueue(const char *data) {
+void appendToSdAndDisplayQueue(const char *data) {
     int len = strlen(data);
 
     // Append to sd queue
