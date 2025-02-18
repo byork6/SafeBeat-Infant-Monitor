@@ -42,22 +42,28 @@
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
-#define DRIVE_GPIO_HIGH (1)
-#define DRIVE_GPIO_LOW (0)
-#define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+#define DRIVE_GPIO_HIGH             1
+#define DRIVE_GPIO_LOW              0
+#define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+// Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
-#define SECONDS_TO_TICKS(seconds) ((seconds) * 100000)                      
-#define MS_TO_TICKS(milliseconds) ((milliseconds) * 100)
-#define US_TO_TICKS(microseconds) ((microseconds) * 10)
-// Default task sleep duration in ticks
-#define DEFAULT_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
+#define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
+#define MS_TO_TICKS(milliseconds)           ((milliseconds) * 100)
+#define US_TO_TICKS(microseconds)           ((microseconds) * 10)
+#define DEFAULT_TASK_SLEEP_DURATION         (MS_TO_TICKS(250))
 #define TEMP_MONITORING_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
 // Temperature monitoring
-#define HIGH_TEMP_THRESHOLD_CELSIUS 35
-#define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
-#define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
-#define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
+#define HIGH_TEMP_THRESHOLD_CELSIUS         35
+#define CRITICAL_TEMP_THRESHOLD_CELSIUS     40
+#define HIGH_TEMP_TASK_SLEEP_DURATION       (MS_TO_TICKS(1000))
+#define CRITICAL_TEMP_TASK_SLEEP_DURATION   (MS_TO_TICKS(5000))
+// Heart rate thresholds
+#define LOW_HEART_RATE_THRESHOLD_BPM    80
+#define HIGH_HEART_RATE_THRESHOLD_BPM   180
+// Respiratory rate thresholds
+#define LOW_RESPIRATORY_RATE_THRESHOLD_BRPM     20
+#define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
 // Circular queue --- Used to buffer recieved data before output to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
 
@@ -69,7 +75,7 @@ typedef struct {
     int size;  // Current size of valid data
 } CircularQueue;
 
-// GLOBAL VARIABLES
+// GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
 extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
@@ -129,8 +135,6 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp);
  * @param data Pointer to the null-terminated string to be added to the queue.
  */
 void appendToSDAndDisplayQueue(const char *data);
-
-int32_t fatfs_getFatTime(void);
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.

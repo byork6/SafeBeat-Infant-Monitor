@@ -1,7 +1,7 @@
 #include "common.h"
 
-// Declare global vars
-// Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
+// Define global variables
+// Global task sleep duration in ticks -- Global variable used to change all task delays dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
@@ -63,26 +63,6 @@ void appendToSDAndDisplayQueue(const char *data) {
     //     displayMemQueue.size += len;
     //     displayMemQueue.buffer[displayMemQueue.tail] = '\0';
     // }
-}
-
-int32_t fatfs_getFatTime(void) {
-    time_t rawTime;
-    struct tm *timeInfo;
-    uint32_t fatTime;
-
-    // Get the current time
-    time(&rawTime);
-    timeInfo = localtime(&rawTime);
-
-    // Convert to FAT time format
-    fatTime = ((uint32_t)(timeInfo->tm_year - 80) << 25) | // Year since 1980
-              ((uint32_t)(timeInfo->tm_mon + 1) << 21)    | // Month (1-12)
-              ((uint32_t)timeInfo->tm_mday << 16)        | // Day (1-31)
-              ((uint32_t)timeInfo->tm_hour << 11)        | // Hour (0-23)
-              ((uint32_t)timeInfo->tm_min << 5)          | // Minute (0-59)
-              ((uint32_t)(timeInfo->tm_sec / 2));          // Second / 2 (0-29)
-
-    return fatTime;
 }
 
 void testGpio(uint32_t pin_config_index){   
