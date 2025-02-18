@@ -31,7 +31,7 @@
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
-// #define DISPLAY_PRIORITY            3
+#define DISPLAY_DRIVER_PRIORITY     3
 #define TEST_GPIO_PRIORITY          4
 #define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
@@ -39,6 +39,7 @@
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
 #define MICROSD_WRITE_STACK_SIZE    1024
+#define DISPLAY_DRIVER_STACK_SIZE   1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
