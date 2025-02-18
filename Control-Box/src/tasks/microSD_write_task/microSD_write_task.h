@@ -11,8 +11,8 @@
 #define MICROSD_WRITE_TASK_STACK_SIZE   (MICROSD_WRITE_STACK_SIZE)
 #define MICROSD_WRITE_TASK_PRIORITY     (MICROSD_WRITE_PRIORITY)
 Task_Struct g_MicroSDWriteTaskStruct;
-Task_Handle g_microSDWriteTaskHandle;
-uint8_t g_microSDWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
+Task_Handle g_microSdWriteTaskHandle;
+uint8_t g_microSdWriteTaskStack[MICROSD_WRITE_TASK_STACK_SIZE];
 
 // Define microSD drive number and buffer size
 #define SD_DRIVE_NUM 0
@@ -41,7 +41,7 @@ typedef enum {
  *
  * @return None
  */
-Task_Handle microSDWrite_constructTask();
+Task_Handle microSdWrite_constructTask();
 
 /**
  * @brief Executes the microSD write task by processing and writing data to the SD card.
@@ -52,7 +52,7 @@ Task_Handle microSDWrite_constructTask();
  * Delays are introduced using `Task_sleep` to manage timing between operations.
  *
  * @param arg0 Pointer to the mock memory queue containing the data to be written
- *             (passed from TaskParams struct inside microSDWrite_constructTask).
+ *             (passed from TaskParams struct inside microSdWrite_constructTask).
  * @param arg1 Unused argument (can be set to 0).
  *
  * @note Example task behavior:
@@ -62,7 +62,7 @@ Task_Handle microSDWrite_constructTask();
  *
  * @return None
  */
-void microSDWrite_executeTask(UArg arg0, UArg arg1);
+void microSdWrite_executeTask(UArg arg0, UArg arg1);
 
 
 /**
@@ -116,3 +116,8 @@ void writeQueueToSD(FILE *file);
  * Also resets the associated file and SD handle pointers.
  */
 void cleanupSDCard();
+
+/**
+ * @brief Placeholder to prevent warning for undefined symbol
+ */
+DWORD fatfs_getFatTime(void);
