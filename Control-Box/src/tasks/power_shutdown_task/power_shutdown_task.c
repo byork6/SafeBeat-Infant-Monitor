@@ -72,13 +72,17 @@ void destructAllResources() {
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printf("Temperature monitoring task destructed.\n");
     }
-    if (g_task1Handle != NULL) {
+    if (g_task1Handle != NULL){
         Task_destruct(g_task1Handle);
         printf("Task 1 destructed.\n");
     }
-    if (g_task2Handle != NULL) {
+    if (g_task2Handle != NULL){
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
+    }
+    if (g_displayDriverTaskHandle != NULL){
+        Task_destruct(g_displayDriverTaskHandle);
+        printf("Display driver task destructed.\n");
     }
 }
 

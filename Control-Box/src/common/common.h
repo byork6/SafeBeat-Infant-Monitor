@@ -87,6 +87,7 @@ extern CircularQueue displayMemQueue;
 #include "../tasks/test_gpio_task/test_gpio_task.h"
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
+#include "../tasks/display_driver_task/display_driver.h"
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////

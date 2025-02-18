@@ -34,7 +34,6 @@ void microSdWrite_executeTask(UArg arg0, UArg arg1){
     int i = 0;
 
     printf("Entering microSdWrite_executeTask()...\n");
-    printf("MicroSdWrite Initialized.\n");
     while(1){
         i++;
         printf("MicroSdWrite Count: %d\n", i);
@@ -47,7 +46,9 @@ void microSdWrite_executeTask(UArg arg0, UArg arg1){
 
         // Check for output file --- will show up or be created as long as microSD card is inserted.
         if (openOutputFile() == OUTPUT_FILE_NOT_OPEN){
-            Task_sleep(g_taskSleepDuration);
+            // If output file does not open we should use higher delay on this task so it is not wasting resources.
+            // Delay will be 5 seconds if the card is not detected so repetition of the task is slower when no card is inserted.
+            Task_sleep(MS_TO_TICKS(5000));
             continue;
         }
 
