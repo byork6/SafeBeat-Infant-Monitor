@@ -31,9 +31,10 @@
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
-#define TEST_GPIO_PRIORITY          3
-#define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
-#define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+// #define DISPLAY_PRIORITY            3
+#define TEST_GPIO_PRIORITY          4
+#define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
@@ -41,23 +42,29 @@
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
-#define DRIVE_GPIO_HIGH (1)
-#define DRIVE_GPIO_LOW (0)
-#define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+#define DRIVE_GPIO_HIGH             1
+#define DRIVE_GPIO_LOW              0
+#define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+// Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
-#define SECONDS_TO_TICKS(seconds) ((seconds) * 100000)                      
-#define MS_TO_TICKS(milliseconds) ((milliseconds) * 100)
-#define US_TO_TICKS(microseconds) ((microseconds) * 10)
-// Default task sleep duration in ticks
-#define DEFAULT_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
+#define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
+#define MS_TO_TICKS(milliseconds)           ((milliseconds) * 100)
+#define US_TO_TICKS(microseconds)           ((microseconds) * 10)
+#define DEFAULT_TASK_SLEEP_DURATION         (MS_TO_TICKS(250))
 #define TEMP_MONITORING_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
 // Temperature monitoring
-#define HIGH_TEMP_THRESHOLD_CELSIUS 35
-#define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
-#define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
-#define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
-// Circular queue --- Used to buffer recieved data before transmission to Display & SD card
+#define HIGH_TEMP_THRESHOLD_CELSIUS         35
+#define CRITICAL_TEMP_THRESHOLD_CELSIUS     40
+#define HIGH_TEMP_TASK_SLEEP_DURATION       (MS_TO_TICKS(1000))
+#define CRITICAL_TEMP_TASK_SLEEP_DURATION   (MS_TO_TICKS(5000))
+// Heart rate thresholds
+#define LOW_HEART_RATE_THRESHOLD_BPM    80
+#define HIGH_HEART_RATE_THRESHOLD_BPM   180
+// Respiratory rate thresholds
+#define LOW_RESPIRATORY_RATE_THRESHOLD_BRPM     20
+#define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
+// Circular queue --- Used to buffer recieved data before output to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
 
 // TYPE DEFINITIONS
@@ -68,7 +75,7 @@ typedef struct {
     int size;  // Current size of valid data
 } CircularQueue;
 
-// GLOBAL VARIABLES
+// GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
 extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
@@ -127,9 +134,7 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp);
  *
  * @param data Pointer to the null-terminated string to be added to the queue.
  */
-void appendToSDAndDisplayQueue(const char *data);
-
-int32_t fatfs_getFatTime(void);
+void appendToSdAndDisplayQueue(const char *data);
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.

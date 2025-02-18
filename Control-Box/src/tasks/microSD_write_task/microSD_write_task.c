@@ -6,14 +6,14 @@ char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
 FILE *g_outputFileStatus;
 
-Task_Handle microSDWrite_constructTask(){
+Task_Handle microSdWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
     // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
     // Stack array
-    TaskParams.stack = g_microSDWriteTaskStack;
+    TaskParams.stack = g_microSdWriteTaskStack;
     // Stack array size
     TaskParams.stackSize = MICROSD_WRITE_TASK_STACK_SIZE;
     // Stack task TI-RTOS priority
@@ -24,20 +24,20 @@ Task_Handle microSDWrite_constructTask(){
     TaskParams.arg1 = 0;
 
     // Construct the TI-RTOS task using the API
-    Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
+    Task_construct(&g_MicroSDWriteTaskStruct, microSdWrite_executeTask, &TaskParams, NULL);
     return (Task_Handle)&g_MicroSDWriteTaskStruct;
 }
 
-void microSDWrite_executeTask(UArg arg0, UArg arg1){
+void microSdWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg0;
     (void)arg1;
     int i = 0;
 
-    printf("Entering microSDWrite_executeTask()...\n");
-    printf("MicroSDWrite Initialized.\n");
+    printf("Entering microSdWrite_executeTask()...\n");
+    printf("MicroSdWrite Initialized.\n");
     while(1){
         i++;
-        printf("MicroSDWrite Count: %d\n", i);
+        printf("MicroSdWrite Count: %d\n", i);
         
         // Check for mounted header and proper FatFS init
         if (initSDCard() == SD_INIT_FAILED){
@@ -152,4 +152,8 @@ void cleanupSDCard() {
         g_sdfatfsHandle = NULL;          // Reset pointer
         printf("SD card unmounted for shutdown.\n");
     }
+}
+
+DWORD fatfs_getFatTime(void) {
+    return ((DWORD)(2025 - 1980) << 25) | ((DWORD)2 << 21) | ((DWORD)18 << 16);
 }
