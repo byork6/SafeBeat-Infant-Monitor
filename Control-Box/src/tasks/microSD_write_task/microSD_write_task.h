@@ -116,3 +116,8 @@ void writeQueueToSD(FILE *file);
  * Also resets the associated file and SD handle pointers.
  */
 void cleanupSDCard();
+
+/**
+ * @brief Placeholder to prevent warning for undefined symbol
+ */
+DWORD fatfs_getFatTime(void);

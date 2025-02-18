@@ -153,3 +153,7 @@ void cleanupSDCard() {
         printf("SD card unmounted for shutdown.\n");
     }
 }
+
+DWORD fatfs_getFatTime(void) {
+    return ((DWORD)(2025 - 1980) << 25) | ((DWORD)2 << 21) | ((DWORD)18 << 16);
+}
