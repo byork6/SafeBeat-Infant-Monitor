@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdint.h>
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs
@@ -30,9 +31,10 @@
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
-#define TEST_GPIO_PRIORITY          3
-#define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
-#define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+// #define DISPLAY_PRIORITY            3
+#define TEST_GPIO_PRIORITY          4
+#define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
@@ -40,25 +42,43 @@
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
-#define DRIVE_GPIO_HIGH (1)
-#define DRIVE_GPIO_LOW (0)
-#define GPIO_SET_OUT_AND_DRIVE_LOW (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
+#define DRIVE_GPIO_HIGH             1
+#define DRIVE_GPIO_LOW              0
+#define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+// Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
-#define SECONDS_TO_TICKS(seconds) ((seconds) * 100000)                      
-#define MS_TO_TICKS(milliseconds) ((milliseconds) * 100)
-#define US_TO_TICKS(microseconds) ((microseconds) * 10)
-// Default task sleep duration in ticks
-#define DEFAULT_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
+#define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
+#define MS_TO_TICKS(milliseconds)           ((milliseconds) * 100)
+#define US_TO_TICKS(microseconds)           ((microseconds) * 10)
+#define DEFAULT_TASK_SLEEP_DURATION         (MS_TO_TICKS(250))
 #define TEMP_MONITORING_TASK_SLEEP_DURATION (MS_TO_TICKS(250))
 // Temperature monitoring
-#define HIGH_TEMP_THRESHOLD_CELSIUS 35
-#define CRITICAL_TEMP_THRESHOLD_CELSIUS 40
-#define HIGH_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(1000))
-#define CRITICAL_TEMP_TASK_SLEEP_DURATION (MS_TO_TICKS(5000))
+#define HIGH_TEMP_THRESHOLD_CELSIUS         35
+#define CRITICAL_TEMP_THRESHOLD_CELSIUS     40
+#define HIGH_TEMP_TASK_SLEEP_DURATION       (MS_TO_TICKS(1000))
+#define CRITICAL_TEMP_TASK_SLEEP_DURATION   (MS_TO_TICKS(5000))
+// Heart rate thresholds
+#define LOW_HEART_RATE_THRESHOLD_BPM    80
+#define HIGH_HEART_RATE_THRESHOLD_BPM   180
+// Respiratory rate thresholds
+#define LOW_RESPIRATORY_RATE_THRESHOLD_BRPM     20
+#define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
+// Circular queue --- Used to buffer recieved data before output to Display & SD card
+#define CIRCULAR_QUEUE_SIZE 1024
 
-// GLOBAL VARIABLES
+// TYPE DEFINITIONS
+typedef struct {
+    char buffer[CIRCULAR_QUEUE_SIZE];
+    int head;  // Points to the start of valid data
+    int tail;  // Points to the next available space
+    int size;  // Current size of valid data
+} CircularQueue;
+
+// GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
 extern int g_taskSleepDuration;
+extern CircularQueue sdMemQueue;
+extern CircularQueue displayMemQueue;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
@@ -95,6 +115,28 @@ extern int g_taskSleepDuration;
 void createAllResources();
 
 /**
+ * @brief Logs formatted data to the circular queue.
+ *
+ * Constructs a formatted log entry containing heart rate, respiratory rate, and timestamp.
+ * The formatted string is then added to the circular queue for both the SD card and display screen.
+ *
+ * @param heartRate The heart rate value to log.
+ * @param respiratoryRate The respiratory rate value to log.
+ * @param timestamp A string containing the timestamp of the log entry.
+ */
+void logData(int heartRate, int respiratoryRate, const char* timestamp);
+
+/**
+ * @brief Appends data to the circular queue.
+ *
+ * Stores the provided data in the circular queue for later writing to the SD card.
+ * If the queue is full, a warning message is printed, and the data is not stored.
+ *
+ * @param data Pointer to the null-terminated string to be added to the queue.
+ */
+void appendToSdAndDisplayQueue(const char *data);
+
+/**
 * @brief - Test code that toggles a GPIO pin every 1 second.
 *
 * The function sets a single GPIO pin to output and toggles it
@@ -106,45 +148,3 @@ void createAllResources();
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGpio(uint32_t pin_config_index);
-
-/**
-* @brief Print the value of a variable of various types to the CIO with an optional name.
-*
-* This function prints the value of a variable based on its type.
-* Supported types include integer, float, character, and string.
-* The function uses a `void*` pointer to handle different types dynamically.
-* Additionally, the variable name can be provided for descriptive output; if
-* no name is provided (`varName` is `NULL`), a default name ("Unnamed Variable") is used.
-*
-* @param varName - Optional name of the variable to print. Pass `NULL` to use the default name.
-* @param var - Pointer to the variable to be printed. The actual type of the variable
-*              must match the specified type parameter (`type`).
-* @param type - A character specifying the type of the variable:
-*               - 'd' for integers
-*               - 'f' for floats
-*               - 'c' for characters
-*               - 's' for strings
-*               - 'u' for unsigned int
-*               - 'U' for unisgned int 32
-*               - 'i' for fast int 16
-*
-* @note Ensure the correct type is passed to avoid undefined behavior.
-*       For example, if the type is 'd', ensure `var` points to an integer.
-* 
-* @example Example usage:
-*          int num = 42;
-*          printVar("num", &num, 'd');       // Prints: Variable "num" value: 42
-*          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
-*/
-void printVar(const char *varName, void *var, char type);
-
-
-/**
-* @brief Print a string to the CIO.
-*
-* @param str - Pointer to a string that will be printed to CIO.
-* 
-* @example Example usage:
-*          printStr("Printed String");
-*/
-void printStr(const char *str);

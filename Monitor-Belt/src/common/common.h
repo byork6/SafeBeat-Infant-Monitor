@@ -11,6 +11,7 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
+#include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 
 // TI-RTOS7 BIOS execution
@@ -28,12 +29,14 @@
 // This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
+#define MICROSD_WRITE_PRIORITY      2
 #define TEST_GPIO_PRIORITY          3
 #define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
+#define MICROSD_WRITE_STACK_SIZE    1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
@@ -102,45 +105,3 @@ void createAllResources();
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGpio(uint32_t pin_config_index);
-
-/**
-* @brief Print the value of a variable of various types to the CIO with an optional name.
-*
-* This function prints the value of a variable based on its type.
-* Supported types include integer, float, character, and string.
-* The function uses a `void*` pointer to handle different types dynamically.
-* Additionally, the variable name can be provided for descriptive output; if
-* no name is provided (`varName` is `NULL`), a default name ("Unnamed Variable") is used.
-*
-* @param varName - Optional name of the variable to print. Pass `NULL` to use the default name.
-* @param var - Pointer to the variable to be printed. The actual type of the variable
-*              must match the specified type parameter (`type`).
-* @param type - A character specifying the type of the variable:
-*               - 'd' for integers
-*               - 'f' for floats
-*               - 'c' for characters
-*               - 's' for strings
-*               - 'u' for unsigned int
-*               - 'U' for unisgned int 32
-*               - 'i' for fast int 16
-*
-* @note Ensure the correct type is passed to avoid undefined behavior.
-*       For example, if the type is 'd', ensure `var` points to an integer.
-* 
-* @example Example usage:
-*          int num = 42;
-*          printVar("num", &num, 'd');       // Prints: Variable "num" value: 42
-*          printVar(NULL, &num, 'd');        // Prints: Variable "foo" value: 42
-*/
-void printVar(const char *varName, void *var, char type);
-
-
-/**
-* @brief Print a string to the CIO.
-*
-* @param str - Pointer to a string that will be printed to CIO.
-* 
-* @example Example usage:
-*          printStr("Printed String");
-*/
-void printStr(const char *str);

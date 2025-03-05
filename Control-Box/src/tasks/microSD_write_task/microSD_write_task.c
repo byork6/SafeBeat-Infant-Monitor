@@ -1,176 +1,159 @@
 #include "../../common/common.h"
 
-/////// TEST CODE ///////
-const char outputFile[] = "C:\\DevProjects\\CCSTheia\\SafeBeat-Infant-Monitor\\Control-Box\\src\\tasks\\microSD_write_task\\microSD_write_taskoutput.txt";                             
+// Global variables
+const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
+char g_fatfsPrefix[] = "fat";
+SDFatFS_Handle g_sdfatfsHandle;
+FILE *g_outputFileStatus;
 
-// Mock memory section containing data
-const char *mock_memory_queue[] = {
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    "Heart Rate: xxx, Respiratory Rate: xx, Timestamp: xx:xx xx/xx/xx",
-    NULL
-};
-/////////////////////////
-
-static unsigned char sd_buff[SD_BUFF_SIZE] __attribute__((aligned(4)));
-const char outputfile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
-
-void microSDWrite_constructTask(){
+Task_Handle microSdWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
 
     // Initialize TaskParams and set paramerters.
     Task_Params_init(&TaskParams);
     // Stack array
-    TaskParams.stack = g_microSDWriteTaskStack;
+    TaskParams.stack = g_microSdWriteTaskStack;
     // Stack array size
     TaskParams.stackSize = MICROSD_WRITE_TASK_STACK_SIZE;
     // Stack task TI-RTOS priority
     TaskParams.priority = MICROSD_WRITE_TASK_PRIORITY;
     // arg0 and ar1 passed to exectution function for the created task. Use 0 if arg is unused.
     // you can pass variables or pointers to structs for larger data objects.
-    TaskParams.arg0 = (UArg)mock_memory_queue;
+    TaskParams.arg0 = 0;
     TaskParams.arg1 = 0;
 
     // Construct the TI-RTOS task using the API
-    Task_construct(&g_MicroSDWriteTaskStruct, microSDWrite_executeTask, &TaskParams, NULL);
+    Task_construct(&g_MicroSDWriteTaskStruct, microSdWrite_executeTask, &TaskParams, NULL);
+    return (Task_Handle)&g_MicroSDWriteTaskStruct;
 }
 
-void microSDWrite_executeTask(UArg arg0, UArg arg1){
+void microSdWrite_executeTask(UArg arg0, UArg arg1){
+    (void)arg0;
     (void)arg1;
-    printStr("Entering microSDWrite_executeTask()");
     int i = 0;
 
-    ///////// Attempt 2 ////////
-    printStr("microSDWrite Initialized...");
+    printf("Entering microSdWrite_executeTask()...\n");
+    printf("MicroSdWrite Initialized.\n");
     while(1){
         i++;
-        printVar("microSDWrite Count: ", &i, 'd');
-        handleFileOperations(arg0);
-        // 500,000 Ticks = 5 s
+        printf("MicroSdWrite Count: %d\n", i);
+        
+        // Check for mounted header and proper FatFS init
+        if (initSDCard() == SD_INIT_FAILED){
+            Task_sleep(g_taskSleepDuration);
+            continue;
+        }
+
+        // Check for output file --- will show up or be created as long as microSD card is inserted.
+        if (openOutputFile() == OUTPUT_FILE_NOT_OPEN){
+            Task_sleep(g_taskSleepDuration);
+            continue;
+        }
+
+        writeToOutputFile();
         Task_sleep(g_taskSleepDuration);
     }
-    ////////////////////////////
-
-    ////////// Attempt 1 /////////
-    // printStr("microSDWrite Initialized...");
-    // while (1){
-    //     /// Block used for testing ///
-    //     printVar("microSDWrite Count: ", &i, 'd');
-    //     if (i == 0){
-    //         Task_sleep(g_taskSleepDuration);
-    //     }
-    //     i++;
-    //     /////////////////////////////
-
-    //     /////// PROJECT CODE ///////
-    //     FILE *file = fopen(outputFile, "a");
-    //     if(!file){
-    //         if (!createOutputFile()) {
-    //             Task_sleep(g_taskSleepDuration);
-    //             continue;
-    //         }
-    //         file = fopen(outputFile, "a");
-    //         if (!file) {
-    //             printStr("Error: Failed to open output file after creation.");
-    //             Task_sleep(g_taskSleepDuration);
-    //             continue;
-    //         }
-    //     }
-        
-    //     exportQueueToOutputFile(file, arg0);
-
-    //     // Task sleeps for limited time until data re-populates the queue
-    //     Task_sleep(g_taskSleepDuration);
-    // }
-    ///////////////////////////////////
 }
 
-bool createOutputFile(){
-    printStr("Output file does not exist. Creating it...");
+SdInitStatus initSDCard(){
+    add_device(g_fatfsPrefix,
+               _MSA,
+               ffcio_open,
+               ffcio_close,
+               ffcio_read,
+               ffcio_write,
+               ffcio_lseek,
+               ffcio_unlink,
+               ffcio_rename);
 
-    FILE *file = fopen(outputFile, "w");
-    if (!file) {
-        printStr("Error: Failed to create output file.");
-        return false;
+    // Reset SPI chip select for microSD card
+    GPIO_write(11, 0);
+
+    // Connect header and create FatFS instance
+    g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
+    if (g_sdfatfsHandle == NULL) {
+        printf("microSD header not connected.\n");
+        return SD_INIT_FAILED;
     }
-    fclose(file);
-    printStr("Output file created successfully.");
-    return true;
+    printf("Header ready for microSD card.\n");
+    return SD_INIT_SUCCESS;
 }
 
-void exportQueueToOutputFile(FILE *file, UArg queue_data){
-    // const char ** is a ptr to an array of string ptrs
-    const char **queue = (const char **)queue_data;
-    int i = 0;
-    char buffer[1024];
-    int buffer_pos = 0;
+OutputFileStatus openOutputFile(){
+    g_outputFileStatus = fopen(g_outputFile, "a");
+    if (!g_outputFileStatus) {
+        printf("Error opening OUTPUT.TXT\n");
+        SDFatFS_close(g_sdfatfsHandle);
+        return OUTPUT_FILE_NOT_OPEN;
+    }
+    printf("OUTPUT.TXT ready for data.\n");
+    return OUTPUT_FILE_OPEN;
+}
 
-    if (!file) {
-        printStr("Error: Failed to open output file in append mode.");
+void writeToOutputFile(){
+        int internalBuffHandle;
+
+        // Disable internal buffering
+        internalBuffHandle = setvbuf(g_outputFileStatus, NULL, _IONBF, 0);
+        if (internalBuffHandle != 0){
+            printf("Call to setvbuf failed!\n");
+        }
+
+        // TESTING: Append line of data to circular queue ///
+        logData(120, 20, "12:30:00 02/10/2025");
+        logData(121, 20, "12:30:01 02/10/2025");
+        logData(122, 20, "12:30:02 02/10/2025");
+        logData(123, 20, "12:30:03 02/10/2025");
+        ////////////////////////////////////////////////////
+
+        // Write contents from circular queue to the output file
+        writeQueueToSD(g_outputFileStatus);
+
+        // Close and unmount SD Card
+        fclose(g_outputFileStatus);
+        SDFatFS_close(g_sdfatfsHandle);
+        printf("Data successfully written to output file.\n");
+    }
+
+void writeQueueToSD(FILE *file) {
+    if (sdMemQueue.size == 0) {
+        printf("Queue empty. Nothing to write.\n");
         return;
     }
 
-    while (queue[i] != NULL) {
-        int len = snprintf(&buffer[buffer_pos], sizeof(buffer) - buffer_pos, "%s\n", queue[i]);
-        if (len < 0 || buffer_pos + len >= sizeof(buffer)) {
-            // Flush the buffer if full
-            fwrite(buffer, 1, buffer_pos, file);
-            buffer_pos = 0;
-            // Retry the current string
-            continue;
-        }
-        buffer_pos += len;
-        queue[i] = NULL;
-        i++;
-    }
-
-    // Write remaining data in the buffer
-    if (buffer_pos > 0) {
-        fwrite(buffer, 1, buffer_pos, file);
-    }
-
+    // Write data from head to tail
+    int bytes_written = fwrite(&sdMemQueue.buffer[sdMemQueue.head], 1, sdMemQueue.size, file);
     fflush(file);
-    fclose(file);
-    printStr("All data from mock_memory_queue written to output file.");
+    rewind(file);
+
+
+    if (bytes_written > 0) {
+        // Remove written data from queue
+        sdMemQueue.head = (sdMemQueue.head + bytes_written) % CIRCULAR_QUEUE_SIZE;
+        sdMemQueue.size -= bytes_written;
+    }
+
+    sdMemQueue.buffer[sdMemQueue.head] = '\0';
+
+    printf("Bytes written: %d B\n", bytes_written);
 }
 
-/* Handle file copy and operations */
-void handleFileOperations(UArg queue_data) {
-    SDFatFS_Handle sdfatfsHandle;
-    FILE *dst;
-
-    /* Mount and register the SD Card */
-    sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
-    if (!sdfatfsHandle) {
-        printStr("microSD card not detected.");
-        Task_yield();
+void cleanupSDCard() {
+    if (g_outputFileStatus != NULL) {
+        fflush(g_outputFileStatus);  // Ensure data is written
+        fclose(g_outputFileStatus);  // Close the file
+        g_outputFileStatus = NULL;   // Reset pointer
+        printf("OUTPUT.TXT file closed for shutdown.\n");
     }
 
-    /* Open output file */
-    dst = fopen(outputfile, "a");
-    if (!dst) {
-        printStr("Error opening output file");
-        SDFatFS_close(sdfatfsHandle);
-        Task_yield();
+    if (g_sdfatfsHandle != NULL) {
+        SDFatFS_close(g_sdfatfsHandle);  // Unmount SD card
+        g_sdfatfsHandle = NULL;          // Reset pointer
+        printf("SD card unmounted for shutdown.\n");
     }
+}
 
-    // Write contents from buffer to the output file
-    exportQueueToOutputFile(dst, (UArg)queue_data);
-
-    /* Unmount SD Card */
-    SDFatFS_close(sdfatfsHandle);
-
-    printStr("Data successfully written to output file.");
-
-    return;
+DWORD fatfs_getFatTime(void) {
+    return ((DWORD)(2025 - 1980) << 25) | ((DWORD)2 << 21) | ((DWORD)18 << 16);
 }
