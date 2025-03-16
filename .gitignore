@@ -1,4 +1,34 @@
-# Ignore folders
+### Ignored folders ###
+# Build folders
 Debug/
+Release/
+Generated Source/
+
+# Environment folders
 .settings/
 .clangd/
+.vscode/
+
+### Ignored files ###
+# Compiled binary outputs
+*.out
+*.hex
+*.elf
+*.map
+
+# Dependency and build logs
+*.d
+*.o
+*.obj
+*.a
+*.lib
+*.lst
+*.dep
+
+# Miscellaneous
+*.log
+*.bak
+*.tmp
+*.swp
+*.swo
+*.DS_Store
