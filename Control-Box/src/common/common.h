@@ -47,6 +47,8 @@
 #define DRIVE_GPIO_LOW              0
 #define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+#define SD_SPI_CSN_PIN              11
+#define DISPLAY_SPI_CSN_PIN         12
 // Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
 #define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
