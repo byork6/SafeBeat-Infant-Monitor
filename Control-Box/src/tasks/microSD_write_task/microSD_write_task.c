@@ -72,7 +72,7 @@ SdInitStatus initSDCard(){
     GPIO_write(11, 0);
 
     // Connect header and create FatFS instance
-    g_sdfatfsHandle = SDFatFS_open(CONFIG_SD_0, SD_DRIVE_NUM);
+    g_sdfatfsHandle = SDFatFS_open(CONFIG_SD, SD_DRIVE_NUM);
     if (g_sdfatfsHandle == NULL) {
         printf("microSD header not connected.\n");
         return SD_INIT_FAILED;
