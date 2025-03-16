@@ -68,8 +68,9 @@ SdInitStatus initSDCard(){
                ffcio_unlink,
                ffcio_rename);
 
-    // Reset SPI chip select for microSD card
-    GPIO_write(11, 0);
+    // Reset SD chip select and set Display chip select for microSD card --- Chip select is active low
+    GPIO_write(SD_SPI_CSN_PIN, 0);
+    GPIO_write(DISPLAY_SPI_CSN_PIN, 1);
 
     // Connect header and create FatFS instance
     g_sdfatfsHandle = SDFatFS_open(CONFIG_SD, SD_DRIVE_NUM);
