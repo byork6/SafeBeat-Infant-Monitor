@@ -11,6 +11,15 @@
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
+const GPIO12      = GPIO.addInstance();
+const GPIO13      = GPIO.addInstance();
+const GPIO15      = GPIO.addInstance();
+const GPIO16      = GPIO.addInstance();
+const GPIO17      = GPIO.addInstance();
+const GPIO18      = GPIO.addInstance();
+const GPIO19      = GPIO.addInstance();
+const PWM         = scripting.addModule("/ti/drivers/PWM", {}, false);
+const PWM1        = PWM.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
 const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
@@ -39,6 +48,40 @@ GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
 
+GPIO12.mode            = "Output";
+GPIO12.$name           = "CONFIG_DISPLAY_SPI_PD";
+GPIO12.gpioPin.$assign = "boosterpack.39";
+scripting.suppress("Connected to hardware,@@@.+?@@@ is connected to LaunchPad LED Red on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", GPIO12, "gpioPin");
+
+GPIO13.$name            = "CONFIG_DISPLAY_SPI_INT";
+GPIO13.pull             = "Pull Down";
+GPIO13.interruptTrigger = "Falling Edge";
+
+GPIO15.$name           = "CONFIG_UP_ARROW";
+GPIO15.mode            = "Output";
+GPIO15.gpioPin.$assign = "boosterpack.36";
+
+GPIO16.mode            = "Output";
+GPIO16.$name           = "CONFIG_DOWN_ARROW";
+GPIO16.gpioPin.$assign = "boosterpack.19";
+
+GPIO17.mode            = "Output";
+GPIO17.$name           = "CONFIG_LEFT_ARROW";
+GPIO17.gpioPin.$assign = "boosterpack.38";
+scripting.suppress("Connected to hardware,@@@.+?@@@ is connected to MX25R8035F SPI Flash Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", GPIO17, "gpioPin");
+
+GPIO18.mode            = "Output";
+GPIO18.$name           = "CONFIG_RIGHT_ARROW";
+GPIO18.gpioPin.$assign = "boosterpack.9";
+
+GPIO19.mode            = "Output";
+GPIO19.$name           = "CONFIG_SEL_BTN";
+GPIO19.gpioPin.$assign = "boosterpack.5";
+
+PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
+PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
+PWM1.timerObject.timer.pwmPin.$assign = "boosterpack.31";
+
 Power.policyFunction = "PowerCC26XX_doWFI";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
@@ -48,12 +91,13 @@ SD1.$name                         = "CONFIG_SD_0";
 SD1.useFatFS                      = true;
 SD1.sdCSPin.$assignAllowConflicts = "boosterpack.18";
 SD1.chipSelect.$name              = "CONFIG_GPIO_SD_CS";
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@, @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SD1, "sdCSPin");
+scripting.suppress("Connected to hardware,@@@.+?@@@ is connected to LaunchPad SPI Bus Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SD1, "sdCSPin");
 
 SPI1.$name                                  = "CONFIG_SPI_0";
-SPI1.mode                                   = "Four Pin CS Active Low";
 SD1.spiInstance                             = SPI1;
+SPI1.mode                                   = "Four Pin CS Active Low";
 SPI1.$hardware                              = system.deviceData.board.components.LP_SPI;
+SPI1.spi.$assign                            = "SSI0";
 SPI1.spi.sclkPin.$assignAllowConflicts      = "boosterpack.7";
 SPI1.spi.pociPin.$assignAllowConflicts      = "boosterpack.14";
 SPI1.spi.picoPin.$assignAllowConflicts      = "boosterpack.15";
@@ -63,23 +107,20 @@ SPI1.spi.dmaTxChannel.$assignAllowConflicts = "DMA_CH4";
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "sclkPin");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "pociPin");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "picoPin");
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@, @@@.+?@@@", SPI1.spi, "csnPin");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "dmaTxChannel");
 
-SPI2.mode                                   = "Four Pin CS Active Low";
-SPI2.$hardware                              = system.deviceData.board.components.LP_SPI;
 SPI2.$name                                  = "CONFIG_DISPLAY_SPI";
+SPI2.mode                                   = "Four Pin CS Active Low";
 SPI2.spi.sclkPin.$assignAllowConflicts      = "boosterpack.7";
 SPI2.spi.pociPin.$assignAllowConflicts      = "boosterpack.14";
 SPI2.spi.picoPin.$assignAllowConflicts      = "boosterpack.15";
-SPI2.spi.csnPin.$assignAllowConflicts       = "boosterpack.18";
 SPI2.spi.dmaRxChannel.$assignAllowConflicts = "DMA_CH3";
 SPI2.spi.dmaTxChannel.$assignAllowConflicts = "DMA_CH4";
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "sclkPin");
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "pociPin");
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "picoPin");
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@, @@@.+?@@@", SPI2.spi, "csnPin");
+SPI2.spi.csnPin.$assign                     = "boosterpack.10";
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SPI2.spi, "sclkPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SPI2.spi, "pociPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SPI2.spi, "picoPin");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
@@ -121,8 +162,10 @@ System.supportModule   = "SysCallback";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-GPIO1.gpioPin.$suggestSolution = "boosterpack.40";
-GPIO2.gpioPin.$suggestSolution = "boosterpack.13";
-SPI1.spi.$suggestSolution      = "SSI0";
-SPI2.spi.$suggestSolution      = "SSI0";
-Timer.rtc.$suggestSolution     = "RTC0";
+GPIO1.gpioPin.$suggestSolution          = "boosterpack.40";
+GPIO2.gpioPin.$suggestSolution          = "boosterpack.13";
+GPIO13.gpioPin.$suggestSolution         = "boosterpack.32";
+PWM1.timerObject.timer.$suggestSolution = "GPTM0";
+SPI1.spi.csnPin.$suggestSolution        = "<error>";
+SPI2.spi.$suggestSolution               = "SSI0";
+Timer.rtc.$suggestSolution              = "RTC0";
