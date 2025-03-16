@@ -1,7 +1,7 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --board "/ti/boards/LP_CC2651P3" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
+ * @cliArgs --device "CC2651P3RGZ" --package "RGZ" --part "Default" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
  * @versions {"tool":"1.18.1+3343"}
  */
 
@@ -12,8 +12,6 @@ const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
-const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
-const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
@@ -30,36 +28,27 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
-GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
-GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
+GPIO1.mode            = "Output";
+GPIO1.$name           = "CONFIG_GPIO_GREEN_LED";
+GPIO1.gpioPin.$assign = "DIO_7";
 
 GPIO2.$name            = "CONFIG_GPIO_PWR_BTN";
-GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
+GPIO2.gpioPin.$assign  = "DIO_15";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
-SD1.$name                         = "CONFIG_SD_0";
-SD1.useFatFS                      = true;
-SD1.sdCSPin.$assignAllowConflicts = "boosterpack.18";
-SD1.chipSelect.$name              = "CONFIG_GPIO_SD_CS";
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SD1, "sdCSPin");
-
-SPI1.$name                            = "CONFIG_SPI_0";
-SPI1.mode                             = "Four Pin CS Active Low";
-SD1.spiInstance                       = SPI1;
-SPI1.$hardware                        = system.deviceData.board.components.LP_SPI;
-SPI1.spi.sclkPin.$assign              = "boosterpack.7";
-SPI1.spi.pociPin.$assign              = "boosterpack.14";
-SPI1.spi.picoPin.$assign              = "boosterpack.15";
-SPI1.spi.csnPin.$assignAllowConflicts = "boosterpack.18";
-SPI1.spi.dmaRxChannel.$assign         = "DMA_CH3";
-SPI1.spi.dmaTxChannel.$assign         = "DMA_CH4";
-scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "csnPin");
+SPI1.$name                    = "CONFIG_AFE_SPI";
+SPI1.spi.$assign              = "SSI0";
+SPI1.spi.sclkPin.$assign      = "DIO_10";
+SPI1.spi.pociPin.$assign      = "DIO_8";
+SPI1.spi.picoPin.$assign      = "DIO_9";
+SPI1.spi.dmaRxChannel.$assign = "DMA_CH3";
+SPI1.spi.dmaTxChannel.$assign = "DMA_CH4";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -68,7 +57,8 @@ BIOS.heapEndAddr    = "__primary_heap_end__";
 const Clock      = scripting.addModule("/ti/sysbios/knl/Clock", {}, false);
 Clock.tickPeriod = 10;
 
-const Timer = scripting.addModule("/ti/sysbios/family/arm/cc26xx/Timer", {}, false);
+const Timer       = scripting.addModule("/ti/sysbios/family/arm/cc26xx/Timer", {}, false);
+Timer.rtc.$assign = "RTC0";
 
 Idle2.$name   = "powerIdle";
 Idle2.idleFxn = "Power_idleFunc";
@@ -93,13 +83,3 @@ System.abortFxn        = "System_abortSpin";
 System.exitFxn         = "System_exitSpin";
 System.extendedFormats = "%f";
 System.supportModule   = "SysCallback";
-
-/**
- * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
- * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
- * re-solve from scratch.
- */
-GPIO1.gpioPin.$suggestSolution = "boosterpack.40";
-GPIO2.gpioPin.$suggestSolution = "boosterpack.13";
-SPI1.spi.$suggestSolution      = "SSI0";
-Timer.rtc.$suggestSolution     = "RTC0";
