@@ -29,6 +29,8 @@ const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
 const SPI2        = SPI.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
+const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
+const UART21      = UART2.addInstance();
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -44,7 +46,8 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
  */
 CCFG.enableBootloader         = true;
 CCFG.enableBootloaderBackdoor = true;
-CCFG.dioBootloaderBackdoor    = 16;
+CCFG.dioBootloaderBackdoor    = 18;
+CCFG.levelBootloaderBackdoor  = "Active low";
 CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
 GPIO1.mode            = "Output";
@@ -67,23 +70,23 @@ GPIO4.gpioPin.$assign  = "DIO_14";
 
 GPIO5.$name           = "CONFIG_UP_ARROW";
 GPIO5.mode            = "Output";
-GPIO5.gpioPin.$assign = "DIO_17";
+GPIO5.gpioPin.$assign = "DIO_25";
 
 GPIO6.mode            = "Output";
 GPIO6.$name           = "CONFIG_DOWN_ARROW";
-GPIO6.gpioPin.$assign = "DIO_18";
+GPIO6.gpioPin.$assign = "DIO_26";
 
 GPIO7.mode            = "Output";
 GPIO7.$name           = "CONFIG_LEFT_ARROW";
-GPIO7.gpioPin.$assign = "DIO_19";
+GPIO7.gpioPin.$assign = "DIO_27";
 
 GPIO8.mode            = "Output";
 GPIO8.$name           = "CONFIG_RIGHT_ARROW";
-GPIO8.gpioPin.$assign = "DIO_20";
+GPIO8.gpioPin.$assign = "DIO_28";
 
 GPIO9.mode            = "Output";
 GPIO9.$name           = "CONFIG_SEL_BTN";
-GPIO9.gpioPin.$assign = "DIO_21";
+GPIO9.gpioPin.$assign = "DIO_29";
 
 GPIO10.$name           = "CONFIG_DISPLAY_CS";
 GPIO10.mode            = "Output";
@@ -92,7 +95,7 @@ GPIO10.gpioPin.$assign = "DIO_12";
 PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
 PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
 PWM1.timerObject.timer.$assign        = "GPTM0";
-PWM1.timerObject.timer.pwmPin.$assign = "DIO_16";
+PWM1.timerObject.timer.pwmPin.$assign = "DIO_24";
 PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
@@ -135,6 +138,10 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
+UART21.$name              = "BOOTLOADER_UART";
+UART21.uart.txPin.$assign = "DIO_17";
+UART21.uart.rxPin.$assign = "DIO_16";
+
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
 BIOS.heapEndAddr    = "__primary_heap_end__";
@@ -168,3 +175,10 @@ System.abortFxn        = "System_abortSpin";
 System.exitFxn         = "System_exitSpin";
 System.extendedFormats = "%f";
 System.supportModule   = "SysCallback";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+UART21.uart.$suggestSolution = "UART0";
