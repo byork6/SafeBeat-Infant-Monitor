@@ -2,7 +2,6 @@
 
 // Inclusions used only by microSD_write_task.c
 #include <file.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include <third_party/fatfs/ffcio.h>
