@@ -74,6 +74,9 @@
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang/Startup"/>
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang/targetConfigs"/>
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/icall/src"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/bleapp/profiles/health_thermometer"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/bleapp/services/health_thermometer"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE.840844224" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE" valueType="definedSymbols">
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_SYMBOLS}"/>
