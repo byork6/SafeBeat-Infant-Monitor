@@ -28,3 +28,8 @@ uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
  * @param arg1 Unused argument, required for compatibility.
  */
  void bleCentral_executeTask(UArg arg0, UArg arg1);
+
+// Added these. TODO: write doc string.
+void BLECentral_init(void);
+
+void BLECentral_readMeasurements(void);
