@@ -14,14 +14,21 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
-#include <ti/ble5stack/inc/gap.h>
-#include <ti/ble5stack/inc/gatt.h>
-#include <ti/ble5stack_flash/controller/cc26xx/inc/ble.h>
-
-// Below is recommended headers but could not find quickly in SDK.
-// #include <ti/drivers/GAP.h>
-// #include <ti/drivers/GATT.h>
-// #include <ti/drivers/BLE.h>
+#include <ti/ble5stack_flash/inc/gap.h>
+#include <ti/ble5stack_flash/inc/gapbondmgr.h>
+#include <ti/ble5stack_flash/inc/gapgattserver.h>
+#include <ti/ble5stack_flash/inc/gatt.h>
+#include <ti/ble5stack_flash/inc/hci.h>
+// #include <ti/ble5stack_flash/osal/src/inc/osal_snv.h>
+// #include <ti/ble5stack_flash/icall/inc/icall_ble_apimsg.h>
+// #include <ti/ble5stack_flash/icall/inc/ble_user_config.h>
+// #include <ti/ble5stack_flash/icall/src/inc/icall.h>
+// #include <ti/ble5stack_flash/icall/src/inc/icall_user_config.h>
+// #include <ti/ble5stack_flash/controller/cc26xx/inc/ble.h>
+// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll_common.h>
+// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll_config.h>
+// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll.h>
+// #include <ti/ble5stack_flash/controller/cc26xx/inc//ll_user_config.h>
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
