@@ -8,6 +8,7 @@
 /**
  * Import the modules used in this configuration.
  */
+const ble         = scripting.addModule("/ti/ble5stack/ble");
 const CCFG        = scripting.addModule("/ti/devices/CCFG");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
@@ -44,6 +45,10 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
+ble.deviceRole                         = "CENTRAL_CFG";
+ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+ble.connUpdateParamsCentral.$name      = "ti_ble5stack_general_ble_conn_update_params0";
+
 CCFG.enableBootloader         = true;
 CCFG.enableBootloaderBackdoor = true;
 CCFG.dioBootloaderBackdoor    = 18;
