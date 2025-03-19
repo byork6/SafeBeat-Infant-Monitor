@@ -7,6 +7,10 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
+#define SERVICE_UUID      0xFFF0
+#define HEART_RATE_UUID   0xFFF1
+#define RESP_RATE_UUID    0xFFF2
+
 /**
  * @brief Constructs the BLE Central task.
  *

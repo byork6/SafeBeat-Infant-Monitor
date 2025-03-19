@@ -1,4 +1,8 @@
+#include "src/tasks/ble_central_task/ble_central.h"
 #include "../../common/common.h"
+
+static uint8_t heartRate = 7;
+static uint8_t respRate = 6;
 
 Task_Handle bleCentral_constructTask(){
     Task_Params TaskParams;
@@ -18,7 +22,23 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
 
-    while (1) {
+    BLECentral_init();
 
+    while (1) {
+        BLECentral_readMeasurements();
+        Task_sleep(g_taskSleepDuration);
     }
+}
+
+void BLECentral_init(void) {
+    BLE_init();
+    BLE_startScanning();
+    BLE_connectToPeripheral(SERVICE_UUID);
+}
+
+void BLECentral_readMeasurements(void) {
+    BLE_readCharacteristic(HEART_RATE_UUID, &heartRate, sizeof(heartRate));
+    BLE_readCharacteristic(RESP_RATE_UUID, &respRate, sizeof(respRate));
+
+    printf("Heart Rate: %d bpm, Resp Rate: %d breaths/min\n", heartRate, respRate);
 }
