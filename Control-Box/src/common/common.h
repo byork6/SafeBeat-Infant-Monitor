@@ -14,6 +14,14 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
+#include <ti/ble5stack/inc/gap.h>
+#include <ti/ble5stack/inc/gatt.h>
+#include <ti/ble5stack_flash/controller/cc26xx/inc/ble.h>
+
+// Below is recommended headers but could not find quickly in SDK.
+// #include <ti/drivers/GAP.h>
+// #include <ti/drivers/GATT.h>
+// #include <ti/drivers/BLE.h>
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
