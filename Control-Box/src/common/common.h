@@ -40,14 +40,16 @@
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
 #define DISPLAY_DRIVER_PRIORITY     3
-#define TEST_GPIO_PRIORITY          4
-#define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
-#define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
+#define BLE_CENTRAL_PRIORITY        4
+#define TEST_GPIO_PRIORITY          5
+#define RED_LIGHT_BLINK_PRIORITY    5       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY  5       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
 #define MICROSD_WRITE_STACK_SIZE    1024
 #define DISPLAY_DRIVER_STACK_SIZE   1024
+#define BLE_CENTRAL_STACK_SIZE      1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
