@@ -31,7 +31,7 @@
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
 #define MICROSD_WRITE_PRIORITY      2
-// #define DISPLAY_PRIORITY            3
+#define DISPLAY_DRIVER_PRIORITY     3
 #define TEST_GPIO_PRIORITY          4
 #define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
@@ -39,6 +39,7 @@
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
 #define MICROSD_WRITE_STACK_SIZE    1024
+#define DISPLAY_DRIVER_STACK_SIZE   1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
@@ -46,6 +47,8 @@
 #define DRIVE_GPIO_LOW              0
 #define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
+#define SD_SPI_CSN_PIN              11
+#define DISPLAY_SPI_CSN_PIN         12
 // Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
 #define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
@@ -86,6 +89,7 @@ extern CircularQueue displayMemQueue;
 #include "../tasks/test_gpio_task/test_gpio_task.h"
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
+#include "../tasks/display_driver_task/display_driver.h"
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
