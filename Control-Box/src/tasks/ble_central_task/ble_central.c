@@ -1,4 +1,3 @@
-#include "src/tasks/ble_central_task/ble_central.h"
 #include "../../common/common.h"
 
 static uint8_t heartRate = 7;
