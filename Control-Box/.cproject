@@ -66,6 +66,8 @@
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x1_cc26x1"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/icall/src/inc"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/host"/>
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang"/>
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang/Application"/>
                                     <listOptionValue value="${PROJECT_ROOT}/simple_central_LP_CC2651P3_tirtos7_ticlang/common/Util"/>
