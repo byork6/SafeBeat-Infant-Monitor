@@ -44,13 +44,51 @@ uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
  */
  void bleCentral_executeTask(UArg arg0, UArg arg1);
 
-// Added these. TODO: write doc string.
+/**
+ * @brief Initializes the BLE Central application.
+ *
+ * This function sets up the BLE stack, registers the application with the ICall module,
+ * and initializes the GAP Central role.
+ */
 void BLECentral_init(void);
 
+/**
+ * @brief Starts BLE scanning.
+ *
+ * This function configures the scan parameters and enables continuous scanning
+ * for advertising BLE peripherals.
+ */
 void BLECentral_startScanning(void);
 
-void scanCb(uint32_t event, void *pBuf, uintptr_t arg);
+/**
+ * @brief Callback function for handling scan events.
+ *
+ * This function is triggered when a scan event occurs, such as receiving an
+ * advertisement report. It may be used to filter devices or initiate a connection.
+ *
+ * @param event Scan event type (e.g., GAP_EVT_ADV_REPORT).
+ * @param ptrBuf Pointer to the scan event data.
+ * @param arg  User-defined argument (unused).
+ */
+void scanCallback(uint32_t event, void *ptrBuf, uintptr_t arg);
 
+/**
+ * @brief Connects to a BLE peripheral device.
+ *
+ * This function initiates a connection to the specified BLE peripheral based on
+ * its address and address type.
+ *
+ * @param peerAddr Pointer to the peripheral's address.
+ * @param addrType Address type of the peripheral (e.g., public or random).
+ */
 void BLECentral_connectToPeripheral(uint8_t *peerAddr, uint8_t addrType);
 
+/**
+ * @brief Reads a characteristic value from a connected peripheral.
+ *
+ * Sends a GATT Read Characteristic Value request to the peripheral.
+ *
+ * @param connHandle Connection handle of the peripheral.
+ * @param charHandle Handle of the characteristic to read.
+ */
 void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle);
