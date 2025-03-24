@@ -1,8 +1,9 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "CC2651P3RGZ" --package "RGZ" --part "Default" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
- * @versions {"tool":"1.18.1+3343"}
+ * @cliArgs --device "CC2651P3RGZ" --part "Default" --package "RGZ" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
+ * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
+ * @versions {"tool":"1.21.1+3772"}
  */
 
 /**
@@ -10,6 +11,7 @@
  */
 const ble         = scripting.addModule("/ti/ble5stack/ble");
 const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
@@ -55,6 +57,8 @@ CCFG.enableBootloaderBackdoor = true;
 CCFG.dioBootloaderBackdoor    = 18;
 CCFG.levelBootloaderBackdoor  = "Active low";
 CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
+
+Board.generateInitializationFunctions = false;
 
 GPIO1.mode            = "Output";
 GPIO1.$name           = "CONFIG_GREEN_LED";
@@ -106,10 +110,11 @@ PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
-SD1.useFatFS         = true;
-SD1.$name            = "CONFIG_SD";
-SD1.sdCSPin.$assign  = "DIO_11";
-SD1.chipSelect.$name = "CONFIG_SD_SPI_CS";
+SD1.useFatFS             = true;
+SD1.$name                = "CONFIG_SD";
+SD1.sdCSPin.$assign      = "DIO_11";
+SD1.chipSelect.$hardware = null;
+SD1.chipSelect.$name     = "CONFIG_SD_SPI_CS";
 
 SD1.spiInstance                             = SPI1;
 SPI1.$name                                  = "CONFIG_SD_SPI";
