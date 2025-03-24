@@ -32,15 +32,6 @@
                     }
                 }
             }
-        },
-        {
-            "name": "Control-Box",
-            "type": "ccs-debug",
-            "request": "launch",
-            "projectInfo": {
-                "name": "Control-Box",
-                "resourceId": "/Control-Box"
-            }
-        }
+        } 
     ]
 }
