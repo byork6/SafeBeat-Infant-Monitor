@@ -1,5 +1,14 @@
 #pragma once
 
+#include <icall.h>
+#include <icall_ble_api.h>
+#include <gap.h>
+#include <gatt.h>
+#include <gattservapp.h>
+#include <gap_scanner.h>
+#include <gap_initiator.h>
+#include <bcomdef.h>
+
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
 #define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
@@ -7,9 +16,11 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
-#define SERVICE_UUID      0xFFF0
-#define HEART_RATE_UUID   0xFFF1
-#define RESP_RATE_UUID    0xFFF2
+// BLE Central Macros
+#define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
+#define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
+#define SCAN_INTERVAL              160  // 100ms
+#define SCAN_WINDOW                160  // 100ms
 
 /**
  * @brief Constructs the BLE Central task.
@@ -36,4 +47,10 @@ uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 // Added these. TODO: write doc string.
 void BLECentral_init(void);
 
-void BLECentral_readMeasurements(void);
+void BLECentral_startScanning(void);
+
+void scanCb(uint32_t event, void *pBuf, uintptr_t arg);
+
+void BLECentral_connectToPeripheral(uint8_t *peerAddr, uint8_t addrType);
+
+void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle);

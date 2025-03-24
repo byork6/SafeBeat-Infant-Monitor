@@ -1,25 +1,7 @@
 #include "../../common/common.h"
 
-#include <icall.h>
-#include <icall_ble_api.h>
-#include <gap.h>
-#include <gatt.h>
-#include <gattservapp.h>
-#include <gap_scanner.h>
-#include <gap_initiator.h>
-#include <bcomdef.h>
-
-#define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
-#define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
-#define SCAN_INTERVAL              160  // 100ms
-#define SCAN_WINDOW                160  // 100ms
-
-static uint8_t heartRate = 7;
-static uint8_t respRate = 6;
 static uint8_t selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;
-
-static void scanCb(uint32_t event, void *pBuf, uintptr_t arg);
 
 Task_Handle bleCentral_constructTask(){
     Task_Params TaskParams;
@@ -47,35 +29,28 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     BLECentral_init();
 
     while (1) {
-            // Wait (block) for BLE stack or system message
-            errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
-            if (errno == ICALL_ERRNO_SUCCESS) {
-                if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
-                    if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
-                        gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
-
-                        if (gattMsg->method == ATT_READ_RSP) {
-                            // ✅ Access the read data here:
-                            uint8_t *value = gattMsg->msg.readRsp.pValue;
-                            uint16_t len = gattMsg->msg.readRsp.len;
-
-                            // For debugging
-                            printf("GATT Read Response: Len = %d\n", len);
-                        }
-
-                        // Free BLE stack buffers
-                        GATT_bm_free(&gattMsg->msg, gattMsg->method);
+        // Wait (block) for BLE stack or system message
+        errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
+        if (errno == ICALL_ERRNO_SUCCESS) {
+            if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
+                if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
+                    gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
+                    if (gattMsg->method == ATT_READ_RSP) {
+                        // ✅ Access the read data here:
+                        uint8_t *value = gattMsg->msg.readRsp.pValue;
+                        uint16_t len = gattMsg->msg.readRsp.len;
+                        // For debugging
+                        printf("GATT Read Response: Len = %d\n", len);
                     }
-                    // Free ICall wrapper
-                    ICall_freeMsg(pMsg);
+                    // Free BLE stack buffers
+                    GATT_bm_free(&gattMsg->msg, gattMsg->method);
                 }
+                // Free ICall wrapper
+                ICall_freeMsg(pMsg);
             }
-
-            // Your app's custom function to trigger reads
-            BLECentral_readMeasurements();
-
-            Task_sleep(g_taskSleepDuration);
         }
+        Task_sleep(g_taskSleepDuration);
+    }
 }
 
 void BLECentral_init(void){
@@ -96,7 +71,7 @@ void BLECentral_startScanning(void){
     GapScan_enable(0, 0, 0);  // 0=continuous scan, 0 timeout, 0 numAdvReports
 }
 
-static void scanCb(uint32_t event, void *pBuf, uintptr_t arg){
+void scanCb(uint32_t event, void *pBuf, uintptr_t arg){
     if (event == GAP_EVT_ADV_REPORT){
         GapScan_Evt_AdvRpt_t *advRpt = (GapScan_Evt_AdvRpt_t *)pBuf;
 
