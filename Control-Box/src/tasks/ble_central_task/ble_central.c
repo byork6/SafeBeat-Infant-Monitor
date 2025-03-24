@@ -66,19 +66,19 @@ void BLECentral_init(void){
 void BLECentral_startScanning(void){
     GapScan_setPhyParams(DEFAULT_SCAN_PHY, SCAN_TYPE_PASSIVE, SCAN_INTERVAL, SCAN_WINDOW);
     GapScan_setParam(SCAN_PARAM_RPT_FIELDS, &scanResFields);
-    GapScan_registerCb(scanCb, NULL);
+    GapScan_registerCb(scanCallback, NULL);
 
     GapScan_enable(0, 0, 0);  // 0=continuous scan, 0 timeout, 0 numAdvReports
 }
 
-void scanCb(uint32_t event, void *pBuf, uintptr_t arg){
+void scanCallback(uint32_t event, void *ptrBuf, uintptr_t arg){
     if (event == GAP_EVT_ADV_REPORT){
-        GapScan_Evt_AdvRpt_t *advRpt = (GapScan_Evt_AdvRpt_t *)pBuf;
+        GapScan_Evt_AdvRpt_t *advRpt = (GapScan_Evt_AdvRpt_t *)ptrBuf;
 
         // Print or filter by address, RSSI, local name etc.
         // You can call BLECentral_connectToPeripheral() here
 
-        ICall_free(pBuf);
+        ICall_free(ptrBuf);
     }
 }
 
