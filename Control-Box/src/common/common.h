@@ -8,29 +8,19 @@
 #include <stdint.h>
 
 /////// SDK HEADER CONTENT ///////
+/* 
+*  Any header locations  that are included throughout the project will be added to the build definitions 
+*  inside the .cproject file. These file paths tell the compiler where to search for headers that are
+*  from the SDK. This allows us to include just a filename.h instead of an absolute path for files that
+*  are outside the project structure but must be included. If a header is used more than once throughout
+*  the SDK & a conflicting file path is already included just use an absolute path.
+*/
 // General purpose TI Drivesrs
 #include <Power.h>
 #include <GPIO.h>
 #include <SPI.h>
 #include <SDFatFS.h>
 #include <Temperature.h>
-
-
-#include <ti/ble5stack_flash/inc/gap.h>
-#include <ti/ble5stack_flash/inc/gapbondmgr.h>
-#include <ti/ble5stack_flash/inc/gapgattserver.h>
-#include <ti/ble5stack_flash/inc/gatt.h>
-#include <ti/ble5stack_flash/inc/hci.h>
-// #include <ti/ble5stack_flash/osal/src/inc/osal_snv.h>
-// #include <ti/ble5stack_flash/icall/inc/icall_ble_apimsg.h>
-// #include <ti/ble5stack_flash/icall/inc/ble_user_config.h>
-// #include <ti/ble5stack_flash/icall/src/inc/icall.h>
-// #include <ti/ble5stack_flash/icall/src/inc/icall_user_config.h>
-// #include <ti/ble5stack_flash/controller/cc26xx/inc/ble.h>
-// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll_common.h>
-// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll_config.h>
-// #include <ti/ble5stack_flash/controller/cc26xx/inc/ll.h>
-// #include <ti/ble5stack_flash/controller/cc26xx/inc//ll_user_config.h>
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>

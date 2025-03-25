@@ -1,4 +1,4 @@
-#include "../../common/common.h"
+#include "common.h"
 
 Task_Handle temperatureMonitoring_constructTask(){
     // Declare TaskParams struct name

@@ -1,4 +1,4 @@
-#include "../../common/common.h"
+#include "common.h"
 
 static uint8_t selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;

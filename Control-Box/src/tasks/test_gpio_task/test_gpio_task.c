@@ -1,4 +1,4 @@
-#include "../../common/common.h"
+#include "common.h"
 
 Task_Handle testGpio_constructTask(uint32_t pinNumber, uint32_t taskPriority, Task_Struct *taskStruct, uint8_t *taskStack){
     // Declare TaskParams struct name

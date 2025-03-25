@@ -1,4 +1,4 @@
-#include "../../common/common.h"
+#include "common.h"
 
 // Global variables
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
