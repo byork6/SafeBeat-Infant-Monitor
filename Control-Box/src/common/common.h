@@ -95,13 +95,13 @@ extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
 
 // CUSTOM INCLUSIONS
-#include "../config/config_functions.h"
-#include "../tasks/microSD_write_task/microSD_write_task.h"
-#include "../tasks/test_gpio_task/test_gpio_task.h"
-#include "../tasks/power_shutdown_task/power_shutdown_task.h"
-#include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
-#include "../tasks/display_driver_task/display_driver.h"
-#include "../tasks/ble_central_task/ble_central.h"
+#include "config_functions.h"
+#include "microSD_write_task.h"
+#include "test_gpio_task.h"
+#include "power_shutdown_task.h"
+#include "temperature_monitoring_task.h"
+#include "display_driver_task.h"
+#include "ble_central_task.h"
 
 
 // CUSTOM FUNCTION PROTOTYPES
