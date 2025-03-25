@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
-#include <third_party/fatfs/ffcio.h>
+#include <ffcio.h>
 
 // Define task parameters
 #define MICROSD_WRITE_TASK_STACK_SIZE   (MICROSD_WRITE_STACK_SIZE)
