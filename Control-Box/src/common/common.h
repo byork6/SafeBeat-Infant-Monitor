@@ -9,11 +9,11 @@
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs
-#include <ti/drivers/Power.h>
-#include <ti/drivers/GPIO.h>
-#include <ti/drivers/SPI.h>
-#include <ti/drivers/SDFatFS.h>
-#include <ti/drivers/Temperature.h>
+#include <Power.h>
+#include <GPIO.h>
+#include <SPI.h>
+#include <SDFatFS.h>
+#include <Temperature.h>
 
 
 #include <ti/ble5stack_flash/inc/gap.h>
