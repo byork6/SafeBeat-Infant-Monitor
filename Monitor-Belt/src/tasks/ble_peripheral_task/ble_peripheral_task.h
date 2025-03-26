@@ -10,11 +10,11 @@
 #include <bcomdef.h>
 
 // BLE Central Task Constants
-#define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
-#define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
+#define BLE_PERIPHERAL_TASK_STACK_SIZE (BLE_PERIPHERALRAL_STACK_SIZE)
+#define BLE_PERIPHERAL_TASK_PRIORITY   (BLE_PERIPHERALRAL_PRIORITY)
 Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
-uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
+uint8_t g_bleCentralTaskStack[BLE_PERIPHERAL_TASK_STACK_SIZE];
 
 // BLE Central Macros
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M

@@ -8,8 +8,8 @@ Task_Handle bleCentral_constructTask(){
 
     Task_Params_init(&TaskParams);
     TaskParams.stack = g_bleCentralTaskStack;
-    TaskParams.stackSize = BLE_CENTRAL_TASK_STACK_SIZE;
-    TaskParams.priority = BLE_CENTRAL_TASK_PRIORITY;
+    TaskParams.stackSize = BLE_PERIPHERAL_TASK_STACK_SIZE;
+    TaskParams.priority = BLE_PERIPHERAL_TASK_PRIORITY;
     TaskParams.arg0 = 0;
     TaskParams.arg1 = 0;
 
