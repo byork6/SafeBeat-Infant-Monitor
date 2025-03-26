@@ -21,34 +21,34 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
 
-    // ICall_Errno errno;
-    // ICall_ServiceEnum src;
-    // ICall_EntityID dest;
-    // ICall_Hdr *pMsg = NULL;
+    ICall_Errno errno;
+    ICall_ServiceEnum src;
+    ICall_EntityID dest;
+    ICall_Hdr *pMsg = NULL;
 
-    // BLECentral_init();
+    BLECentral_init();
 
     while (1) {
-        // // Wait (block) for BLE stack or system message
-        // errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
-        // if (errno == ICALL_ERRNO_SUCCESS) {
-        //     if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
-        //         if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
-        //             gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
-        //             if (gattMsg->method == ATT_READ_RSP) {
-        //                 // ✅ Access the read data here:
-        //                 uint8_t *value = gattMsg->msg.readRsp.pValue;
-        //                 uint16_t len = gattMsg->msg.readRsp.len;
-        //                 // For debugging
-        //                 printf("GATT Read Response: Len = %d\n", len);
-        //             }
-        //             // Free BLE stack buffers
-        //             GATT_bm_free(&gattMsg->msg, gattMsg->method);
-        //         }
-        //         // Free ICall wrapper
-        //         ICall_freeMsg(pMsg);
-        //     }
-        // }
+        // Wait (block) for BLE stack or system message
+        errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
+        if (errno == ICALL_ERRNO_SUCCESS) {
+            if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
+                if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
+                    gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
+                    if (gattMsg->method == ATT_READ_RSP) {
+                        // ✅ Access the read data here:
+                        uint8_t *value = gattMsg->msg.readRsp.pValue;
+                        uint16_t len = gattMsg->msg.readRsp.len;
+                        // For debugging
+                        printf("GATT Read Response: Len = %d\n", len);
+                    }
+                    // Free BLE stack buffers
+                    GATT_bm_free(&gattMsg->msg, gattMsg->method);
+                }
+                // Free ICall wrapper
+                ICall_freeMsg(pMsg);
+            }
+        }
         Task_sleep(g_taskSleepDuration);
     }
 }
