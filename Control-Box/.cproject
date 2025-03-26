@@ -93,7 +93,7 @@
                                     <listOptionValue value="NVOCMP_NWSAMEITEM=1"/>
                                     <listOptionValue value="HEAPMGR_CONFIG=0x80"/>
                                     <listOptionValue value="HEAPMGR_SIZE=0x0"/>
-                                    <listOptionValue value="ICALL_JT"/>
+                                    <listOptionValue value="ICALL_JT=1"/>
                                     <listOptionValue value="ICALL_EVENTS"/>
                                     <listOptionValue value="ICALL_LITE"/>
                                 </option>
