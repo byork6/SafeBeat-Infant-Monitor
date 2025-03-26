@@ -1,4 +1,4 @@
-#include "common/common.h"
+#include "common.h"
 
 void *mainThread(void *arg0){
 
@@ -17,7 +17,7 @@ void *mainThread(void *arg0){
     // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. 
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
-
+    
     createAllResources();
 
     return NULL;

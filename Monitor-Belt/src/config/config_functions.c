@@ -1,9 +1,10 @@
-#include "../common/common.h"
+#include "common.h"
 
 void initBOARD(void){
     Power_init();
     GPIO_init();
     SPI_init();
+    SDFatFS_init();
     Temperature_init();
     // NOTE: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
     

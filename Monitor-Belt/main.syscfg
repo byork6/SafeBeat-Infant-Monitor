@@ -1,20 +1,39 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "CC2651P3RGZ" --package "RGZ" --part "Default" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
- * @versions {"tool":"1.18.1+3343"}
+ * @cliArgs --device "CC2651P3RGZ" --part "Default" --package "RGZ" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
+ * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
+ * @versions {"tool":"1.21.1+3772"}
  */
 
 /**
  * Import the modules used in this configuration.
  */
+const ble         = scripting.addModule("/ti/ble5stack/ble");
+const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
+const GPIO3       = GPIO.addInstance();
+const GPIO4       = GPIO.addInstance();
+const GPIO5       = GPIO.addInstance();
+const GPIO6       = GPIO.addInstance();
+const GPIO7       = GPIO.addInstance();
+const GPIO8       = GPIO.addInstance();
+const GPIO9       = GPIO.addInstance();
+const GPIO10      = GPIO.addInstance();
+const PWM         = scripting.addModule("/ti/drivers/PWM", {}, false);
+const PWM1        = PWM.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
+const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
+const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
+const SPI2        = SPI.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
+const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
+const UART21      = UART2.addInstance();
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -28,27 +47,111 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
+ble.deviceRole                         = "CENTRAL_CFG";
+ble.bondPairing                        = "GAPBOND_PAIRING_MODE_INITIATE";
+ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+ble.connUpdateParamsCentral.$name      = "ti_ble5stack_general_ble_conn_update_params0";
+
+CCFG.enableBootloader         = true;
+CCFG.enableBootloaderBackdoor = true;
+CCFG.dioBootloaderBackdoor    = 18;
+CCFG.levelBootloaderBackdoor  = "Active low";
+CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
+
+Board.generateInitializationFunctions = false;
+
 GPIO1.mode            = "Output";
-GPIO1.$name           = "CONFIG_GPIO_GREEN_LED";
+GPIO1.$name           = "CONFIG_GREEN_LED";
 GPIO1.gpioPin.$assign = "DIO_7";
 
-GPIO2.$name            = "CONFIG_GPIO_PWR_BTN";
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
+GPIO2.$name            = "CONFIG_PWR_BTN";
 GPIO2.gpioPin.$assign  = "DIO_15";
+
+GPIO3.mode            = "Output";
+GPIO3.$name           = "CONFIG_DISPLAY_SPI_PD";
+GPIO3.gpioPin.$assign = "DIO_13";
+
+GPIO4.$name            = "CONFIG_DISPLAY_SPI_INT";
+GPIO4.pull             = "Pull Down";
+GPIO4.interruptTrigger = "Falling Edge";
+GPIO4.gpioPin.$assign  = "DIO_14";
+
+GPIO5.$name           = "CONFIG_UP_ARROW";
+GPIO5.mode            = "Output";
+GPIO5.gpioPin.$assign = "DIO_25";
+
+GPIO6.mode            = "Output";
+GPIO6.$name           = "CONFIG_DOWN_ARROW";
+GPIO6.gpioPin.$assign = "DIO_26";
+
+GPIO7.mode            = "Output";
+GPIO7.$name           = "CONFIG_LEFT_ARROW";
+GPIO7.gpioPin.$assign = "DIO_27";
+
+GPIO8.mode            = "Output";
+GPIO8.$name           = "CONFIG_RIGHT_ARROW";
+GPIO8.gpioPin.$assign = "DIO_28";
+
+GPIO9.mode            = "Output";
+GPIO9.$name           = "CONFIG_SEL_BTN";
+GPIO9.gpioPin.$assign = "DIO_29";
+
+GPIO10.$name           = "CONFIG_DISPLAY_CS";
+GPIO10.mode            = "Output";
+GPIO10.gpioPin.$assign = "DIO_12";
+
+PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
+PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
+PWM1.timerObject.timer.$assign        = "GPTM0";
+PWM1.timerObject.timer.pwmPin.$assign = "DIO_24";
+PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
-const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
-CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
+SD1.useFatFS             = true;
+SD1.$name                = "CONFIG_SD";
+SD1.sdCSPin.$assign      = "DIO_11";
+SD1.chipSelect.$hardware = null;
+SD1.chipSelect.$name     = "CONFIG_SD_SPI_CS";
 
-SPI1.$name                    = "CONFIG_AFE_SPI";
-SPI1.spi.$assign              = "SSI0";
-SPI1.spi.sclkPin.$assign      = "DIO_10";
-SPI1.spi.pociPin.$assign      = "DIO_8";
-SPI1.spi.picoPin.$assign      = "DIO_9";
-SPI1.spi.dmaRxChannel.$assign = "DMA_CH3";
-SPI1.spi.dmaTxChannel.$assign = "DMA_CH4";
+SD1.spiInstance                             = SPI1;
+SPI1.$name                                  = "CONFIG_SD_SPI";
+SPI1.spi.$assign                            = "SSI0";
+SPI1.spi.sclkPin.$assignAllowConflicts      = "DIO_10";
+SPI1.spi.pociPin.$assignAllowConflicts      = "DIO_8";
+SPI1.spi.picoPin.$assignAllowConflicts      = "DIO_9";
+SPI1.spi.dmaRxChannel.$assignAllowConflicts = "DMA_CH3";
+SPI1.spi.dmaTxChannel.$assignAllowConflicts = "DMA_CH4";
+SPI1.sclkPinInstance.$name                  = "CONFIG_SD_SPI_SCLK";
+SPI1.pociPinInstance.$name                  = "CONFIG_SD_SPI_POCI";
+SPI1.picoPinInstance.$name                  = "CONFIG_SD_SPI_PICO";
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "sclkPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "pociPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "picoPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "dmaRxChannel");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI1.spi, "dmaTxChannel");
+
+SPI2.$name                                  = "CONFIG_DISPLAY_SPI";
+SPI2.spi.$assign                            = "SSI0";
+SPI2.spi.sclkPin.$assignAllowConflicts      = "DIO_10";
+SPI2.spi.pociPin.$assignAllowConflicts      = "DIO_8";
+SPI2.spi.picoPin.$assignAllowConflicts      = "DIO_9";
+SPI2.spi.dmaRxChannel.$assignAllowConflicts = "DMA_CH3";
+SPI2.spi.dmaTxChannel.$assignAllowConflicts = "DMA_CH4";
+SPI2.sclkPinInstance.$name                  = "CONFIG_DISPLAY_SPI_SCLK";
+SPI2.pociPinInstance.$name                  = "CONFIG_DISPLAY_SPI_POCI";
+SPI2.picoPinInstance.$name                  = "CONFIG_DISPLAY_SPI_PICO";
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "sclkPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "pociPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "picoPin");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
+scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
+
+UART21.$name              = "BOOTLOADER_UART";
+UART21.uart.txPin.$assign = "DIO_17";
+UART21.uart.rxPin.$assign = "DIO_16";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -83,3 +186,10 @@ System.abortFxn        = "System_abortSpin";
 System.exitFxn         = "System_exitSpin";
 System.extendedFormats = "%f";
 System.supportModule   = "SysCallback";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+UART21.uart.$suggestSolution = "UART0";

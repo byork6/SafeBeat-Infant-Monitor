@@ -20,6 +20,7 @@ Task_Handle temperatureMonitoring_constructTask(){
 void temperatureMonitoring_executeTask(UArg arg0, UArg arg1){
     int16_t currentTemp = 0;
 
+    printf("Entering temperatureMonitoring_executeTask()...");
     while(1){
         // Get current temperature for debugging
         currentTemp = Temperature_getTemperature();

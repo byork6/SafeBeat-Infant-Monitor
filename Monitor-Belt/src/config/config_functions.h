@@ -1,8 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-
-
 ////////// DOC STRING TEMPLATE //////////
 /**
 * @brief Short description goes here.

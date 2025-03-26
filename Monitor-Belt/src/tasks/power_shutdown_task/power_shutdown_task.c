@@ -51,6 +51,9 @@ void powerShutdownISR(uint_least8_t index){
 }
 
 void destructAllResources() {
+    // Force close and unmounting of sd card before shutdown
+    cleanupSDCard();
+    
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
     if (g_powerShutdownSemaphoreHandle != NULL){
@@ -61,17 +64,25 @@ void destructAllResources() {
         Task_destruct(g_powerShutdownTaskHandle);
         printf("Power shutdown task destructed.\n");
     }
+    if (g_microSdWriteTaskHandle != NULL){
+        Task_destruct(g_microSdWriteTaskHandle);
+        printf("MicroSD write task destructed.\n");
+    }
     if (g_temperatureMonitoringTaskHandle != NULL){
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printf("Temperature monitoring task destructed.\n");
     }
-    if (g_task1Handle != NULL) {
+    if (g_task1Handle != NULL){
         Task_destruct(g_task1Handle);
         printf("Task 1 destructed.\n");
     }
-    if (g_task2Handle != NULL) {
+    if (g_task2Handle != NULL){
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
+    }
+    if (g_displayDriverTaskHandle != NULL){
+        Task_destruct(g_displayDriverTaskHandle);
+        printf("Display driver task destructed.\n");
     }
 }
 
