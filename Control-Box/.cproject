@@ -93,6 +93,9 @@
                                     <listOptionValue value="NVOCMP_NWSAMEITEM=1"/>
                                     <listOptionValue value="HEAPMGR_CONFIG=0x80"/>
                                     <listOptionValue value="HEAPMGR_SIZE=0x0"/>
+                                    <listOptionValue value="ICALL_JT"/>
+                                    <listOptionValue value="ICALL_EVENTS"/>
+                                    <listOptionValue value="ICALL_LITE"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.1003190244" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.cortex-m4" valueType="enumerated"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.SELECT_PROCESSOR_MODE__ARM_THUMB.1482282477" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.SELECT_PROCESSOR_MODE__ARM_THUMB" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.SELECT_PROCESSOR_MODE__ARM_THUMB.MTHUMB" valueType="enumerated"/>
