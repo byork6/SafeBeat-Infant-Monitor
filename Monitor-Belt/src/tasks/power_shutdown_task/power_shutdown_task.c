@@ -60,10 +60,6 @@ void destructAllResources() {
         Semaphore_destruct(g_powerShutdownSemaphoreHandle);
         printf("Power shutdown semaphore destructed.\n");
     }
-    if (g_powerShutdownTaskHandle != NULL){
-        Task_destruct(g_powerShutdownTaskHandle);
-        printf("Power shutdown task destructed.\n");
-    }
     if (g_microSdWriteTaskHandle != NULL){
         Task_destruct(g_microSdWriteTaskHandle);
         printf("MicroSD write task destructed.\n");
@@ -79,10 +75,6 @@ void destructAllResources() {
     if (g_task2Handle != NULL){
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
-    }
-    if (g_displayDriverTaskHandle != NULL){
-        Task_destruct(g_displayDriverTaskHandle);
-        printf("Display driver task destructed.\n");
     }
 }
 

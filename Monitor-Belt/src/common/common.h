@@ -39,17 +39,13 @@
 // This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
-#define MICROSD_WRITE_PRIORITY      2
-#define DISPLAY_DRIVER_PRIORITY     3
-#define BLE_CENTRAL_PRIORITY        4
+#define BLE_CENTRAL_PRIORITY        2
 #define TEST_GPIO_PRIORITY          5
 #define RED_LIGHT_BLINK_PRIORITY    5       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  5       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
-#define MICROSD_WRITE_STACK_SIZE    1024
-#define DISPLAY_DRIVER_STACK_SIZE   1024
 #define BLE_CENTRAL_STACK_SIZE      1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
@@ -58,8 +54,6 @@
 #define DRIVE_GPIO_LOW              0
 #define GPIO_SET_OUT_AND_DRIVE_LOW  (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW)
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
-#define SD_SPI_CSN_PIN              11
-#define DISPLAY_SPI_CSN_PIN         12
 // Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
 #define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
@@ -72,35 +66,18 @@
 #define CRITICAL_TEMP_THRESHOLD_CELSIUS     40
 #define HIGH_TEMP_TASK_SLEEP_DURATION       (MS_TO_TICKS(1000))
 #define CRITICAL_TEMP_TASK_SLEEP_DURATION   (MS_TO_TICKS(5000))
-// Heart rate thresholds
-#define LOW_HEART_RATE_THRESHOLD_BPM    80
-#define HIGH_HEART_RATE_THRESHOLD_BPM   180
-// Respiratory rate thresholds
-#define LOW_RESPIRATORY_RATE_THRESHOLD_BRPM     20
-#define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
-// Circular queue --- Used to buffer recieved data before output to Display & SD card
-#define CIRCULAR_QUEUE_SIZE 1024
 
 // TYPE DEFINITIONS
-typedef struct {
-    char buffer[CIRCULAR_QUEUE_SIZE];
-    int head;  // Points to the start of valid data
-    int tail;  // Points to the next available space
-    int size;  // Current size of valid data
-} CircularQueue;
+// Defs go here
 
 // GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
 extern int g_taskSleepDuration;
-extern CircularQueue sdMemQueue;
-extern CircularQueue displayMemQueue;
 
 // CUSTOM INCLUSIONS
 #include "config_functions.h"
-#include "microSD_write_task.h"
 #include "test_gpio_task.h"
 #include "power_shutdown_task.h"
 #include "temperature_monitoring_task.h"
-#include "display_driver_task.h"
 #include "ble_central_task.h"
 
 
