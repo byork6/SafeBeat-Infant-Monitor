@@ -11,14 +11,15 @@ void *mainThread(void *arg0){
         PowerCC26X2_releaseLatches();
     }
 
-    // Initialize the board with TI-Driver config & custom config if needed
+    // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
     initBOARD();
     
     // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. 
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
     
-    createAllResources();
+    // Constructs all RTOS tasks before BIOS_start() is called in main_tirtos.c
+    constructAllResources();
 
     return NULL;
 }

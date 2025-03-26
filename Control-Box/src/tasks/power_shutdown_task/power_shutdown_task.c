@@ -40,7 +40,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 
         printf("SHOULD NOT PASS THIS.\n");
         // If it does re-create all tasks for proper BIOS execution
-        createAllResources();
+        constructAllResources();
     }
 }
 

@@ -23,22 +23,15 @@
 void initBOARD(void);
 
 /**
-* @brief contains all custom board configurations for things like GPIO, SPI, etc.
+* @brief Creates and initializes all tasks and other RTOS resources required for the application.
 *
-* NOTE: Add long description once function is complete.
+* This function is responsible for creating all the tasks necessary 
+* for the application, initializing associated semaphores, and 
+* configuring interrupts. It sets up the power task and any other 
+* tasks that toggle GPIOs or perform other specific functionalities.
+* Each task is created with its respective stack and priority.
+* 
+* @note This function assumes that all task stacks and structures 
+*       are properly defined globally and available for use.
 */
-void configBOARD(void);
-
-/**
-* @brief Sets startup state for GPIO pins.
-*
-* NOTE: Add long description once function is complete.
-*/
-void configGPIO(void);
-
-/**
-* @brief Initializes SPI during startup.
-*
-* NOTE: Add long description once function is complete.
-*/
-void configSPI(void);
+void constructAllResources();
