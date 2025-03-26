@@ -7,6 +7,8 @@ void initBOARD(void){
     SPI_init();
     SDFatFS_init();
     Temperature_init();
+    ICall_init();
+    ICall_createRemoteTasks();
 }
 
 void constructAllResources() {
