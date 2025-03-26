@@ -18,7 +18,7 @@ void createAllResources() {
     g_displayDriverTaskHandle = displayDriver_constructTask();
 
     // Task 4 --- Priority = 4
-    // g_bleCentralTaskHandle = bleCentral_constructTask();
+    g_bleCentralTaskHandle = bleCentral_constructTask();
     
     // Task 4 --- Priority = 5
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);

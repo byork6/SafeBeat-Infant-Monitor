@@ -84,10 +84,10 @@ void destructAllResources() {
         Task_destruct(g_displayDriverTaskHandle);
         printf("Display driver task destructed.\n");
     }
-    // if (g_bleCentralTaskHandle != NULL){
-    //     // Task_destruct(g_bleCentralTaskHandle);
-    //     printf("Display driver task destructed.\n");
-    // }
+    if (g_bleCentralTaskHandle != NULL){
+        Task_destruct(g_bleCentralTaskHandle);
+        printf("Display driver task destructed.\n");
+    }
 }
 
 void clearAllPeripherals() {
