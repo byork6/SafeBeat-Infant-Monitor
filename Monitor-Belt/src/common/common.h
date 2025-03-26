@@ -39,14 +39,14 @@
 // This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
 #define POWER_SHUTDOWN_PRIORITY     1
-#define ble_peripheral_PRIORITY        2
+#define BLE_PERIPHERAL_PRIORITY     2
 #define TEST_GPIO_PRIORITY          5
 #define RED_LIGHT_BLINK_PRIORITY    5       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  5       // Used for debugging
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
-#define ble_peripheral_STACK_SIZE      1024
+#define BLE_PERIPHERAL_STACK_SIZE   1024
 #define TEST_GPIO_STACK_SIZE        1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
@@ -93,20 +93,6 @@ extern int g_taskSleepDuration;
 * @return  - What is returned goes here (optional).
 */
 /////////////////////////////////////////
-
-/**
-* @brief Creates and initializes all tasks and other RTOS resources required for the application.
-*
-* This function is responsible for creating all the tasks necessary 
-* for the application, initializing associated semaphores, and 
-* configuring interrupts. It sets up the power task and any other 
-* tasks that toggle GPIOs or perform other specific functionalities.
-* Each task is created with its respective stack and priority.
-* 
-* @note This function assumes that all task stacks and structures 
-*       are properly defined globally and available for use.
-*/
-void createAllResources();
 
 /**
  * @brief Logs formatted data to the circular queue.

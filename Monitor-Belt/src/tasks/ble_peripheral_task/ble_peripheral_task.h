@@ -10,11 +10,11 @@
 #include <bcomdef.h>
 
 // BLE Central Task Constants
-#define BLE_PERIPHERAL_TASK_STACK_SIZE (BLE_PERIPHERALRAL_STACK_SIZE)
-#define BLE_PERIPHERAL_TASK_PRIORITY   (BLE_PERIPHERALRAL_PRIORITY)
-Task_Struct g_BleCentralTaskStruct;
-Task_Handle g_bleCentralTaskHandle;
-uint8_t g_bleCentralTaskStack[BLE_PERIPHERAL_TASK_STACK_SIZE];
+#define BLE_PERIPHERAL_TASK_STACK_SIZE (BLE_PERIPHERAL_STACK_SIZE)
+#define BLE_PERIPHERAL_TASK_PRIORITY   (BLE_PERIPHERAL_PRIORITY)
+Task_Struct g_BlePeripheralTaskStruct;
+Task_Handle g_blePeripheralTaskHandle;
+uint8_t g_blePeripheralTaskStack[BLE_PERIPHERAL_TASK_STACK_SIZE];
 
 // BLE Central Macros
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
@@ -31,7 +31,7 @@ uint8_t g_bleCentralTaskStack[BLE_PERIPHERAL_TASK_STACK_SIZE];
  *
  * @return Task_Handle The handle to the constructed BLE Central task.
  */
- Task_Handle bleCentral_constructTask(void);
+ Task_Handle blePeripheral_constructTask(void);
 
 /**
  * @brief Executes the BLE Central task.
@@ -42,7 +42,7 @@ uint8_t g_bleCentralTaskStack[BLE_PERIPHERAL_TASK_STACK_SIZE];
  * @param arg0 Unused argument, required for compatibility.
  * @param arg1 Unused argument, required for compatibility.
  */
- void bleCentral_executeTask(UArg arg0, UArg arg1);
+ void blePeripheral_executeTask(UArg arg0, UArg arg1);
 
 /**
  * @brief Initializes the BLE Central application.

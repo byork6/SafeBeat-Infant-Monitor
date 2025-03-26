@@ -18,7 +18,7 @@ void *mainThread(void *arg0){
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
     
-    createAllResources();
+    constructAllResources();
 
     return NULL;
 }

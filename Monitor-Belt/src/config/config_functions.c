@@ -1,41 +1,29 @@
 #include "common.h"
 
 void initBOARD(void){
+    // Call TI init functions, these use the pin configurations from .syscfg generated files and negate the need to write custom pin inits.
     Power_init();
     GPIO_init();
     SPI_init();
     SDFatFS_init();
     Temperature_init();
-    // NOTE: Add init drivers as needed. Init functions called here must also be selected in the .syscfg file for the project.
-    
-    // NOTE: We may not need custom calls for init since .sysconfig handles it -- commented out custom calls for now.
-    // configBOARD();
 }
 
-void configBOARD(void){
-    // CUSTOM CONFIG CALLS BELOW GO HERE
-    configGPIO();
-    // configSPI();
-}
+void constructAllResources() {
+    // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
+    // Task 1 --- Priority = 1
+    g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
-void configGPIO(void){
-    // GPIO CUSTOM INIT HERE
-    // Set GPIO Pins 5, 7-17 as output and drive low on startup for LCD.
-    GPIO_setConfig(5, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(6, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(8, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(9, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(10, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(11, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(12, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(13, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(14, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(15, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(16, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_setConfig(17, GPIO_SET_OUT_AND_DRIVE_LOW);
-}
+    // Task 2 --- Priority = 2
+    // TODO: BLE task goes here.
+    // g_blePeripheralTaskHandle = blePeripheral_constructTask();
+        
+    // Task 3 --- Priority = 5
+    g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 
-void configSPI(void){
-    // SPI CUSTOM INIT HERE
+    // Task 4 --- Priority = 5
+    g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
+
+    // Task 5 --- Priority = 6
+    g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }

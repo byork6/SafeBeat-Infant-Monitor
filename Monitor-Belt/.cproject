@@ -45,7 +45,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/power_shutdown_task"/>
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/temperature_monitoring_task"/>
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/display_driver_task"/>
-                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/ble_central_task"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/ble_peripheral_task"/>
                                     <listOptionValue value="${PROJECT_LOC}/Application"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti"/>

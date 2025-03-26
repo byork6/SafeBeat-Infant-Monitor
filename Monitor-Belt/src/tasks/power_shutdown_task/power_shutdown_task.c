@@ -40,7 +40,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
 
         printf("SHOULD NOT PASS THIS.\n");
         // If it does re-create all tasks for proper BIOS execution
-        createAllResources();
+        constructAllResources();
     }
 }
 
@@ -51,19 +51,17 @@ void powerShutdownISR(uint_least8_t index){
 }
 
 void destructAllResources() {
-    // Force close and unmounting of sd card before shutdown
-    cleanupSDCard();
-    
     // NOTE: ALL TASKS, SEMAPHORES, AND EVENTS MUST BE DESTRUCTED BEFORE "Power_shutdown()"" IS FORCED
     // ONCE THE MCU REBOOTS FROM A SHUTDOWN THEY MUST BE RE-CREATED FROM SCRATCH
     if (g_powerShutdownSemaphoreHandle != NULL){
         Semaphore_destruct(g_powerShutdownSemaphoreHandle);
         printf("Power shutdown semaphore destructed.\n");
     }
-    if (g_microSdWriteTaskHandle != NULL){
-        Task_destruct(g_microSdWriteTaskHandle);
-        printf("MicroSD write task destructed.\n");
-    }
+    // TODO: Uncomment when BLE is ready
+    // if (g_blePeripheralTaskHandle != NULL){
+    //     Task_destruct(g_blePeripheralTaskHandle);
+    //     printf("Temperature monitoring task destructed.\n");
+    // }
     if (g_temperatureMonitoringTaskHandle != NULL){
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printf("Temperature monitoring task destructed.\n");
