@@ -1,8 +1,10 @@
 #pragma once
 
 #include <icall.h>
-#include <icall_ble_api.h>
+#include <icall_addrs.h>
+#include <icall_user_config.h>
 #include <icall_platform.h>
+#include <icall_ble_api.h>
 #include <gap.h>
 #include <gatt.h>
 #include <gattservapp.h>
