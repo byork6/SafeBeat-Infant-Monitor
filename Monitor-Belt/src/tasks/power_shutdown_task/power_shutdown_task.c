@@ -57,11 +57,10 @@ void destructAllResources() {
         Semaphore_destruct(g_powerShutdownSemaphoreHandle);
         printf("Power shutdown semaphore destructed.\n");
     }
-    // TODO: Uncomment when BLE is ready
-    // if (g_blePeripheralTaskHandle != NULL){
-    //     Task_destruct(g_blePeripheralTaskHandle);
-    //     printf("Temperature monitoring task destructed.\n");
-    // }
+    if (g_blePeripheralTaskHandle != NULL){
+        Task_destruct(g_blePeripheralTaskHandle);
+        printf("Temperature monitoring task destructed.\n");
+    }
     if (g_temperatureMonitoringTaskHandle != NULL){
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printf("Temperature monitoring task destructed.\n");

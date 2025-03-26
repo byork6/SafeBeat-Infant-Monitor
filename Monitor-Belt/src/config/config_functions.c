@@ -15,8 +15,7 @@ void constructAllResources() {
     g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
     // Task 2 --- Priority = 2
-    // TODO: BLE task goes here.
-    // g_blePeripheralTaskHandle = blePeripheral_constructTask();
+    g_blePeripheralTaskHandle = blePeripheral_constructTask();
         
     // Task 3 --- Priority = 5
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);

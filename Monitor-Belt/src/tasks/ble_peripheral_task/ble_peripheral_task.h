@@ -1,9 +1,27 @@
 #pragma once
 
+// UTIL
+#include <util.h>
+
+// ICALL
 #include <icall.h>
-#include <icall_ble_api.h>
+#include <icall_addrs.h>
+#include <icall_user_config.h>
+#include <icall_platform.h>
+
+//ICALL BLE
+#include <icall_ble_apimsg.h>
+#include <ble_user_config.h>
+
+// INCLUDE
 #include <gap.h>
+#include <gapbondmgr.h>
+#include <gapgattserver.h>
 #include <gatt.h>
+#include <hci.h>
+#include <osal_snv.h>
+
+// Custom
 #include <gattservapp.h>
 #include <gap_scanner.h>
 #include <gap_initiator.h>
