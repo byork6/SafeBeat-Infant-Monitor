@@ -63,7 +63,7 @@ void BLECentral_init(void){
 void BLECentral_startScanning(void){
     GapScan_setPhyParams(DEFAULT_SCAN_PHY, SCAN_TYPE_PASSIVE, SCAN_INTERVAL, SCAN_WINDOW);
     GapScan_setParam(SCAN_PARAM_RPT_FIELDS, &scanResFields);
-    GapScan_registerCb(scanCallback, NULL);
+    GapScan_registerCb(scanCallback, (uintptr_t)NULL);
 
     GapScan_enable(0, 0, 0);  // 0=continuous scan, 0 timeout, 0 numAdvReports
 }
@@ -80,7 +80,7 @@ void scanCallback(uint32_t event, void *ptrBuf, uintptr_t arg){
 }
 
 void BLECentral_connectToPeripheral(uint8_t *peerAddr, uint8_t addrType){
-    GapInit_connect(peerAddr, addrType, DEFAULT_INIT_PHY, 0);
+    GapInit_connect(addrType, peerAddr, DEFAULT_INIT_PHY, 0);
 }
 
 void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle){
