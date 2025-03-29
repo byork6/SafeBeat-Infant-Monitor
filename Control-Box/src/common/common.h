@@ -49,6 +49,10 @@
 #define GPIO_SET_OUT_AND_DRIVE_HIGH (GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH)
 #define SD_SPI_CSN_PIN              11
 #define DISPLAY_SPI_CSN_PIN         12
+//Display SPI pins
+#define TFT_CS                      DISPLAY_SPI_CSN_PIN
+#define TFT_PD                      13   // May not be the correct pin numbers. might need to change
+#define TFT_INT                     14   // May not be the correct pin numbers. might need to change
 // Clock timing
 // Clock_tickPeriod = 10 us --- i.e. 25,000 Ticks = 250 ms --- The macros below convert common time units into ticks to use in delay routines.
 #define SECONDS_TO_TICKS(seconds)           ((seconds) * 100000)                      
@@ -83,6 +87,10 @@ extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
 
+// SPI & Display Mutex Globals
+extern SPI_Handle spiHandle;       // Global handle for SPI communication (used for display)
+//extern Mutex_Handle spiMutex;     // Mutex for safely sharing SPI bus across multiple tasks
+
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
 #include "../tasks/microSD_write_task/microSD_write_task.h"
@@ -116,6 +124,8 @@ extern CircularQueue displayMemQueue;
 * @note This function assumes that all task stacks and structures 
 *       are properly defined globally and available for use.
 */
+void *mainThread(void *arg0);
+void initializeDrivers(void);
 void createAllResources();
 
 /**

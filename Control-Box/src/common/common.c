@@ -1,10 +1,39 @@
 #include "common.h"
+#include "ti_drivers_config.h"
 
 // Define global variables
 // Global task sleep duration in ticks -- Global variable used to change all task delays dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
+SPI_Handle spiHandle = NULL;
+//Mutex_Handle spiMutex = NULL;
+
+void initializeDrivers(void) {
+    GPIO_init();
+    SPI_init();
+
+    // Configure GPIOs for FT813 display
+    GPIO_setConfig(TFT_CS, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
+    GPIO_setConfig(TFT_PD, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
+    GPIO_setConfig(TFT_INT, GPIO_CFG_INPUT | GPIO_CFG_IN_NOPULL);
+
+    // Initialize SPI
+    SPI_Params spiParams;
+    SPI_Params_init(&spiParams);
+    spiParams.frameFormat = SPI_POL0_PHA0;
+    spiParams.dataSize = 8;
+    spiParams.bitRate = 1000000;
+    spiHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
+    if (!spiHandle) {
+        printf("SPI initialization failed!\n");
+        while (1);
+    }
+// Create SPI mutex for safe sharing
+    //Mutex_Params mutexParams;
+    //Mutex_Params_init(&mutexParams);
+    //spiMutex = Mutex_create(&mutexParams, NULL);
+}
 
 void createAllResources() {
     // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
@@ -26,6 +55,12 @@ void createAllResources() {
     // Task 6 --- Priority = 6
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
+
+/*void *mainThread(void *arg0) {
+    initializeDrivers();
+    createAllResources();
+    return NULL;
+}*/
 
 void logData(int heartRate, int respiratoryRate, const char* timestamp) {
     char logEntry[128] = {0};  // Temporary buffer for formatted string
@@ -89,3 +124,4 @@ void testGpio(uint32_t pin_config_index){
         GPIO_toggle(pin_config_index);
     }
 }
+
