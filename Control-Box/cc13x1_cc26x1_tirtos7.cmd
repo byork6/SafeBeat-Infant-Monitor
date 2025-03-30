@@ -120,6 +120,7 @@ SECTIONS
         . += HEAPSIZE;
         __primary_heap_end__ = .;
     } > SRAM align 8
+
     .gpram          :   > GPRAM
 
     .log_data       :   > LOG_DATA, type = COPY
@@ -128,5 +129,7 @@ SECTIONS
 
 --symbol_map __TI_STACK_SIZE=__STACK_SIZE
 --symbol_map __TI_STACK_BASE=__stack
+--symbol_map heapStart=__primary_heap_start__
+--symbol_map heapEnd=__primary_heap_end__
 
 -u_c_int00

@@ -11,7 +11,15 @@
  */
 const ble         = scripting.addModule("/ti/ble5stack/ble");
 const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM", {}, false);
+const AESCCM1     = AESCCM.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG", {}, false);
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB", {}, false);
+const AESECB1     = AESECB.addInstance();
 const Board       = scripting.addModule("/ti/drivers/Board");
+const ECDH        = scripting.addModule("/ti/drivers/ECDH", {}, false);
+const ECDH1       = ECDH.addInstance();
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
@@ -23,14 +31,19 @@ const GPIO7       = GPIO.addInstance();
 const GPIO8       = GPIO.addInstance();
 const GPIO9       = GPIO.addInstance();
 const GPIO10      = GPIO.addInstance();
+const NVS         = scripting.addModule("/ti/drivers/NVS", {}, false);
+const NVS1        = NVS.addInstance();
 const PWM         = scripting.addModule("/ti/drivers/PWM", {}, false);
 const PWM1        = PWM.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
+const RF          = scripting.addModule("/ti/drivers/RF");
 const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
 const SPI2        = SPI.addInstance();
+const TRNG        = scripting.addModule("/ti/drivers/TRNG", {}, false);
+const TRNG1       = TRNG.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
 const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
 const UART21      = UART2.addInstance();
@@ -58,7 +71,15 @@ CCFG.dioBootloaderBackdoor    = 18;
 CCFG.levelBootloaderBackdoor  = "Active low";
 CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
+AESCCM1.$name = "Board_AESCCM0";
+
+AESCTRDRBG1.$name = "CONFIG_AESCTRDRBG_0";
+
+AESECB1.$name = "CONFIG_AESECB_0";
+
 Board.generateInitializationFunctions = false;
+
+ECDH1.$name = "CONFIG_ECDH_0";
 
 GPIO1.mode            = "Output";
 GPIO1.$name           = "CONFIG_GREEN_LED";
@@ -102,6 +123,11 @@ GPIO10.$name           = "CONFIG_DISPLAY_CS";
 GPIO10.mode            = "Output";
 GPIO10.gpioPin.$assign = "DIO_12";
 
+NVS1.$name                    = "CONFIG_NVSINTERNAL";
+NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
+NVS1.internalFlash.regionBase = 0x48000;
+NVS1.internalFlash.regionSize = 0x4000;
+
 PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
 PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
 PWM1.timerObject.timer.$assign        = "GPTM0";
@@ -109,6 +135,12 @@ PWM1.timerObject.timer.pwmPin.$assign = "DIO_24";
 PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
+
+RF.pinSelectionAntenna                      = 2;
+RF.rfAntennaPinSymbol0                      = "CONFIG_RF_24GHZ";
+RF.rfAntennaPinSymbol1                      = "CONFIG_RF_HIGH_PA";
+RF.rfAntennaPin0Instance.initialOutputState = scripting.forceWrite("Low");
+RF.rfAntennaPin1Instance.initialOutputState = scripting.forceWrite("Low");
 
 SD1.useFatFS             = true;
 SD1.$name                = "CONFIG_SD";
@@ -149,9 +181,13 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
+TRNG1.$name = "CONFIG_TRNG_0";
+
 UART21.$name              = "BOOTLOADER_UART";
 UART21.uart.txPin.$assign = "DIO_17";
 UART21.uart.rxPin.$assign = "DIO_16";
+
+Settings.enableMutexPriority = true;
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -192,4 +228,6 @@ System.supportModule   = "SysCallback";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-UART21.uart.$suggestSolution = "UART0";
+RF.rfAntennaPin0.$suggestSolution = "DIO_5";
+RF.rfAntennaPin1.$suggestSolution = "DIO_6";
+UART21.uart.$suggestSolution      = "UART0";

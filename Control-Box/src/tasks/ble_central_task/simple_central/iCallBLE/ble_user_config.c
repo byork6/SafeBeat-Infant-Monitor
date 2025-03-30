@@ -673,5 +673,7 @@ void DefaultAssertCback(uint8 assertCause, uint8 assertSubcause)
 // Application Assert Callback Function Pointer
 assertCback_t appAssertCback = DefaultAssertCback;
 
+const uint32_t user0Cfg = 0;
+
 /*******************************************************************************
  */

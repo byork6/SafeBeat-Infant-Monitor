@@ -1,31 +1,26 @@
 #pragma once
 
-// UTIL
-#include <util.h>
-
-// ICALL
+// BLE5Stack_Flash
 #include <icall.h>
+#include <icall_ble_api.h>
+#include <ble_user_config.h>
+#include <gap.h>
+#include <gatt.h>
+#include <gapbondmgr.h>
+#include <gapgattserver.h>
+#include <osal_snv.h>
+#include <gattservapp.h>
 #include <icall_addrs.h>
 #include <icall_user_config.h>
 #include <icall_platform.h>
-
-//ICALL BLE
 #include <icall_ble_apimsg.h>
-#include <ble_user_config.h>
-
-// INCLUDE
-#include <gap.h>
-#include <gapbondmgr.h>
-#include <gapgattserver.h>
-#include <gatt.h>
 #include <hci.h>
-#include <osal_snv.h>
+#include <util.h>
 
-// Custom
-#include <gattservapp.h>
-#include <gap_scanner.h>
-#include <gap_initiator.h>
-#include <bcomdef.h>
+// NV
+#include <crc.h>
+#include <nvintf.h>
+#include <nvocmp.h>
 
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
@@ -110,3 +105,5 @@ void BLECentral_connectToPeripheral(uint8_t *peerAddr, uint8_t addrType);
  * @param charHandle Handle of the characteristic to read.
  */
 void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle);
+
+void rfDriverCallbackAntennaSwitching(void);

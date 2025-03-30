@@ -89,3 +89,7 @@ void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle){
 
     GATT_ReadCharValue(connHandle, &req, selfEntity);
 }
+
+void rfDriverCallbackAntennaSwitching(void) {
+    // Empty stub
+}

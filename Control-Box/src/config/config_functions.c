@@ -9,6 +9,11 @@ void initBOARD(void){
     Temperature_init();
     ICall_init();
     ICall_createRemoteTasks();
+    ECDH_init();
+    AESECB_init();
+    AESCCM_init();
+    TRNG_init();
+    AESCTRDRBG_init();
 }
 
 void constructAllResources() {
