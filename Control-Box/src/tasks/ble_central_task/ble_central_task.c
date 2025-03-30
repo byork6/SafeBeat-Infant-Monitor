@@ -20,6 +20,8 @@ Task_Handle bleCentral_constructTask(){
 void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
+    
+    // TODO: Copy init stuff from main() from the simple_central example
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
