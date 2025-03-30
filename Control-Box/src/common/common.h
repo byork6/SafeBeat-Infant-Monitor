@@ -98,6 +98,10 @@ extern SPI_Handle spiHandle;       // Global handle for SPI communication (used 
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 #include "../tasks/display_driver_task/display_driver.h"
+#include "../tasks/display_driver_task/EVE2_Library/Eve2_81x.h"
+#include "../tasks/display_driver_task/EVE2_Library/hw_api.h"
+#include "../tasks/display_driver_task/EVE2_Library/MatrixEve2Conf.h"
+#include "../tasks/display_driver_task/EVE2_Library/touch_cap_811.h"
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
