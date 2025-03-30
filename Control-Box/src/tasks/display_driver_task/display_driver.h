@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ti/sysbios/knl/Task.h>
-
 // Define task parameters
 #define DISPLAY_DRIVER_TASK_STACK_SIZE   (DISPLAY_DRIVER_STACK_SIZE)
 #define DISPLAY_DRIVER_TASK_PRIORITY     (DISPLAY_DRIVER_PRIORITY)
