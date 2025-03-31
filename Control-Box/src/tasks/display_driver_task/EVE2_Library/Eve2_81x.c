@@ -106,6 +106,7 @@ int FT81x_Init(int display, int board, int touch)
 	int CSPREAD;
 	int DITHER;
 
+    printf("Enter switch...\n");
 	switch (display)
 	{
 	case  DISPLAY_70:
@@ -307,23 +308,30 @@ int FT81x_Init(int display, int board, int touch)
 	HOffset = PIXHOFFSET;
 	VOffset = PIXVOFFSET;
 	Touch = touch;
+    printf("Eve_Reset...\n");
 	Eve_Reset(); // Hard reset of the Eve chip
 
 	// Wakeup Eve	
+    printf("Wakeup eve...\n");
 	if (board >= BOARD_EVE3)
 	{
 		HostCommand(HCMD_CLKEXT);
 	}	
+    printf("Host cmd...\n");
 	HostCommand(HCMD_ACTIVE);
+    printf("Hal delay...\n");
 	HAL_Delay(300);
 
+    printf("Do rdy...\n");
 	do
 	{
+        printf("Spinning...");
 		Ready = Cmd_READ_REG_ID();
 	} while (!Ready);
 
 	//  Log("Eve now ACTIVE\n");         //
 
+    printf("Eve ready...\n");
 	Ready = rd32(REG_CHIP_ID);
 	uint16_t ValH = Ready >> 16;
 	uint16_t ValL = Ready & 0xFFFF;
@@ -592,6 +600,7 @@ uint8_t Cmd_READ_REG_ID(void)
   HAL_SPI_ReadBuffer(readData, 1);       // There was a dummy read of the first byte in there
   HAL_SPI_Disable();
   
+  
   if (readData[0] == 0x7C)           // FT81x Datasheet section 5.1, Table 5-2. Return value always 0x7C
   {
 //    Log("\nGood ID: 0x%02x\n", readData[0]);
@@ -600,6 +609,7 @@ uint8_t Cmd_READ_REG_ID(void)
   else
   {
 //    Log("0x%02x ", readData[0]);
+    printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
     return 0;
   }
 }
