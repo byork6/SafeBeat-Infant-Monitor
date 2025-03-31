@@ -15,8 +15,6 @@ Task_Handle displayDriver_constructTask(void);
 
 void displayDriver_executeTask(UArg arg0, UArg arg1);
 
-void initDisplay(void);
-
 void renderDisplay(int heartRate, int respirationRate);
 
 void initializeDrivers(void);

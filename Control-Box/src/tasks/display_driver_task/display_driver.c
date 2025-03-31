@@ -23,25 +23,30 @@ Task_Handle displayDriver_constructTask(){
 void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
+    int i = 0;
+
+    SPI_Params spiParams;
+    SPI_Params_init(&spiParams);
+
+    g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
 
     printf("Entering displayDriver_executeTask()...\n");
-    initDisplay();
-
-    static int loopCounter = 0;
 
     while (1) {
+        i++;
+        printf("Display driver Count: %d\n", i);
+
+        if (g_spiDisplayHandle == NULL){
+            printf("Display SPI not initialized.\n");
+            Task_sleep(g_taskSleepDuration);
+            continue;
+        }
+
         // Placeholder test values — replace with real data later
         int testHeartRate = 110;
         int testRespirationRate = 35;
 
-        // Optional: task loop counter for debugging
-        loopCounter++;
-        printf("Display Loop Count: %d\n", loopCounter);
-
-        // Safe SPI access using mutex
-        //Mutex_pend(spiMutex, BIOS_WAIT_FOREVER);
-        renderDisplay(testHeartRate, testRespirationRate);
-        //Mutex_post(spiMutex);
+        // TODO: add code here
 
         Task_sleep(g_taskSleepDuration);  // Sleep for configured duration
     }
@@ -57,19 +62,6 @@ void spiWriteFT813(uint8_t *data, size_t len) {
     GPIO_write(TFT_CS, 0);                     // Pull CS low to start transaction
     SPI_transfer(spiHandle, &transaction);     // Use shared handle from common.c
     GPIO_write(TFT_CS, 1);                     // Pull CS high to end transaction
-}
-
-void initDisplay(void) {
-    printf("Initializing FT813 Display...\n");
-
-    // Placeholder command — FT813 requires the correct sequence to be implemented here
-    uint8_t Command[] = { 0x00, 0x00, 0x00 }; //dummy statements
-    printf("hello");
-    //Mutex_pend(spiMutex, BIOS_WAIT_FOREVER);
-    spiWriteFT813(Command, sizeof(Command));
-    //Mutex_post(spiMutex);
-
-    printf("FT813 Initialized.\n");
 }
 
 void renderDisplay(int heartRate, int respirationRate) {
