@@ -25,9 +25,9 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg1;
     int i = 0;
 
+    // Init SPI
     SPI_Params spiParams;
     SPI_Params_init(&spiParams);
-
     g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
 
     printf("Entering displayDriver_executeTask()...\n");
@@ -48,20 +48,8 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
 
         // TODO: add code here
 
-        Task_sleep(g_taskSleepDuration);  // Sleep for configured duration
+        Task_sleep(g_taskSleepDuration);
     }
-}
-
-
-void spiWriteFT813(uint8_t *data, size_t len) {
-    SPI_Transaction transaction;
-    transaction.count = len;
-    transaction.txBuf = data;
-    transaction.rxBuf = NULL;
-
-    GPIO_write(TFT_CS, 0);                     // Pull CS low to start transaction
-    SPI_transfer(spiHandle, &transaction);     // Use shared handle from common.c
-    GPIO_write(TFT_CS, 1);                     // Pull CS high to end transaction
 }
 
 void renderDisplay(int heartRate, int respirationRate) {
@@ -73,30 +61,4 @@ void renderDisplay(int heartRate, int respirationRate) {
     }
 
     // We need to replace printf() with FT813 draw-text commands once graphics integration starts
-}
-
-void initializeDrivers(void) {
-    GPIO_init();
-    SPI_init();
-
-    // Configure GPIOs for FT813 display
-    GPIO_setConfig(TFT_CS, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
-    GPIO_setConfig(TFT_PD, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
-    GPIO_setConfig(TFT_INT, GPIO_CFG_INPUT | GPIO_CFG_IN_NOPULL);
-
-    // Initialize SPI
-    SPI_Params spiParams;
-    SPI_Params_init(&spiParams);
-    spiParams.frameFormat = SPI_POL0_PHA0;
-    spiParams.dataSize = 8;
-    spiParams.bitRate = 1000000;
-    spiHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
-    if (!spiHandle) {
-        printf("SPI initialization failed!\n");
-        while (1);
-    }
-    // Create SPI mutex for safe sharing
-    //Mutex_Params mutexParams;
-    //Mutex_Params_init(&mutexParams);
-    //spiMutex = Mutex_create(&mutexParams, NULL);
 }
