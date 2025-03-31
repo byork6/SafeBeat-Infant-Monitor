@@ -19,9 +19,11 @@ uint8_t HAL_SPI_Write(uint8_t data){
     transaction.rxBuf = &rxBuf;
 
     if (SPI_transfer(g_spiDisplayHandle, &transaction)) {
+        // printf("HAL_SPI_Write: Returned rxBuf 0x%02X\n", rxBuf);
         return rxBuf;
     } else {
-        return 0xFF;  // This return statement shows that there is a failure
+        printf("HAL_SPI_Write Failed!\n");
+        return 0xFF;
     }
 }
 
@@ -52,7 +54,11 @@ void HAL_Delay(uint32_t milliSeconds){
 }
 
 void HAL_Eve_Reset_HW(void){
-    // Optional --- Toggles reset GPIO pin if one is being used.
+    GPIO_write(CONFIG_DISPLAY_SPI_PD, 0);  // Enter reset
+    Task_sleep(MS_TO_TICKS(20));            // 20 ms
+    
+    GPIO_write(CONFIG_DISPLAY_SPI_PD, 1);  // Exit reset
+    Task_sleep(MS_TO_TICKS(300));          // Wait 300 ms
 }
 
 void HAL_Close(void){
