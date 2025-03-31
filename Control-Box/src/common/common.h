@@ -86,10 +86,7 @@ typedef struct {
 extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
-
-// SPI & Display Mutex Globals
-extern SPI_Handle spiHandle;       // Global handle for SPI communication (used for display)
-//extern Mutex_Handle spiMutex;     // Mutex for safely sharing SPI bus across multiple tasks
+extern SPI_Handle g_spiHandle;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
