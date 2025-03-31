@@ -1,4 +1,5 @@
 #include "../../common/common.h"
+#include "EVE2_Library/hw_api.h"
 
 // Define global variable for spi handle --- declared in common.h using extern
 SPI_Handle g_spiDisplayHandle = NULL;
@@ -23,10 +24,16 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
     int i = 0;
+    
+    HAL_Eve_Reset_HW();
 
     // Init SPI
     while (g_spiDisplayHandle == NULL){
         SPI_Params spiParams;
+        spiParams.bitRate = 1000000;                     // 1 MHz (slow and safe)
+        spiParams.frameFormat = SPI_POL0_PHA0;           // FT81x expects SPI Mode 0
+        spiParams.dataSize = 8;                          // 8 bits per word
+
         SPI_Params_init(&spiParams);
         g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
 
@@ -41,8 +48,7 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     }
 
     printf("Selecting display...\n");
-    GPIO_write(SD_SPI_CSN_PIN, 1);
-    GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
+    HAL_SPI_Enable();
 
     // Init Display
     printf("Entering FT81x_init...\n");
