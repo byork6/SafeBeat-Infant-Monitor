@@ -40,12 +40,16 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         }
     }
 
+    printf("Selecting display...\n");
     GPIO_write(SD_SPI_CSN_PIN, 1);
     GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
 
     // Init Display
+    printf("Entering FT81x_init...\n");
     FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
+    printf("Clear screen...\n");
     ClearScreen();
+    printf("Make screen...\n");
     MakeScreen_MatrixOrbital(30);
 
     printf("Entering displayDriver_executeTask()...\n");

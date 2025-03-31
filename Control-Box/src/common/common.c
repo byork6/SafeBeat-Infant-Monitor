@@ -14,7 +14,7 @@ void createAllResources() {
     g_powerShutdownTaskHandle = powerShutdown_constructTask();
 
     // Task 2 --- Priority = 2
-    g_microSdWriteTaskHandle = microSdWrite_constructTask();
+    // g_microSdWriteTaskHandle = microSdWrite_constructTask();
 
     // Task 3 --- Priority = 3
     g_displayDriverTaskHandle = displayDriver_constructTask();
