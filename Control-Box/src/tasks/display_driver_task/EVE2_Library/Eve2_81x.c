@@ -325,7 +325,7 @@ int FT81x_Init(int display, int board, int touch)
     printf("Do rdy...\n");
 	do
 	{
-        printf("Spinning...");
+        printf("Spinning...\n");
 		Ready = Cmd_READ_REG_ID();
 	} while (!Ready);
 
@@ -604,12 +604,15 @@ uint8_t Cmd_READ_REG_ID(void)
   if (readData[0] == 0x7C)           // FT81x Datasheet section 5.1, Table 5-2. Return value always 0x7C
   {
 //    Log("\nGood ID: 0x%02x\n", readData[0]);
+    printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
+    printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
     return 1;
   }
   else
   {
 //    Log("0x%02x ", readData[0]);
     printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
+    printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
     return 0;
   }
 }
