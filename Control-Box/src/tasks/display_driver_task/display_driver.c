@@ -1,8 +1,7 @@
 #include "../../common/common.h"
 
-Task_Struct g_DisplayDriverTaskStruct;
-Task_Handle g_displayDriverTaskHandle;
-uint8_t g_displayDriverTaskStack[DISPLAY_DRIVER_TASK_STACK_SIZE];
+// Define global variable for spi handle --- declared in common.h using extern
+SPI_Handle g_spiDisplayHandle = NULL;
 
 Task_Handle displayDriver_constructTask(){
     // Construct task
