@@ -1,13 +1,12 @@
 #include "../../../common/common.h"
 
-// Globarl Vars
-SPI_Handle g_spiHandle;
-
 void HAL_SPI_Enable(void){
+    GPIO_write(CONFIG_SD_SPI_CS, 1);
     GPIO_write(CONFIG_DISPLAY_CS, 0);
 }
 
 void HAL_SPI_Disable(void){
+    GPIO_write(CONFIG_SD_SPI_CS, 0);
     GPIO_write(CONFIG_DISPLAY_CS, 1);
 }
 
@@ -19,7 +18,7 @@ uint8_t HAL_SPI_Write(uint8_t data){
     transaction.txBuf = &data;
     transaction.rxBuf = &rxBuf;
 
-    if (SPI_transfer(g_spiHandle, &transaction)) {
+    if (SPI_transfer(g_spiDisplayHandle, &transaction)) {
         return rxBuf;
     } else {
         return 0xFF;  // This return statement shows that there is a failure
@@ -34,7 +33,7 @@ void HAL_SPI_WriteBuffer(uint8_t *Buffer, uint32_t Length){
     transaction.txBuf = Buffer;
     transaction.rxBuf = NULL;
 
-    SPI_transfer(g_spiHandle, &transaction);
+    SPI_transfer(g_spiDisplayHandle, &transaction);
 }
 
 void HAL_SPI_ReadBuffer(uint8_t *Buffer, uint32_t Length){
@@ -45,7 +44,7 @@ void HAL_SPI_ReadBuffer(uint8_t *Buffer, uint32_t Length){
     transaction.txBuf = &dummyTx;
     transaction.rxBuf = Buffer;
 
-    SPI_transfer(g_spiHandle, &transaction);
+    SPI_transfer(g_spiDisplayHandle, &transaction);
 }
 
 void HAL_Delay(uint32_t milliSeconds){
@@ -57,5 +56,5 @@ void HAL_Eve_Reset_HW(void){
 }
 
 void HAL_Close(void){
-    SPI_close(g_spiHandle);
+    SPI_close(g_spiDisplayHandle);
 }
