@@ -38,6 +38,9 @@ void microSdWrite_executeTask(UArg arg0, UArg arg1){
         i++;
         printf("MicroSdWrite Count: %d\n", i);
         
+        GPIO_write(SD_SPI_CSN_PIN, 0);
+        GPIO_write(DISPLAY_SPI_CSN_PIN, 1);
+        
         // Check for mounted header and proper FatFS init
         if (initSDCard() == SD_INIT_FAILED){
             Task_sleep(g_taskSleepDuration);

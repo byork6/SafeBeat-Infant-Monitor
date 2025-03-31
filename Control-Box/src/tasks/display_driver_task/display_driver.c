@@ -40,6 +40,9 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         }
     }
 
+    GPIO_write(SD_SPI_CSN_PIN, 1);
+    GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
+
     // Init Display
     FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
     ClearScreen();
@@ -54,6 +57,10 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         // Placeholder test values — replace with real data later
         int testHeartRate = 110;
         int testRespirationRate = 35;
+
+        GPIO_write(SD_SPI_CSN_PIN, 1);
+        GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
+        
         Task_sleep(g_taskSleepDuration);
     }
 }
