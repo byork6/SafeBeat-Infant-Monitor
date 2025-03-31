@@ -25,9 +25,20 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     int i = 0;
 
     // Init SPI
-    SPI_Params spiParams;
-    SPI_Params_init(&spiParams);
-    g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
+    while (g_spiDisplayHandle == NULL){
+        SPI_Params spiParams;
+        SPI_Params_init(&spiParams);
+        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
+
+        if (g_spiDisplayHandle != NULL){
+            printf("Display SPI initialized.\n");
+            break;
+        }
+        else{
+            printf("Display SPI not initialized, trying again...\n");
+            Task_sleep(g_taskSleepDuration);
+        }
+    }
 
     // Init Display
     FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
@@ -38,12 +49,6 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     while (1) {
         i++;
         printf("Display driver Count: %d\n", i);
-
-        if (g_spiDisplayHandle == NULL){
-            printf("Display SPI not initialized.\n");
-            Task_sleep(g_taskSleepDuration);
-            continue;
-        }
 
         // Placeholder test values — replace with real data later
         int testHeartRate = 110;
