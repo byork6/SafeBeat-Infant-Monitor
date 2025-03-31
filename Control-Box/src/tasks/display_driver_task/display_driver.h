@@ -43,6 +43,9 @@ Task_Handle displayDriver_constructTask(void);
  */
 void displayDriver_executeTask(UArg arg0, UArg arg1);
 
+void ClearScreen(void);
+
+void MakeScreen_MatrixOrbital(uint8_t DotSize);
 
 /**
  * @brief Renders heart rate and respiration rate values to the display.

@@ -29,6 +29,10 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     SPI_Params_init(&spiParams);
     g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
 
+    // Init Display
+    FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
+    ClearScreen();
+
     printf("Entering displayDriver_executeTask()...\n");
 
     while (1) {
@@ -49,6 +53,35 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
 
         Task_sleep(g_taskSleepDuration);
     }
+}
+
+void ClearScreen(void){
+	Send_CMD(CMD_DLSTART);
+	Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));
+	Send_CMD(CLEAR(1, 1, 1));
+	Send_CMD(DISPLAY());
+	Send_CMD(CMD_SWAP);
+	UpdateFIFO();                            // Trigger the CoProcessor to start processing commands out of the FIFO
+	Wait4CoProFIFOEmpty();                   // wait here until the coprocessor has read and executed every pending command.		
+	HAL_Delay(10);
+}
+
+void MakeScreen_MatrixOrbital(uint8_t DotSize){
+	Send_CMD(CMD_DLSTART);                   //Start a new display list
+	Send_CMD(VERTEXFORMAT(0));               //setup VERTEX2F to take pixel coordinates
+	Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));      //Determine the clear screen color
+	Send_CMD(CLEAR(1, 1, 1));	               //Clear the screen and the curren display list
+	Send_CMD(COLOR_RGB(26, 26, 192));        // change colour to blue
+	Send_CMD(POINT_SIZE(DotSize * 16));      // set point size to DotSize pixels. Points = (pixels x 16)
+	Send_CMD(BEGIN(POINTS));                 // start drawing point
+	Send_CMD(TAG(1));                        // Tag the blue dot with a touch ID
+	Send_CMD(VERTEX2F(Display_Width() / 2, Display_Height() / 2));     // place blue point
+	Send_CMD(END());                         // end drawing point
+	Send_CMD(COLOR_RGB(255, 255, 255));      //Change color to white for text
+	Cmd_Text(Display_Width() / 2, Display_Height() / 2, 30, OPT_CENTER, " MATRIX         ORBITAL"); //Write text in the center of the screen
+	Send_CMD(DISPLAY());                     //End the display list
+	Send_CMD(CMD_SWAP);                      //Swap commands into RAM
+	UpdateFIFO();                            // Trigger the CoProcessor to start processing the FIFO
 }
 
 void renderDisplay(int heartRate, int respirationRate) {
