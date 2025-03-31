@@ -25,7 +25,7 @@ void HAL_SPI_ReadBuffer(uint8_t *Buffer, uint32_t Length);
 /* Stall the cpu for X milliseconds */
 void HAL_Delay(uint32_t milliSeconds);
 
-/* Gives an opertunity to reset the EVE hardware */
+/* Gives an opportunity to reset the EVE hardware */
 void HAL_Eve_Reset_HW(void);
 
 /* Cleans up and resources allocated */
