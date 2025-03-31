@@ -86,7 +86,7 @@ typedef struct {
 extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
-extern SPI_Handle g_spiHandle;
+extern SPI_Handle g_spiDisplayHandle;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
