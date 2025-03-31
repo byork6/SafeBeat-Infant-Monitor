@@ -43,6 +43,7 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     // Init Display
     FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
     ClearScreen();
+    MakeScreen_MatrixOrbital(30);
 
     printf("Entering displayDriver_executeTask()...\n");
 
@@ -53,9 +54,6 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         // Placeholder test values — replace with real data later
         int testHeartRate = 110;
         int testRespirationRate = 35;
-
-        // TODO: add code here
-
         Task_sleep(g_taskSleepDuration);
     }
 }
