@@ -2,6 +2,7 @@
 
 void *mainThread(void *arg0){
 
+    // INIT POWER
     // Retrieve power-reset reason
     PowerCC26X2_ResetReason resetReason = PowerCC26X2_getResetReason();
 
@@ -11,6 +12,11 @@ void *mainThread(void *arg0){
         PowerCC26X2_releaseLatches();
     }
 
+    // INIT BLE
+    /* Register Application callback to trap asserts raised in the Stack */
+    RegisterAssertCback(AssertHandler);
+
+    // INIT BOARD
     // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
     initBOARD();
     
@@ -18,8 +24,10 @@ void *mainThread(void *arg0){
     // If the powerbutton is pushed Power_shutdown() will be forced.
     Power_enablePolicy();
     
+    // INIT TASKS
     // Constructs all RTOS tasks before BIOS_start() is called in main_tirtos.c
     constructAllResources();
 
+    // RETURNS TO BIOS_START()
     return NULL;
 }
