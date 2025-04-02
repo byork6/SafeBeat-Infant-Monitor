@@ -31,7 +31,7 @@ Task_Handle microSdWrite_constructTask(){
 void microSdWrite_executeTask(UArg arg0, UArg arg1){
     (void)arg0;
     (void)arg1;
-    int i = 0;
+    static int i = 0;
 
     printf("Entering microSdWrite_executeTask()...\n");
     while(1){

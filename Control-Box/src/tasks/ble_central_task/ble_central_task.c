@@ -20,6 +20,7 @@ Task_Handle bleCentral_constructTask(){
 void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
+    static int i = 0;
     
     // TODO: Copy init stuff from main() from the simple_central example
 
@@ -30,7 +31,11 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
 
     BLECentral_init();
 
+    printf("Entering bleCentral_executeTask()...\n");
     while (1) {
+        i++;
+        printf("BLE Central Count: %d\n", i);
+
         // Wait (block) for BLE stack or system message
         errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
         if (errno == ICALL_ERRNO_SUCCESS) {
@@ -38,7 +43,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
                 if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
                     gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
                     if (gattMsg->method == ATT_READ_RSP) {
-                        // ✅ Access the read data here:
+                        // Access the read data here:
                         uint8_t *value = gattMsg->msg.readRsp.pValue;
                         uint16_t len = gattMsg->msg.readRsp.len;
                         // For debugging
