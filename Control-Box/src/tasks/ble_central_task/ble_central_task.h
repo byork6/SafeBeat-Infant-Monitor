@@ -33,6 +33,13 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
+// Event globally used to post local events and pend on system and local events
+ICall_SyncHandle syncEvent;
+
+// Queue object used for app messages
+Queue_Struct appMsg;
+Queue_Handle appMsgQueue;
+
 // BLE Central Macros
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
 // #define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE

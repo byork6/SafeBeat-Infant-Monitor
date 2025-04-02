@@ -73,31 +73,31 @@ void AssertHandler(uint8 assertCause, uint8 assertSubcause){
   // check the assert cause
     switch (assertCause){
         case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
-            printf("***ERROR***");
-            printf(">> OUT OF MEMORY!");
+            printf("***ERROR***\n");
+            printf(">> OUT OF MEMORY!\n");
             break;
 
         case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
             // check the subcause
             if (assertSubcause == HAL_ASSERT_SUBCAUSE_FW_INERNAL_ERROR){
-                printf("***ERROR***");
-                printf(">> INTERNAL FW ERROR!");
+                printf("***ERROR***\n");
+                printf(">> INTERNAL FW ERROR!\n");
             }
             else{
-                printf("***ERROR***");
-                printf(">> INTERNAL ERROR!");
+                printf("***ERROR***\n");
+                printf(">> INTERNAL ERROR!\n");
             }
             break;
 
         case HAL_ASSERT_CAUSE_ICALL_ABORT:
-            printf("***ERROR***");
-            printf(">> ICALL ABORT!");
+            printf("***ERROR***\n");
+            printf(">> ICALL ABORT!\n");
             HAL_ASSERT_SPINLOCK;
             break;
 
         default:
-            printf("***ERROR***");
-            printf(">> DEFAULT SPINLOCK!");
+            printf("***ERROR***\n");
+            printf(">> DEFAULT SPINLOCK!\n");
             HAL_ASSERT_SPINLOCK;
     }
   return;

@@ -33,8 +33,24 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     static int i = 0;
     
     // TODO: Copy init stuff from main() from the simple_central example
-    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLLE_CENTRAL_TASK_PRIORITY);
+    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
     printf("APP --- init\n");
+
+    // ******************************************************************
+    // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
+    // ******************************************************************
+    // Register the current thread as an ICall dispatcher application
+    // so that the application can send and receive messages.
+    ICall_registerApp(&selfEntity, &syncEvent);
+
+    // Create an RTOS queue for message from profile to be sent to app.
+    appMsgQueue = Util_constructQueue(&appMsg);
+
+    // Initialize internal data
+    // for (i = 0; i < MAX_NUM_BLE_CONNS; i++){
+    //   connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
+    //   connList[i].pRssiClock = NULL;
+    // }
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
