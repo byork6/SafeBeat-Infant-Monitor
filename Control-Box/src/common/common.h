@@ -28,6 +28,9 @@
 #include <AESECB.h>
 #include <ECDH.h>
 
+#include <inc/hw_memmap.h>
+#include <driverlib/vims.h>
+
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Semaphore.h>
