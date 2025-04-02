@@ -25,7 +25,6 @@
 // Example includes
 #include <hal_assert.h>
 
-
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
 #define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
@@ -33,12 +32,24 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
+// Type Definitions
+// Connected device information
+typedef struct
+{
+  uint16_t connHandle;        // Connection Handle
+  uint16_t charHandle;        // Characteristic Handle
+  uint8_t  addr[B_ADDR_LEN];  // Peer Device Address
+  Clock_Struct *pRssiClock;   // pointer to clock struct
+} connRec_t;
+
+// BLE global variables
 // Event globally used to post local events and pend on system and local events
 ICall_SyncHandle syncEvent;
-
 // Queue object used for app messages
 Queue_Struct appMsg;
 Queue_Handle appMsgQueue;
+// List of connections
+connRec_t connList[MAX_NUM_BLE_CONNS];
 
 // BLE Central Macros
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M

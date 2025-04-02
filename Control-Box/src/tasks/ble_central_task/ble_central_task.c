@@ -3,6 +3,8 @@
 // Global Variables
 static uint8_t selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;
+// Number of connected devices
+static uint8_t numConn = 0;
 
 // Define user config
 #ifndef USE_DEFAULT_USER_CFG
@@ -47,10 +49,10 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     appMsgQueue = Util_constructQueue(&appMsg);
 
     // Initialize internal data
-    // for (i = 0; i < MAX_NUM_BLE_CONNS; i++){
-    //   connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
-    //   connList[i].pRssiClock = NULL;
-    // }
+    for (i = 0; i < MAX_NUM_BLE_CONNS; i++){
+      connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
+      connList[i].pRssiClock = NULL;
+    }
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
