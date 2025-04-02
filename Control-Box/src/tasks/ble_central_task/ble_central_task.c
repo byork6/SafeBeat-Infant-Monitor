@@ -34,7 +34,8 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg1;
     static int i = 0;
     
-    // TODO: Copy init stuff from main() from the simple_central example
+    // NOTE: Everything from here until the while loop is from the Simple_Central Example.
+    // All of the code below is for the BLE initializtion.
     BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
     printf("APP --- init\n");
 
@@ -53,6 +54,27 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
       connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
       connList[i].pRssiClock = NULL;
     }
+
+    GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN,(void *)attDeviceName);
+
+    //Set default values for Data Length Extension
+    //Extended Data Length Feature is already enabled by default
+    //in build_config.opt in stack project.
+    {
+      //Change initial values of RX/TX PDU and Time, RX is set to max. by default(251 octets, 2120us)
+      #define APP_SUGGESTED_RX_PDU_SIZE 251     //default is 251 octets(RX)
+      #define APP_SUGGESTED_RX_TIME     17000   //default is 17000us(RX)
+      #define APP_SUGGESTED_TX_PDU_SIZE 27      //default is 27 octets(TX)
+      #define APP_SUGGESTED_TX_TIME     328     //default is 328us(TX)
+
+      //This API is documented in hci.h
+      //See the LE Data Length Extension section in the BLE5-Stack User's Guide for information on using this command:
+      //http://software-dl.ti.com/lprf/ble5stack-latest/
+      HCI_EXT_SetMaxDataLenCmd(APP_SUGGESTED_TX_PDU_SIZE, APP_SUGGESTED_TX_TIME, APP_SUGGESTED_RX_PDU_SIZE, APP_SUGGESTED_RX_TIME);
+    }
+
+    // Initialize GATT Client
+    VOID GATT_InitClient();
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
