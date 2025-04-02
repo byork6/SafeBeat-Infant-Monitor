@@ -22,6 +22,10 @@
 #include <nvintf.h>
 #include <nvocmp.h>
 
+// Example includes
+#include <hal_assert.h>
+
+
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
 #define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
@@ -31,7 +35,8 @@ uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
 // BLE Central Macros
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
-#define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
+// #define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
+#define SCAN_TYPE_PASSIVE          SCAN_PARAM_DFLT_TYPE
 #define SCAN_INTERVAL              160  // 100ms
 #define SCAN_WINDOW                160  // 100ms
 
