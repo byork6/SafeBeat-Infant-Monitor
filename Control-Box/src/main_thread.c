@@ -16,6 +16,12 @@ void *mainThread(void *arg0){
     /* Register Application callback to trap asserts raised in the Stack */
     RegisterAssertCback(AssertHandler);
 
+    // Enable iCache prefetching
+    VIMSConfigure(VIMS_BASE, TRUE, TRUE);
+
+    // Enable cache
+    VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
+
     // INIT BOARD
     // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
     initBOARD();
