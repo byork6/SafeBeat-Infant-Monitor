@@ -33,6 +33,8 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     static int i = 0;
     
     // TODO: Copy init stuff from main() from the simple_central example
+    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLLE_CENTRAL_TASK_PRIORITY);
+    printf("APP --- init\n");
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
