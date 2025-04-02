@@ -3,7 +3,7 @@
 // BLE5Stack_Flash
 #include <icall.h>
 #include <icall_ble_api.h>
-#include <ble_user_config.h>
+// #include <ble_user_config.h>
 #include <gap.h>
 #include <gatt.h>
 #include <gapbondmgr.h>
@@ -39,6 +39,7 @@ uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 #define SCAN_TYPE_PASSIVE          SCAN_PARAM_DFLT_TYPE
 #define SCAN_INTERVAL              160  // 100ms
 #define SCAN_WINDOW                160  // 100ms
+
 
 /**
  * @brief Constructs the BLE Central task.

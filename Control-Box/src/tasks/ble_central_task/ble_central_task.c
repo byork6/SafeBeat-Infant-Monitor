@@ -1,7 +1,17 @@
 #include "common.h"
 
+// Global Variables
 static uint8_t selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;
+
+// Define user config
+#ifndef USE_DEFAULT_USER_CFG
+#include "ble_user_config.h"
+
+// BLE user defined configuration
+icall_userCfg_t user0Cfg = BLE_USER_CFG;
+
+#endif // USE_DEFAULT_USER_CFG
 
 Task_Handle bleCentral_constructTask(){
     Task_Params TaskParams;
