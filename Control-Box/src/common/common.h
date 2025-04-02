@@ -160,3 +160,42 @@ void appendToSdAndDisplayQueue(const char *data);
 * @param pin_config_index - The index of the GPIO pin to be tested. Valid inputs = 5-30
 */
 void testGpio(uint32_t pin_config_index);
+
+
+/*******************************************************************************
+ * @fn          AssertHandler --- FROM EXAMPLE
+ *
+ * @brief       This is the Application's callback handler for asserts raised
+ *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack Wrapper
+ *              project this function will be called when an assert is raised,
+ *              and can be used to observe or trap a violation from expected
+ *              behavior.
+ *
+ *              As an example, for Heap allocation failures the Stack will raise
+ *              HAL_ASSERT_CAUSE_OUT_OF_MEMORY as the assertCause and
+ *              HAL_ASSERT_SUBCAUSE_NONE as the assertSubcause.  An application
+ *              developer could trap any malloc failure on the stack by calling
+ *              HAL_ASSERT_SPINLOCK under the matching case.
+ *
+ *              An application developer is encouraged to extend this function
+ *              for use by their own application.  To do this, add hal_assert.c
+ *              to your project workspace, the path to hal_assert.h (this can
+ *              be found on the stack side). Asserts are raised by including
+ *              hal_assert.h and using macro HAL_ASSERT(cause) to raise an
+ *              assert with argument assertCause.  the assertSubcause may be
+ *              optionally set by macro HAL_ASSERT_SET_SUBCAUSE(subCause) prior
+ *              to asserting the cause it describes. More information is
+ *              available in hal_assert.h.
+ *
+ * input parameters
+ *
+ * @param       assertCause    - Assert cause as defined in hal_assert.h.
+ * @param       assertSubcause - Optional assert subcause (see hal_assert.h).
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+void AssertHandler(uint8 assertCause, uint8 assertSubcause);
