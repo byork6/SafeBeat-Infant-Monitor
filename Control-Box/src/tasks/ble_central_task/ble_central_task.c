@@ -44,6 +44,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg1;
     static int i = 0;
     
+    ///////////////////////////// START OF EXAMPLE CODE INIT /////////////////////////////
     // NOTE: Everything from here until the while loop is from the Simple_Central Example.
     // All of the code below is for the BLE initializtion.
     BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
@@ -113,48 +114,54 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     // Initialize GAP layer for Central role and register to receive GAP events
     GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, addrMode, &pRandomAddress);
 
+    ///////////////////////////// EMD OF EXAMPLE CODE INIT /////////////////////////////
 
-    ICall_Errno errno;
-    ICall_ServiceEnum src;
-    ICall_EntityID dest;
-    ICall_Hdr *pMsg = NULL;
+    ///// MY INIT CODE --- Might be able to delete /////
+    // ICall_Errno errno;
+    // ICall_ServiceEnum src;
+    // ICall_EntityID dest;
+    // ICall_Hdr *pMsg = NULL;
 
-    BLECentral_init();
+    // BLECentral_init();
 
     printf("Entering bleCentral_executeTask()...\n");
     while (1) {
         i++;
         printf("BLE Central Count: %d\n", i);
 
-        // Wait (block) for BLE stack or system message
-        errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
-        if (errno == ICALL_ERRNO_SUCCESS) {
-            if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
-                if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
-                    gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
-                    if (gattMsg->method == ATT_READ_RSP) {
-                        // Access the read data here:
-                        uint8_t *value = gattMsg->msg.readRsp.pValue;
-                        uint16_t len = gattMsg->msg.readRsp.len;
-                        // For debugging
-                        printf("GATT Read Response: Len = %d\n", len);
-                    }
-                    // Free BLE stack buffers
-                    GATT_bm_free(&gattMsg->msg, gattMsg->method);
-                }
-                // Free ICall wrapper
-                ICall_freeMsg(pMsg);
-            }
-        }
-        Task_sleep(g_taskSleepDuration);
+        ///////////////////////////// START OF EXAMPLE LOOP /////////////////////////////
+        // TODO: Add application loop from example here.
+        ////////////////////////////// END OF EXAMPLE LOOP //////////////////////////////
+
+        ////////////////////////////// MY CODE STARTS HERE //////////////////////////////
+        // // Wait (block) for BLE stack or system message
+        // errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
+        // if (errno == ICALL_ERRNO_SUCCESS) {
+        //     if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS) {
+        //         if ((src == ICALL_SERVICE_CLASS_BLE) && (pMsg->event == GATT_MSG_EVENT)) {
+        //             gattMsgEvent_t *gattMsg = (gattMsgEvent_t *)pMsg;
+        //             if (gattMsg->method == ATT_READ_RSP) {
+        //                 // Access the read data here:
+        //                 uint8_t *value = gattMsg->msg.readRsp.pValue;
+        //                 uint16_t len = gattMsg->msg.readRsp.len;
+        //                 // For debugging
+        //                 printf("GATT Read Response: Len = %d\n", len);
+        //             }
+        //             // Free BLE stack buffers
+        //             GATT_bm_free(&gattMsg->msg, gattMsg->method);
+        //         }
+        //         // Free ICall wrapper
+        //         ICall_freeMsg(pMsg);
+        //     }
+        // }
+        // Task_sleep(g_taskSleepDuration);
+        ////////////////////////////// MY CODE ENDS HERE //////////////////////////////
+
     }
 }
 
 void BLECentral_init(void){
-    selfEntity = ICall_registerApp(NULL, NULL);
-
-    // Initialize GAP Central Role
-    GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, ADDRMODE_PUBLIC, NULL);
+    // TODO: Add ex code init block here.
 }
 
 void BLECentral_startScanning(void){
