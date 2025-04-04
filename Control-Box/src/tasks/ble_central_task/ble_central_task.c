@@ -1,7 +1,7 @@
 #include "common.h"
 
 // Global Variables
-static uint8_t selfEntity;
+static ICall_EntityID selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;
 // Number of connected devices
 static uint8_t numConn = 0;
@@ -75,6 +75,16 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
 
     // Initialize GATT Client
     VOID GATT_InitClient();
+
+    // Register to receive incoming ATT Indications/Notifications
+    GATT_RegisterForInd(selfEntity);
+
+    // Initialize GATT attributes
+    GGS_AddService(GAP_SERVICE);               // GAP
+    GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
+
+    // Register for GATT local events and ATT Responses pending for transmission
+    GATT_RegisterForMsgs(selfEntity);
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
