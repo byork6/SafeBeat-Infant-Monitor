@@ -1,20 +1,30 @@
 #include "common.h"
 
-// Global Variables
+// GLOBAL VARIABLES
 static ICall_EntityID selfEntity;
 static uint16_t scanResFields = GAP_ADTYPE_FLAGS | GAP_ADTYPE_16BIT_MORE | GAP_ADTYPE_LOCAL_NAME_COMPLETE;
+
 // Number of connected devices
 static uint8_t numConn = 0;
+
+// Address mode
+static GAP_Addr_Modes_t addrMode = DEFAULT_ADDRESS_MODE;
+
+// Bond Manager Callbacks
+static gapBondCBs_t bondMgrCBs =
+{
+  SimpleCentral_passcodeCb, // Passcode callback
+  SimpleCentral_pairStateCb // Pairing/Bonding state Callback
+};
 
 // Define user config
 #ifndef USE_DEFAULT_USER_CFG
 #include "ble_user_config.h"
-
 // BLE user defined configuration
 icall_userCfg_t user0Cfg = BLE_USER_CFG;
-
 #endif // USE_DEFAULT_USER_CFG
 
+// FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
     Task_Params TaskParams;
 
@@ -85,6 +95,24 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
 
     // Register for GATT local events and ATT Responses pending for transmission
     GATT_RegisterForMsgs(selfEntity);
+
+    // Set Bond Manager parameters
+    setBondManagerParameters();
+
+    // Start Bond Manager and register callback
+    // This must be done before initialing the GAP layer
+    VOID GAPBondMgr_Register(&bondMgrCBs);
+
+    // Accept all parameter update requests
+    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, GAP_UPDATE_REQ_ACCEPT_ALL);
+
+    // Register with GAP for HCI/Host messages (for RSSI)
+    GAP_RegisterForMsgs(selfEntity);
+
+    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- call GAP_DeviceInit", GAP_PROFILE_CENTRAL);
+    // Initialize GAP layer for Central role and register to receive GAP events
+    GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, addrMode, &pRandomAddress);
+
 
     ICall_Errno errno;
     ICall_ServiceEnum src;
@@ -161,4 +189,60 @@ void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle){
 
 void rfDriverCallbackAntennaSwitching(void) {
     // Empty stub
+}
+
+void SimpleCentral_passcodeCb(uint8_t *deviceAddr, uint16_t connHandle, uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison){
+  scPasscodeData_t *pData = ICall_malloc(sizeof(scPasscodeData_t));
+
+  // Allocate space for the passcode event.
+  if (pData)
+  {
+    pData->connHandle = connHandle;
+    memcpy(pData->deviceAddr, deviceAddr, B_ADDR_LEN);
+    pData->uiInputs = uiInputs;
+    pData->uiOutputs = uiOutputs;
+    pData->numComparison = numComparison;
+
+    // Enqueue the event.
+    if (SimpleCentral_enqueueMsg(SC_EVT_PASSCODE_NEEDED, 0,(uint8_t *) pData) != SUCCESS)
+    {
+      ICall_free(pData);
+    }
+  }
+}
+
+void SimpleCentral_pairStateCb(uint16_t connHandle, uint8_t state, uint8_t status){
+  scPairStateData_t *pData;
+
+  // Allocate space for the event data.
+  if ((pData = ICall_malloc(sizeof(scPairStateData_t))))
+  {
+    pData->connHandle = connHandle;
+    pData->status = status;
+
+    // Queue the event.
+    if(SimpleCentral_enqueueMsg(SC_EVT_PAIR_STATE, state, (uint8_t*) pData) != SUCCESS)
+    {
+      ICall_free(pData);
+    }
+  }
+}
+
+status_t SimpleCentral_enqueueMsg(uint8_t event, uint8_t state, int8_t *pData){
+  uint8_t success;
+  scEvt_t *pMsg = ICall_malloc(sizeof(scEvt_t));
+
+  // Create dynamic pointer to message.
+  if (pMsg)
+  {
+    pMsg->hdr.event = event;
+    pMsg->hdr.state = state;
+    pMsg->pData = pData;
+
+    // Enqueue the message.
+    success = Util_enqueueMsg(appMsgQueue, syncEvent, (uint8_t *)pMsg);
+    return (success) ? SUCCESS : FAILURE;
+  }
+
+  return(bleMemAllocError);
 }

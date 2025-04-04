@@ -24,6 +24,7 @@
 
 // Example includes
 #include <hal_assert.h>
+#include <osal_list.h>
 
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
@@ -32,17 +33,70 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
-// Type Definitions
+// TYPE DEFINITIONS
+// Auto connect availble groups
+enum{
+  AUTOCONNECT_DISABLE = 0,              // Disable
+  AUTOCONNECT_GROUP_A = 1,              // Group A
+  AUTOCONNECT_GROUP_B = 2               // Group B
+};
+
+// Discovery states
+enum{
+  BLE_DISC_STATE_IDLE,                // Idle
+  BLE_DISC_STATE_MTU,                 // Exchange ATT MTU size
+  BLE_DISC_STATE_SVC,                 // Service discovery
+  BLE_DISC_STATE_CHAR                 // Characteristic discovery
+};
+
+// App event passed from profiles.
+typedef struct{
+  appEvtHdr_t hdr; // event header
+  uint8_t *pData;  // event data
+} scEvt_t;
+
+// Scanned device information record
+typedef struct{
+  uint8_t addrType;         // Peer Device's Address Type
+  uint8_t addr[B_ADDR_LEN]; // Peer Device Address
+} scanRec_t;
+
 // Connected device information
-typedef struct
-{
+typedef struct{
   uint16_t connHandle;        // Connection Handle
   uint16_t charHandle;        // Characteristic Handle
   uint8_t  addr[B_ADDR_LEN];  // Peer Device Address
   Clock_Struct *pRssiClock;   // pointer to clock struct
 } connRec_t;
 
-// BLE global variables
+// Container to store paring state info when passing from gapbondmgr callback
+// to app event. See the pfnPairStateCB_t documentation from the gapbondmgr.h
+// header file for more information on each parameter.
+typedef struct{
+  uint16_t connHandle;
+  uint8_t  status;
+} scPairStateData_t;
+
+// Container to store passcode data when passing from gapbondmgr callback
+// to app event. See the pfnPasscodeCB_t documentation from the gapbondmgr.h
+// header file for more information on each parameter.
+typedef struct{
+  uint8_t deviceAddr[B_ADDR_LEN];
+  uint16_t connHandle;
+  uint8_t uiInputs;
+  uint8_t uiOutputs;
+  uint32_t numComparison;
+} scPasscodeData_t;
+
+typedef struct{
+	osal_list_elem elem;
+	uint8_t  addr[B_ADDR_LEN];  // member's BDADDR
+	uint8_t  addrType;          // member's Address Type
+	uint16_t connHandle;        // member's connection handle
+	uint8_t  status;            // bitwise status flag
+} groupListElem_t;
+
+// VARIABLE DECLARATIONS
 // Event globally used to post local events and pend on system and local events
 ICall_SyncHandle syncEvent;
 // Queue object used for app messages
@@ -51,12 +105,23 @@ Queue_Handle appMsgQueue;
 // List of connections
 connRec_t connList[MAX_NUM_BLE_CONNS];
 
-// BLE Central Macros
+// MACROS & CONSTANTS
 #define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
 // #define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
 #define SCAN_TYPE_PASSIVE          SCAN_PARAM_DFLT_TYPE
 #define SCAN_INTERVAL              160  // 100ms
 #define SCAN_WINDOW                160  // 100ms
+// Application events
+#define SC_EVT_KEY_CHANGE          0x01
+#define SC_EVT_SCAN_ENABLED        0x02
+#define SC_EVT_SCAN_DISABLED       0x03
+#define SC_EVT_ADV_REPORT          0x04
+#define SC_EVT_SVC_DISC            0x05
+#define SC_EVT_READ_RSSI           0x06
+#define SC_EVT_PAIR_STATE          0x07
+#define SC_EVT_PASSCODE_NEEDED     0x08
+#define SC_EVT_READ_RPA            0x09
+#define SC_EVT_INSUFFICIENT_MEM    0x0A
 
 
 /**
@@ -131,3 +196,45 @@ void BLECentral_connectToPeripheral(uint8_t *peerAddr, uint8_t addrType);
 void BLE_readCharacteristic(uint16_t connHandle, uint16_t charHandle);
 
 void rfDriverCallbackAntennaSwitching(void);
+
+/*********************************************************************
+* @fn      SimpleCentral_passcodeCb
+*
+* @brief   Passcode callback.
+*
+* @param   deviceAddr - pointer to device address
+*
+* @param   connHandle - the connection handle
+*
+* @param   uiInputs - pairing User Interface Inputs
+*
+* @param   uiOutputs - pairing User Interface Outputs
+*
+* @param   numComparison - numeric Comparison 20 bits
+*
+* @return  none
+*/
+void SimpleCentral_passcodeCb(uint8_t *deviceAddr, uint16_t connHandle, uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison);
+
+/*********************************************************************
+ * @fn      SimpleCentral_pairStateCb
+ *
+ * @brief   Pairing state callback.
+ *
+ * @return  none
+ */
+void SimpleCentral_pairStateCb(uint16_t connHandle, uint8_t state, uint8_t status);
+
+/*********************************************************************
+ * @fn      SimpleCentral_enqueueMsg
+ *
+ * @brief   Creates a message and puts the message in RTOS queue.
+ *
+ * @param   event - message event.
+ * @param   state - message state.
+ * @param   pData - message data pointer.
+ *
+ * @return  TRUE or FALSE
+ */
+status_t SimpleCentral_enqueueMsg(uint8_t event, uint8_t state, int8_t *pData);
+
