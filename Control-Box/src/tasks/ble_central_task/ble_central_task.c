@@ -636,3 +636,55 @@ void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg){
           break;
     }
 }
+
+void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg){
+    if (linkDB_Up(pMsg->connHandle)){
+        // See if GATT server was unable to transmit an ATT response
+        if (pMsg->hdr.status == blePending){
+            // No HCI buffer was available. App can try to retransmit the response
+            // on the next connection event. Drop it for now.
+            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                       "ATT Rsp dropped %d", pMsg->method);
+        }
+        else if ((pMsg->method == ATT_READ_RSP)   || ((pMsg->method == ATT_ERROR_RSP) && (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ))){
+            if (pMsg->method == ATT_ERROR_RSP){
+                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
+            }
+            else{
+                // After a successful read, display the read value
+                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Read rsp: 0x%02x", pMsg->msg.readRsp.pValue[0]);
+            }
+        }
+        else if ((pMsg->method == ATT_WRITE_RSP)  || ((pMsg->method == ATT_ERROR_RSP) && (pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ))){
+            if (pMsg->method == ATT_ERROR_RSP){
+                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
+            }
+            else{
+                // After a successful write, display the value that was written and
+                // increment value
+                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                             "Write sent: 0x%02x", charVal);
+            }
+            tbm_goTo(&scMenuPerConn);
+        }
+        else if (pMsg->method == ATT_FLOW_CTRL_VIOLATED_EVENT){
+            // ATT request-response or indication-confirmation flow control is
+            // violated. All subsequent ATT requests or indications will be dropped.
+            // The app is informed in case it wants to drop the connection.
+            // Display the opcode of the message that caused the violation.
+            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                       "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
+        }
+        else if (pMsg->method == ATT_MTU_UPDATED_EVENT){
+            // MTU size updated
+            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                         "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
+        }
+        else if (discState != BLE_DISC_STATE_IDLE){
+            SimpleCentral_processGATTDiscEvent(pMsg);
+        }
+    } 
+    // else - in case a GATT message came after a connection has dropped, ignore it.
+    // Needed only for ATT Protocol messages
+    GATT_bm_free(&pMsg->msg, pMsg->method);
+}

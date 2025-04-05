@@ -362,3 +362,12 @@ uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , uint8_t l
  * @return  none
  */
 void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processGATTMsg
+ *
+ * @brief   Process GATT messages and events.
+ *
+ * @return  none
+ */
+void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg);
