@@ -33,6 +33,7 @@
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
+#include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/gates/GateMutexPri.h>
 
