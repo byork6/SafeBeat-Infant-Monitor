@@ -391,3 +391,12 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg);
  * @return  none
  */
 void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processPasscode
+ *
+ * @brief   Process the Passcode request.
+ *
+ * @return  none
+ */
+void SimpleCentral_processPasscode(scPasscodeData_t *pData);

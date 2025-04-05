@@ -1132,3 +1132,15 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
     }
   }
 }
+
+void SimpleCentral_processPasscode(scPasscodeData_t *pData){
+  // Display passcode to user
+  if (pData->uiOutputs != 0)
+  {
+    Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Passcode: %d",
+                   B_APP_DEFAULT_PASSCODE);
+  }
+
+  // Send passcode response
+  GAPBondMgr_PasscodeRsp(pData->connHandle, SUCCESS, B_APP_DEFAULT_PASSCODE);
+}
