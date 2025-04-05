@@ -1274,3 +1274,21 @@ void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg){
     discState = BLE_DISC_STATE_IDLE;
   }
 }
+
+uint8_t SimpleCentral_removeConnInfo(uint16_t connHandle){
+  uint8_t i;
+
+  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+  {
+    if (connList[i].connHandle == connHandle)
+    {
+      // Found the entry to mark as deleted
+      connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
+      numConn--;
+
+      break;
+    }
+  }
+
+  return i;
+}

@@ -484,3 +484,14 @@ uint8_t SimpleCentral_getConnIndex(uint16_t connHandle);
  * @return  none
  */
 void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_removeConnInfo
+ *
+ * @brief   Remove a device from the connected device list
+ *
+ * @return  index of the connected device list entry where the new connection
+ *          info is removed from.
+ *          if connHandle is not found, MAX_NUM_BLE_CONNS will be returned.
+ */
+uint8_t SimpleCentral_removeConnInfo(uint16_t connHandle);
