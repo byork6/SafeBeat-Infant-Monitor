@@ -144,7 +144,23 @@ char *appEventStrings[] = {
   "APP_EVT_INSUFFICIENT_MEM  ",
 };
 
+// Spin if the expression is not true
+#define SIMPLECENTRAL_ASSERT(expr) if (!(expr)) SimpleCentral_spin();
 
+// Timeout for the initiator to cancel connection if not successful
+#define CONNECTION_TIMEOUT                   3000
+
+// Auto connect chosen group
+#define GROUP_NAME_LENGTH                    4
+
+//Member defalult status when initalized
+#define GROUP_MEMBER_INITIALIZED             0x00
+
+//Member connected
+#define GROUP_MEMBER_CONNECTED               0x01
+
+//Default connection handle which is set when group member is created
+#define GROUP_INITIALIZED_CONNECTION_HANDLE  0xFFFF
 
 // FUNCTION PROTOTYPES
 /**

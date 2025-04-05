@@ -24,6 +24,22 @@ static gapBondCBs_t bondMgrCBs =
 icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #endif // USE_DEFAULT_USER_CFG
 
+// Auto connect Disabled/Enabled {0 - Disabled, 1- Group A , 2-Group B, ...}
+uint8_t autoConnect = AUTOCONNECT_DISABLE;
+
+//Number of group members found
+static uint8_t numGroupMembers = 0;
+
+//AutoConnect ADV data filter according to local name short
+static uint8_t acGroup[4] = {
+  0x03,
+  GAP_ADTYPE_LOCAL_NAME_SHORT,
+  'G',
+  'A'
+ };
+
+ 
+
 // FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
     Task_Params TaskParams;
