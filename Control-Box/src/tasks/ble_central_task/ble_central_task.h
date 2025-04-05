@@ -108,28 +108,48 @@ Queue_Handle appMsgQueue;
 connRec_t connList[MAX_NUM_BLE_CONNS];
 
 // MACROS & CONSTANTS
-#define DEFAULT_SCAN_PHY           SCAN_PRIM_PHY_1M
+#define DEFAULT_SCAN_PHY            SCAN_PRIM_PHY_1M
 // #define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
-#define SCAN_TYPE_PASSIVE          SCAN_PARAM_DFLT_TYPE
-#define SCAN_INTERVAL              160  // 100ms
-#define SCAN_WINDOW                160  // 100ms
+#define SCAN_TYPE_PASSIVE           SCAN_PARAM_DFLT_TYPE
+#define SCAN_INTERVAL               160  // 100ms
+#define SCAN_WINDOW                 160  // 100ms
+// Duplicate menu item indices.
+#define SC_ITEM_NONE                TBM_ITEM_NONE
+#define SC_ITEM_ALL                 TBM_ITEM_ALL
+// Note: The defines should be updated accordingly if there is any change
+//       in the order of the items of the menu objects the items belong to.
+#define SC_ITEM_SCANPHY             TBM_ITEM(0)  // "Set Scanning PHY"
+#define SC_ITEM_STARTDISC           TBM_ITEM(1)  // "Discover Devices"
+#define SC_ITEM_STOPDISC            TBM_ITEM(2)  // "Stop Discovering"
+#define SC_ITEM_CONNECT             TBM_ITEM(3)  // "Connect To"
+#define SC_ITEM_CANCELCONN          TBM_ITEM(4)  // "Cancel Connecting"
+#define SC_ITEM_SELECTCONN          TBM_ITEM(5)  // "Work With"
+#define SC_ITEM_AUTOCONNECT         TBM_ITEM(6)  // "Auto Connect"
+
+#define SC_ITEM_GATTREAD            TBM_ITEM(0)  // "GATT Read"
+#define SC_ITEM_GATTWRITE           TBM_ITEM(1)  // "GATT Write"
+#define SC_ITEM_STRTRSSI            TBM_ITEM(2)  // "Start RSSI Reading"
+#define SC_ITEM_STOPRSSI            TBM_ITEM(3)  // "Stop RSSI Reading"
+#define SC_ITEM_UPDATE              TBM_ITEM(4)  // "Connection Update"
+#define SC_ITEM_CONNPHY             TBM_ITEM(5)  // "Set Connection PHY"
+#define SC_ITEM_DISCONNECT          TBM_ITEM(6)  // "Disconnect"
 // Application events
 // #define SC_EVT_KEY_CHANGE          0x01 ---- // Removed this line because we are not using the keys from ex.
-#define SC_EVT_SCAN_ENABLED        0x02
-#define SC_EVT_SCAN_DISABLED       0x03
-#define SC_EVT_ADV_REPORT          0x04
-#define SC_EVT_SVC_DISC            0x05
-#define SC_EVT_READ_RSSI           0x06
-#define SC_EVT_PAIR_STATE          0x07
-#define SC_EVT_PASSCODE_NEEDED     0x08
-#define SC_EVT_READ_RPA            0x09
-#define SC_EVT_INSUFFICIENT_MEM    0x0A
+#define SC_EVT_SCAN_ENABLED         0x02
+#define SC_EVT_SCAN_DISABLED        0x03
+#define SC_EVT_ADV_REPORT           0x04
+#define SC_EVT_SVC_DISC             0x05
+#define SC_EVT_READ_RSSI            0x06
+#define SC_EVT_PAIR_STATE           0x07
+#define SC_EVT_PASSCODE_NEEDED      0x08
+#define SC_EVT_READ_RPA             0x09
+#define SC_EVT_INSUFFICIENT_MEM     0x0A
 // Simple Central Task Events
-#define SC_ICALL_EVT                         ICALL_MSG_EVENT_ID  // Event_Id_31
-#define SC_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
+#define SC_ICALL_EVT                ICALL_MSG_EVENT_ID  // Event_Id_31
+#define SC_QUEUE_EVT                UTIL_QUEUE_EVENT_ID // Event_Id_30
 #define SC_ALL_EVENTS                        (SC_ICALL_EVT           | \
                                               SC_QUEUE_EVT)
-#define APP_EVT_EVENT_MAX 0xA
+#define APP_EVT_EVENT_MAX           0xA
 char *appEventStrings[] = {
   "APP_EVT_ZERO              ",
   "APP_EVT_KEY_CHANGE        ",
@@ -143,24 +163,20 @@ char *appEventStrings[] = {
   "APP_EVT_READ_RPA          ",
   "APP_EVT_INSUFFICIENT_MEM  ",
 };
-
 // Spin if the expression is not true
 #define SIMPLECENTRAL_ASSERT(expr) if (!(expr)) SimpleCentral_spin();
-
 // Timeout for the initiator to cancel connection if not successful
-#define CONNECTION_TIMEOUT                   3000
-
+#define CONNECTION_TIMEOUT          3000
 // Auto connect chosen group
-#define GROUP_NAME_LENGTH                    4
-
+#define GROUP_NAME_LENGTH           4
 //Member defalult status when initalized
-#define GROUP_MEMBER_INITIALIZED             0x00
-
+#define GROUP_MEMBER_INITIALIZED    0x00
 //Member connected
-#define GROUP_MEMBER_CONNECTED               0x01
-
+#define GROUP_MEMBER_CONNECTED      0x01
 //Default connection handle which is set when group member is created
-#define GROUP_INITIALIZED_CONNECTION_HANDLE  0xFFFF
+#define GROUP_INITIALIZED_CONNECTION_HANDLE     0xFFFF
+// Size of string-converted device address ("0xXXXXXXXXXXXX")
+#define SC_ADDR_STR_SIZE            15
 
 // FUNCTION PROTOTYPES
 /**

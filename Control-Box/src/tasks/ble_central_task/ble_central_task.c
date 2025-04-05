@@ -38,7 +38,11 @@ static uint8_t acGroup[4] = {
   'A'
  };
 
- 
+//AutoConnect Group list
+static osal_list_list groupList;
+
+// Current Random Private Address
+static uint8 rpa[B_ADDR_LEN] = {0};
 
 // FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
@@ -77,8 +81,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
         ///////////////////////////// START OF EXAMPLE LOOP /////////////////////////////
         uint32_t events;
 
-        events = Event_pend(syncEvent, Event_Id_NONE, SC_ALL_EVENTS,
-                            ICALL_TIMEOUT_FOREVER);
+        events = Event_pend(syncEvent, Event_Id_NONE, SC_ALL_EVENTS, ICALL_TIMEOUT_FOREVER);
 
         if (events){
           ICall_EntityID dest;
