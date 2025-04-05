@@ -574,3 +574,29 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
         ICall_free(pMsg->pData);
     }
 }
+
+void SimpleCentral_autoConnect(void){
+    status_t status;
+    if (memberInProg == NULL){
+        if (numConn < MAX_NUM_BLE_CONNS){
+            groupListElem_t *tempMember = (groupListElem_t *)osal_list_head(&groupList);
+            //If group member is not connected
+            if ((tempMember != NULL) && (!(tempMember->status & GROUP_MEMBER_CONNECTED))){
+               //Initiate a connection
+               status = GapInit_connect(tempMember->addrType & MASK_ADDRTYPE_ID,tempMember->addr, DEFAULT_INIT_PHY, CONNECTION_TIMEOUT);
+               if (status != SUCCESS){
+                    //Couldn't create connection remove element from list and free the memory.
+                    osal_list_remove(&groupList, (osal_list_elem *)tempMember);
+                    ICall_free(tempMember);
+                }
+                else{
+                    //Save pointer to connection in progress untill connection is established.
+                    memberInProg = tempMember;
+                }
+            }
+        }
+        else{
+            Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "AutoConnect turned off: Max connection reached.");
+        }
+    }
+}

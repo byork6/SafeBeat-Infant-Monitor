@@ -314,3 +314,14 @@ uint8_t SimpleCentral_processStackMsg(ICall_Hdr *pMsg);
  * @return  none
  */
 void SimpleCentral_processAppMsg(scEvt_t *pMsg);
+
+/*********************************************************************
+ * @fn		SimpleCentral_autoConnect
+ *
+ * @brief	Check if Advertiser is part of the group according to its Adv Data
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void SimpleCentral_autoConnect(void);
