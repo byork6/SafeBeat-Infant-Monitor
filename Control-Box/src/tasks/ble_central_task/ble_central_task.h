@@ -442,3 +442,15 @@ void SimpleCentral_scanCb(uint32_t evt, void* msg, uintptr_t arg);
  * @return  none
  */
 void SimpleCentral_clockHandler(UArg arg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_CancelRssi
+ *
+ * @brief   Cancel periodic RSSI reads on a link.
+ *
+ * @param   connection handle
+ *
+ * @return  SUCCESS: Operation successful
+ *          bleIncorrectMode: Has not started
+ */
+status_t SimpleCentral_CancelRssi(uint16_t connHandle);

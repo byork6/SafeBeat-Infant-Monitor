@@ -1139,3 +1139,31 @@ void SimpleCentral_clockHandler(UArg arg){
       break;
   }
 }
+
+status_t SimpleCentral_CancelRssi(uint16_t connHandle)
+{
+  uint8_t connIndex = SimpleCentral_getConnIndex(connHandle);
+
+  // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
+  SIMPLECENTRAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
+
+  // If already running
+  if (connList[connIndex].pRssiClock == NULL)
+  {
+    return bleIncorrectMode;
+  }
+
+  // Stop timer
+  Util_stopClock(connList[connIndex].pRssiClock);
+
+  // Destroy the clock object
+  Clock_destruct(connList[connIndex].pRssiClock);
+
+  // Free clock struct
+  ICall_free(connList[connIndex].pRssiClock);
+  connList[connIndex].pRssiClock = NULL;
+
+  Display_clearLine(dispHandle, SC_ROW_ANY_CONN);
+
+  return SUCCESS;
+}
