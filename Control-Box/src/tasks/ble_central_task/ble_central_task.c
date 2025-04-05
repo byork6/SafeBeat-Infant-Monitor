@@ -1134,13 +1134,22 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
 }
 
 void SimpleCentral_processPasscode(scPasscodeData_t *pData){
-  // Display passcode to user
-  if (pData->uiOutputs != 0)
-  {
-    Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Passcode: %d",
-                   B_APP_DEFAULT_PASSCODE);
-  }
+    // Display passcode to user
+    if (pData->uiOutputs != 0){
+        Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Passcode: %d", B_APP_DEFAULT_PASSCODE);
+    }
+    // Send passcode response
+    GAPBondMgr_PasscodeRsp(pData->connHandle, SUCCESS, B_APP_DEFAULT_PASSCODE);
+}
 
-  // Send passcode response
-  GAPBondMgr_PasscodeRsp(pData->connHandle, SUCCESS, B_APP_DEFAULT_PASSCODE);
+void SimpleCentral_startSvcDiscovery(void){
+    attExchangeMTUReq_t req;
+    // Initialize cached handles
+    svcStartHdl = svcEndHdl = 0;
+    discState = BLE_DISC_STATE_MTU;
+    // Discover GATT Server's Rx MTU size
+    req.clientRxMTU = scMaxPduSize - L2CAP_HDR_SIZE;
+    // ATT MTU size should be set to the minimum of the Client Rx MTU
+    // and Server Rx MTU values
+    VOID GATT_ExchangeMTU(scConnHandle, &req, selfEntity);
 }

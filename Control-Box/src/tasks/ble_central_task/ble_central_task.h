@@ -400,3 +400,12 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
  * @return  none
  */
 void SimpleCentral_processPasscode(scPasscodeData_t *pData);
+
+/*********************************************************************
+ * @fn      SimpleCentral_startSvcDiscovery
+ *
+ * @brief   Start service discovery.
+ *
+ * @return  none
+ */
+void SimpleCentral_startSvcDiscovery(void);
