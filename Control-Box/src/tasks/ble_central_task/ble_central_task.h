@@ -1,5 +1,6 @@
 #pragma once
 
+// INCLUDES
 // BLE5Stack_Flash
 #include <icall.h>
 #include <icall_ble_api.h>
@@ -17,7 +18,7 @@
 #include <hci.h>
 #include <util.h>
 
-// NV
+// nv
 #include <crc.h>
 #include <nvintf.h>
 #include <nvocmp.h>
@@ -26,6 +27,7 @@
 #include <hal_assert.h>
 #include <osal_list.h>
 
+// TASK DECLARATIONS
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
 #define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
@@ -112,7 +114,7 @@ connRec_t connList[MAX_NUM_BLE_CONNS];
 #define SCAN_INTERVAL              160  // 100ms
 #define SCAN_WINDOW                160  // 100ms
 // Application events
-#define SC_EVT_KEY_CHANGE          0x01
+// #define SC_EVT_KEY_CHANGE          0x01 ---- // Removed this line because we are not using the keys from ex.
 #define SC_EVT_SCAN_ENABLED        0x02
 #define SC_EVT_SCAN_DISABLED       0x03
 #define SC_EVT_ADV_REPORT          0x04
@@ -122,8 +124,29 @@ connRec_t connList[MAX_NUM_BLE_CONNS];
 #define SC_EVT_PASSCODE_NEEDED     0x08
 #define SC_EVT_READ_RPA            0x09
 #define SC_EVT_INSUFFICIENT_MEM    0x0A
+// Simple Central Task Events
+#define SC_ICALL_EVT                         ICALL_MSG_EVENT_ID  // Event_Id_31
+#define SC_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
+#define SC_ALL_EVENTS                        (SC_ICALL_EVT           | \
+                                              SC_QUEUE_EVT)
+#define APP_EVT_EVENT_MAX 0xA
+char *appEventStrings[] = {
+  "APP_EVT_ZERO              ",
+  "APP_EVT_KEY_CHANGE        ",
+  "APP_EVT_SCAN_ENABLED      ",
+  "APP_EVT_SCAN_DISABLED     ",
+  "APP_EVT_ADV_REPORT        ",
+  "APP_EVT_SVC_DISC          ",
+  "APP_EVT_READ_RSSI         ",
+  "APP_EVT_PAIR_STATE        ",
+  "APP_EVT_PASSCODE_NEEDED   ",
+  "APP_EVT_READ_RPA          ",
+  "APP_EVT_INSUFFICIENT_MEM  ",
+};
 
 
+
+// FUNCTION PROTOTYPES
 /**
  * @brief Constructs the BLE Central task.
  *
@@ -238,3 +261,24 @@ void SimpleCentral_pairStateCb(uint16_t connHandle, uint8_t state, uint8_t statu
  */
 status_t SimpleCentral_enqueueMsg(uint8_t event, uint8_t state, int8_t *pData);
 
+/*********************************************************************
+ * @fn      SimpleCentral_processStackMsg
+ *
+ * @brief   Process an incoming task message.
+ *
+ * @param   pMsg - message to process
+ *
+ * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
+ */
+uint8_t SimpleCentral_processStackMsg(ICall_Hdr *pMsg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processAppMsg
+ *
+ * @brief   Scanner application event processing function.
+ *
+ * @param   pMsg - pointer to event structure
+ *
+ * @return  none
+ */
+void SimpleCentral_processAppMsg(scEvt_t *pMsg);

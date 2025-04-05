@@ -59,7 +59,46 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
         printf("BLE Central Count: %d\n", i);
 
         ///////////////////////////// START OF EXAMPLE LOOP /////////////////////////////
-        // TODO: Add application loop from example here.
+        uint32_t events;
+
+        events = Event_pend(syncEvent, Event_Id_NONE, SC_ALL_EVENTS,
+                            ICALL_TIMEOUT_FOREVER);
+
+        if (events){
+          ICall_EntityID dest;
+          ICall_ServiceEnum src;
+          ICall_HciExtEvt *pMsg = NULL;
+
+          if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS){
+            uint8 safeToDealloc = TRUE;
+
+            if ((src == ICALL_SERVICE_CLASS_BLE) && (dest == selfEntity)){
+              ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
+
+              // Check for BLE stack events first
+              if (pEvt->signature != 0xffff){
+                // Process inter-task message
+                safeToDealloc = SimpleCentral_processStackMsg((ICall_Hdr *)pMsg);
+              }
+            }
+
+            if (pMsg && safeToDealloc){
+              ICall_freeMsg(pMsg);
+            }
+          }
+
+          // If RTOS queue is not empty, process app message
+          if (events & SC_QUEUE_EVT){
+            scEvt_t *pMsg;
+            while ((pMsg = (scEvt_t *)Util_dequeueMsg(appMsgQueue))){
+              // Process message
+              SimpleCentral_processAppMsg(pMsg);
+
+              // Free the space from the message
+              ICall_free(pMsg);
+            }
+          }
+        }
         ////////////////////////////// END OF EXAMPLE LOOP //////////////////////////////
 
         ////////////////////////////// MY CODE STARTS HERE //////////////////////////////
@@ -91,7 +130,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
 
 void BLECentral_init(void){
     static int i = 0;
-    
+
     ///////////////////////////// START OF EXAMPLE CODE INIT /////////////////////////////
     // NOTE: Everything from here until the while loop is from the Simple_Central Example.
     // All of the code below is for the BLE initializtion.
@@ -219,37 +258,362 @@ void SimpleCentral_passcodeCb(uint8_t *deviceAddr, uint16_t connHandle, uint8_t 
 }
 
 void SimpleCentral_pairStateCb(uint16_t connHandle, uint8_t state, uint8_t status){
-  scPairStateData_t *pData;
+    scPairStateData_t *pData;
 
-  // Allocate space for the event data.
-  if ((pData = ICall_malloc(sizeof(scPairStateData_t))))
-  {
-    pData->connHandle = connHandle;
-    pData->status = status;
-
-    // Queue the event.
-    if(SimpleCentral_enqueueMsg(SC_EVT_PAIR_STATE, state, (uint8_t*) pData) != SUCCESS)
+    // Allocate space for the event data.
+    if ((pData = ICall_malloc(sizeof(scPairStateData_t))))
     {
-      ICall_free(pData);
+      pData->connHandle = connHandle;
+      pData->status = status;
+
+      // Queue the event.
+      if(SimpleCentral_enqueueMsg(SC_EVT_PAIR_STATE, state, (uint8_t*) pData) != SUCCESS)
+      {
+        ICall_free(pData);
+      }
     }
-  }
 }
 
 status_t SimpleCentral_enqueueMsg(uint8_t event, uint8_t state, int8_t *pData){
-  uint8_t success;
-  scEvt_t *pMsg = ICall_malloc(sizeof(scEvt_t));
+    uint8_t success;
+    scEvt_t *pMsg = ICall_malloc(sizeof(scEvt_t));
 
-  // Create dynamic pointer to message.
-  if (pMsg)
-  {
-    pMsg->hdr.event = event;
-    pMsg->hdr.state = state;
-    pMsg->pData = pData;
+    // Create dynamic pointer to message.
+    if (pMsg)
+    {
+      pMsg->hdr.event = event;
+      pMsg->hdr.state = state;
+      pMsg->pData = pData;
 
-    // Enqueue the message.
-    success = Util_enqueueMsg(appMsgQueue, syncEvent, (uint8_t *)pMsg);
-    return (success) ? SUCCESS : FAILURE;
-  }
+      // Enqueue the message.
+      success = Util_enqueueMsg(appMsgQueue, syncEvent, (uint8_t *)pMsg);
+      return (success) ? SUCCESS : FAILURE;
+    }
 
-  return(bleMemAllocError);
+    return(bleMemAllocError);
+}
+
+uint8_t SimpleCentral_processStackMsg(ICall_Hdr *pMsg){
+    uint8_t safeToDealloc = TRUE;
+
+    BLE_LOG_INT_INT(0, BLE_LOG_MODULE_APP, "APP : Stack msg status=%d, event=0x%x\n", pMsg->status, pMsg->event);
+
+    switch (pMsg->event){
+      case GAP_MSG_EVENT:
+        SimpleCentral_processGapMsg((gapEventHdr_t*) pMsg);
+        break;
+
+      case GATT_MSG_EVENT:
+        SimpleCentral_processGATTMsg((gattMsgEvent_t *)pMsg);
+        break;
+
+      case HCI_GAP_EVENT_EVENT:{
+        // Process HCI message
+        switch (pMsg->status){
+          case HCI_COMMAND_COMPLETE_EVENT_CODE:
+            SimpleCentral_processCmdCompleteEvt((hciEvt_CmdComplete_t *) pMsg);
+            break;
+
+          case HCI_BLE_HARDWARE_ERROR_EVENT_CODE:
+            AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,0);
+            break;
+
+          // HCI Commands Events
+          case HCI_COMMAND_STATUS_EVENT_CODE:{
+              hciEvt_CommandStatus_t *pMyMsg = (hciEvt_CommandStatus_t *)pMsg;
+              switch ( pMyMsg->cmdOpcode ){
+                case HCI_LE_SET_PHY:{
+                    if (pMyMsg->cmdStatus == HCI_ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE){
+                        printf("PHY Change failure, peer does not support this");
+                    }
+                    else{
+                        printf("PHY Update Status: 0x%02x", pMyMsg->cmdStatus);
+                    }
+                  }
+                  break;
+                case HCI_DISCONNECT:
+                  break;
+
+                default:{
+                    printf("Unknown Cmd Status: 0x%04x::0x%02x", pMyMsg->cmdOpcode, pMyMsg->cmdStatus);
+                  }
+                break;
+              }
+            }
+            break;
+
+          // LE Events
+          case HCI_LE_EVENT_CODE:{
+            hciEvt_BLEPhyUpdateComplete_t *pPUC
+              = (hciEvt_BLEPhyUpdateComplete_t*) pMsg;
+
+            if (pPUC->BLEEventCode == HCI_BLE_PHY_UPDATE_COMPLETE_EVENT){
+              if (pPUC->status != SUCCESS){
+                printf("%s: PHY change failure", SimpleCentral_getConnAddrStr(pPUC->connHandle));
+              }
+              else{
+                printf("%s: PHY updated to %s", SimpleCentral_getConnAddrStr(pPUC->connHandle), 
+                    // Only symmetrical PHY is supported.
+                    // rxPhy should be equal to txPhy.
+                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_1M) ? "1 Mbps" :
+                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_2M) ? "2 Mbps" :
+                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_CODED) ? "CODED" : "Unexpected PHY Value");
+              }
+            }
+
+            break;
+          }
+
+          default:
+            break;
+        }
+
+        break;
+      }
+
+      case L2CAP_SIGNAL_EVENT:
+        // place holder for L2CAP Connection Parameter Reply
+        break;
+
+      default:
+        break;
+    }
+
+    return (safeToDealloc);
+}
+
+void SimpleCentral_processAppMsg(scEvt_t *pMsg){
+    bool safeToDealloc = TRUE;
+
+    if (pMsg->hdr.event <= APP_EVT_EVENT_MAX){
+      BLE_LOG_INT_STR(0, BLE_LOG_MODULE_APP, "APP : App msg status=%d, event=%s\n", 0, appEventStrings[pMsg->hdr.event]);
+    }
+    else{
+      BLE_LOG_INT_INT(0, BLE_LOG_MODULE_APP, "APP : App msg status=%d, event=0x%x\n", 0, pMsg->hdr.event);
+    }
+    
+    switch (pMsg->hdr.event){
+         case SC_EVT_ADV_REPORT:{
+        GapScan_Evt_AdvRpt_t* pAdvRpt = (GapScan_Evt_AdvRpt_t*) (pMsg->pData);
+        //Auto connect is enabled
+        if (autoConnect){
+          if (numGroupMembers == MAX_NUM_BLE_CONNS){
+            GapScan_disable();
+            break;
+          }
+          //Check if advertiser is part of the group
+          if (SimpleCentral_isMember(pAdvRpt->pData , acGroup, GROUP_NAME_LENGTH)){
+            groupListElem_t *tempMember;
+            //Traverse list to search if advertiser already in list.
+            for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember)){
+              if (osal_memcmp((uint8_t *)tempMember->addr ,(uint8_t *)pAdvRpt->addr,B_ADDR_LEN)){
+                break;
+              }
+            }
+            //If tempMemer is NULL this meams advertiser not in list.
+            if (tempMember == NULL){
+              groupListElem_t *groupMember = (groupListElem_t *)ICall_malloc(sizeof(groupListElem_t));
+              if (groupMember != NULL){
+                //Copy member's details into Member's list.
+                osal_memcpy((uint8_t *)groupMember->addr , (uint8_t *)pAdvRpt->addr,B_ADDR_LEN);
+                groupMember->addrType = pAdvRpt->addrType;
+                groupMember->status = GROUP_MEMBER_INITIALIZED;
+                groupMember->connHandle = GROUP_INITIALIZED_CONNECTION_HANDLE;
+                //Add group member into list.
+                osal_list_putHead(&groupList,(osal_list_elem *)groupMember);
+                numGroupMembers++;
+              }
+              else{
+                printf("AutoConnect: Allocation failed!");
+                break;
+              }
+            }
+          }
+        }
+      if (SimpleCentral_findSvcUuid(SIMPLEPROFILE_SERV_UUID,
+                                    pAdvRpt->pData, pAdvRpt->dataLen))
+    #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
+          {
+            SimpleCentral_addScanInfo(pAdvRpt->addr, pAdvRpt->addrType);
+            printf("Discovered: %s", Util_convertBdAddr2Str(pAdvRpt->addr));
+          }
+    #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
+          printf("Discovered: %s", Util_convertBdAddr2Str(pAdvRpt->addr));
+    #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
+          // Free report payload data
+          if (pAdvRpt->pData != NULL){
+            ICall_free(pAdvRpt->pData);
+    
+          }
+          break;
+        }
+        case SC_EVT_SCAN_ENABLED:
+          // Disable everything but "Stop Discovering" on the menu
+          tbm_setItemStatus(&scMenuMain, SC_ITEM_STOPDISC,
+    
+                            (SC_ITEM_ALL & ~SC_ITEM_STOPDISC));
+          printf("Discovering...");
+          break;
+        case SC_EVT_SCAN_DISABLED:{
+          uint16_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY;
+          if (autoConnect){
+        
+            itemsToEnable |= SC_ITEM_AUTOCONNECT;
+            if (numGroupMembers < MAX_NUM_BLE_CONNS){
+                printf("AutoConnect: Not all members found, only %d members were found",numGroupMembers);
+            }
+            else{
+                printf("AutoConnect: Number of members in the group %d",numGroupMembers);
+              SimpleCentral_autoConnect();
+              if (numConn > 0){
+                // Also enable "Work with"
+                itemsToEnable |= SC_ITEM_SELECTCONN;
+              }
+            }
+            // Enable "Discover Devices", "Set Scanning PHY", and possibly
+            // "Connect to" and/or "Work with".
+            // Disable "Stop Discovering".
+            tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
+          }
+          else
+          {
+            uint8_t numReport;
+            uint8_t i;
+            static uint8_t* pAddrs = NULL;
+            uint8_t* pAddrTemp;
+    #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
+            numReport = numScanRes;
+    #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
+            GapScan_Evt_AdvRpt_t advRpt;
+            numReport = ((GapScan_Evt_End_t*) (pMsg->pData))->numReport;
+    #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
+            printf("%d devices discovered", numReport);
+            if (numReport > 0){
+            
+              // Also enable "Connect to"
+              itemsToEnable |= SC_ITEM_CONNECT;
+    
+            }
+            if (numConn > 0){
+              // Also enable "Work with"
+              itemsToEnable |= SC_ITEM_SELECTCONN;
+    
+            }
+            // Enable "Discover Devices", "Set Scanning PHY", and possibly
+            // "Connect to" and/or "Work with".
+            // Disable "Stop Discovering".
+    
+            tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
+            // Allocate buffer to display addresses
+            if (pAddrs != NULL){
+              // A scan has been done previously, release the previously allocated buffer
+    
+              ICall_free(pAddrs);
+            }
+            pAddrs = ICall_malloc(numReport * SC_ADDR_STR_SIZE);
+            if (pAddrs == NULL){
+              numReport = 0;
+            }
+            TBM_SET_NUM_ITEM(&scMenuConnect, numReport);
+    
+              pAddrTemp = pAddrs;
+            if (pAddrs != NULL){
+              for (i = 0; i < numReport; i++, pAddrTemp += SC_ADDR_STR_SIZE)
+    
+              {
+    #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
+                // Get the address from the list, convert it to string, and
+                // copy the string to the address buffer
+                memcpy(pAddrTemp, Util_convertBdAddr2Str(scanList[i].addr),
+                       SC_ADDR_STR_SIZE);
+    #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
+                // Get the address from the report, convert it to string, and
+                // copy the string to the address buffer
+                GapScan_getAdvReport(i, &advRpt);
+                memcpy(pAddrTemp, Util_convertBdAddr2Str(advRpt.addr),
+                       SC_ADDR_STR_SIZE);
+    #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
+                // Assign the string to the corresponding action description of the menu
+                TBM_SET_ACTION_DESC(&scMenuConnect, i, pAddrTemp);
+              }
+    
+              // Disable any non-active scan results
+              for (; i < DEFAULT_MAX_SCAN_RES; i++){
+                tbm_setItemStatus(&scMenuConnect, TBM_ITEM_NONE, (1 << i));
+    
+              }
+              // Note: pAddrs is not freed since it will be used by the two button menu
+              // to display the discovered address.
+              // This implies that at least the last discovered addresses
+    
+              // will be maintained until a new scan is done.
+            }
+            break;
+          }
+        }
+        case SC_EVT_SVC_DISC:
+          SimpleCentral_startSvcDiscovery();
+          break;
+    
+        case SC_EVT_READ_RSSI:{
+          uint8_t connIndex = pMsg->hdr.state;
+          uint16_t connHandle = connList[connIndex].connHandle;
+    
+          // If link is still valid
+          if (connHandle != LINKDB_CONNHANDLE_INVALID){
+            // Restart timer
+            Util_startClock(connList[connIndex].pRssiClock);
+    
+            // Read RSSI
+            VOID HCI_ReadRssiCmd(connHandle);
+          }
+    
+          break;
+        }
+    
+        // Pairing event
+        case SC_EVT_PAIR_STATE:{
+          SimpleCentral_processPairState(pMsg->hdr.state,
+                                         (scPairStateData_t*) (pMsg->pData));
+          break;
+        }
+    
+        // Passcode event
+        case SC_EVT_PASSCODE_NEEDED:{
+          SimpleCentral_processPasscode((scPasscodeData_t *)(pMsg->pData));
+          break;
+        }
+    
+        case SC_EVT_READ_RPA:{
+          uint8_t* pRpaNew;
+    
+          // Read the current RPA.
+          pRpaNew = GAP_GetDevAddress(FALSE);
+    
+          if (memcmp(pRpaNew, rpa, B_ADDR_LEN)){
+            // If the RPA has changed, update the display
+            printf("RP Addr: %s", Util_convertBdAddr2Str(pRpaNew));
+            memcpy(rpa, pRpaNew, B_ADDR_LEN);
+          }
+          break;
+        }
+    
+        // Insufficient memory
+        case SC_EVT_INSUFFICIENT_MEM:{
+          // We are running out of memory.
+          printf("Insufficient Memory");
+    
+          // We might be in the middle of scanning, try stopping it.
+          GapScan_disable();
+          break;
+        }
+    
+        default:
+          // Do nothing.
+          break;
+      }
+    
+      if ((safeToDealloc == TRUE) && (pMsg->pData != NULL)){
+        ICall_free(pMsg->pData);
+      }
 }
