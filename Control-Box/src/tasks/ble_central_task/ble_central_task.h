@@ -351,3 +351,14 @@ char* SimpleCentral_getConnAddrStr(uint16_t connHandle);
  */
 
 uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , uint8_t len);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processCmdCompleteEvt
+ *
+ * @brief   Process an incoming OSAL HCI Command Complete Event.
+ *
+ * @param   pMsg - message to process
+ *
+ * @return  none
+ */
+void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);

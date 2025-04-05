@@ -619,3 +619,20 @@ uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , uint8_t l
     }
     return FALSE;
 }
+
+void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg){
+      switch (pMsg->cmdOpcode){
+        case HCI_READ_RSSI:{
+            #ifndef Display_DISABLE_ALL
+                uint16_t connHandle = BUILD_UINT16(pMsg->pReturnParam[1],
+                                             pMsg->pReturnParam[2]);
+                int8 rssi = (int8)pMsg->pReturnParam[3];
+
+                Display_printf(dispHandle, SC_ROW_ANY_CONN, 0, "%s: RSSI %d dBm", SimpleCentral_getConnAddrStr(connHandle), rssi);
+            #endif
+            break;
+        }
+        default:
+          break;
+    }
+}
