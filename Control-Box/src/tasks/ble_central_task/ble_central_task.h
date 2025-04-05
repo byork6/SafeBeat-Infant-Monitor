@@ -371,3 +371,14 @@ void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);
  * @return  none
  */
 void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processGapMsg
+ *
+ * @brief   GAP message processing function.
+ *
+ * @param   pMsg - pointer to event message structure
+ *
+ * @return  none
+ */
+void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg);

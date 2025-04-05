@@ -688,3 +688,369 @@ void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg){
     // Needed only for ATT Protocol messages
     GATT_bm_free(&pMsg->msg, pMsg->method);
 }
+
+void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
+  switch (pMsg->opcode)
+  {
+    case GAP_DEVICE_INIT_DONE_EVENT:
+    {
+      uint8_t temp8;
+      uint16_t temp16;
+      gapDeviceInitDoneEvent_t *pPkt = (gapDeviceInitDoneEvent_t *)pMsg;
+
+      BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- got GAP_DEVICE_INIT_DONE_EVENT", 0);
+      // Setup scanning
+      // For more information, see the GAP section in the User's Guide:
+      // http://software-dl.ti.com/lprf/ble5stack-latest/
+
+      // Register callback to process Scanner events
+      GapScan_registerCb(SimpleCentral_scanCb, NULL);
+
+      // Set Scanner Event Mask
+      GapScan_setEventMask(GAP_EVT_SCAN_ENABLED | GAP_EVT_SCAN_DISABLED |
+                           GAP_EVT_ADV_REPORT);
+
+      // Set Scan PHY parameters
+      GapScan_setPhyParams(DEFAULT_SCAN_PHY, DEFAULT_SCAN_TYPE,
+                           DEFAULT_SCAN_INTERVAL, DEFAULT_SCAN_WINDOW);
+
+      // Set Advertising report fields to keep
+      temp16 = ADV_RPT_FIELDS;
+      GapScan_setParam(SCAN_PARAM_RPT_FIELDS, &temp16);
+      // Set Scanning Primary PHY
+      temp8 = DEFAULT_SCAN_PHY;
+      GapScan_setParam(SCAN_PARAM_PRIM_PHYS, &temp8);
+      // Set LL Duplicate Filter
+      temp8 = SCANNER_DUPLICATE_FILTER;
+      GapScan_setParam(SCAN_PARAM_FLT_DUP, &temp8);
+
+      // Set PDU type filter -
+      // Only 'Connectable' and 'Complete' packets are desired.
+      // It doesn't matter if received packets are
+      // whether Scannable or Non-Scannable, whether Directed or Undirected,
+      // whether Scan_Rsp's or Advertisements, and whether Legacy or Extended.
+      temp16 = SCAN_FLT_PDU_CONNECTABLE_ONLY | SCAN_FLT_PDU_COMPLETE_ONLY;
+      BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- GapScan_setParam", 0);
+      GapScan_setParam(SCAN_PARAM_FLT_PDU_TYPE, &temp16);
+
+	  // Set initiating PHY parameters
+      GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MIN,
+						  INIT_PHYPARAM_MIN_CONN_INT);
+      GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MAX,
+						  INIT_PHYPARAM_MAX_CONN_INT);
+
+      scMaxPduSize = pPkt->dataPktLen;
+
+      // Enable "Discover Devices", "Set Scanning PHY", "AutoConnect" , and "Set Address Type"
+      // in the main menu
+      tbm_setItemStatus(&scMenuMain,
+                        SC_ITEM_STARTDISC | SC_ITEM_SCANPHY | SC_ITEM_AUTOCONNECT, SC_ITEM_NONE);
+
+      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Initialized");
+      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
+
+      // Display device address
+      Display_printf(dispHandle, SC_ROW_IDA, 0, "%s Addr: %s",
+                     (addrMode <= ADDRMODE_RANDOM) ? "Dev" : "ID",
+                     Util_convertBdAddr2Str(pPkt->devAddr));
+
+      if (addrMode > ADDRMODE_RANDOM)
+      {
+        // Update the current RPA.
+        memcpy(rpa, GAP_GetDevAddress(FALSE), B_ADDR_LEN);
+
+        Display_printf(dispHandle, SC_ROW_RPA, 0, "RP Addr: %s",
+                       Util_convertBdAddr2Str(rpa));
+
+        // Create one-shot clock for RPA check event.
+        Util_constructClock(&clkRpaRead, SimpleCentral_clockHandler,
+                            READ_RPA_PERIOD, 0, true, SC_EVT_READ_RPA);
+      }
+      break;
+    }
+
+    case GAP_CONNECTING_CANCELLED_EVENT:
+    {
+      uint16_t itemsToEnable = SC_ITEM_SCANPHY | SC_ITEM_STARTDISC |
+                               SC_ITEM_CONNECT | SC_ITEM_AUTOCONNECT;
+      if (autoConnect)
+      {
+        if (memberInProg != NULL)
+        {
+          //Remove node from member's group and free its memory.
+          osal_list_remove(&groupList, (osal_list_elem *)memberInProg);
+          ICall_free(memberInProg);
+          numGroupMembers--;
+          memberInProg = NULL;
+        }
+        Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
+        //Keep on connecting to the remaining members in the list
+        SimpleCentral_autoConnect();
+      }
+
+      if (numConn > 0)
+      {
+        itemsToEnable |= SC_ITEM_SELECTCONN;
+      }
+
+      Display_printf(dispHandle, SC_ROW_NON_CONN, 0,
+                     "Conneting attempt cancelled");
+
+      // Enable "Discover Devices", "Connect To", and "Set Scanning PHY"
+      // and disable everything else.
+      tbm_setItemStatus(&scMenuMain,
+                        itemsToEnable, SC_ITEM_ALL & ~itemsToEnable);
+
+      break;
+    }
+
+    case GAP_LINK_ESTABLISHED_EVENT:
+    {
+      uint16_t connHandle = ((gapEstLinkReqEvent_t*) pMsg)->connectionHandle;
+      uint8_t* pAddr = ((gapEstLinkReqEvent_t*) pMsg)->devAddr;
+      BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- got GAP_LINK_ESTABLISHED_EVENT", 0);
+      if (autoConnect)
+      {
+        if (memberInProg != NULL)
+        {
+          if (osal_memcmp((uint8_t *)pAddr, (uint8_t *)memberInProg->addr, B_ADDR_LEN))
+          {
+            //Move the connected member to the tail of the list.
+            osal_list_remove(&groupList,(osal_list_elem *)memberInProg);
+            osal_list_put(&groupList,(osal_list_elem *)memberInProg);
+            //Set the connected bit.;
+            memberInProg->status |= GROUP_MEMBER_CONNECTED;
+            //Store the connection handle.
+            memberInProg->connHandle = connHandle;
+            memberInProg = NULL;
+          }
+        }
+      }
+      uint8_t  connIndex;
+      uint32_t itemsToDisable = SC_ITEM_STOPDISC | SC_ITEM_CANCELCONN;
+      uint8_t* pStrAddr;
+      uint8_t i;
+      uint8_t numConnectable = 0;
+      uint8_t pairMode = 0;
+
+      // Add this connection info to the list
+      connIndex = SimpleCentral_addConnInfo(connHandle, pAddr);
+
+      // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
+      SIMPLECENTRAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
+
+      connList[connIndex].charHandle = 0;
+
+      pStrAddr = (uint8_t*) Util_convertBdAddr2Str(connList[connIndex].addr);
+
+      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Connected to %s", pStrAddr);
+      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
+
+      // Disable "Connect To" until another discovery is performed
+      itemsToDisable |= SC_ITEM_CONNECT;
+
+      // If we already have maximum allowed number of connections,
+      // disable device discovery and additional connection making.
+      if (numConn >= MAX_NUM_BLE_CONNS)
+      {
+        itemsToDisable |= SC_ITEM_SCANPHY | SC_ITEM_STARTDISC;
+      }
+
+      for (i = 0; i < TBM_GET_NUM_ITEM(&scMenuConnect); i++)
+      {
+        if (!memcmp(TBM_GET_ACTION_DESC(&scMenuConnect, i), pStrAddr,
+            SC_ADDR_STR_SIZE))
+        {
+          // Disable this device from the connection choices
+          tbm_setItemStatus(&scMenuConnect, SC_ITEM_NONE, 1 << i);
+        }
+        else if (TBM_IS_ITEM_ACTIVE(&scMenuConnect, i))
+        {
+          numConnectable++;
+        }
+      }
+
+      // Enable/disable Main menu items properly
+      tbm_setItemStatus(&scMenuMain,
+                        SC_ITEM_ALL & ~(itemsToDisable), itemsToDisable);
+
+      GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
+
+      if ((autoConnect) && (pairMode != GAPBOND_PAIRING_MODE_INITIATE))
+      {
+        SimpleCentral_autoConnect();
+      }
+      break;
+    }
+
+    case GAP_LINK_TERMINATED_EVENT:
+    {
+      uint8_t connIndex;
+      BLE_LOG_INT_STR(0, BLE_LOG_MODULE_APP, "APP : GAP msg status=%d, opcode=%s\n", 0, "GAP_LINK_TERMINATED_EVENT");
+      uint32_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY | SC_ITEM_AUTOCONNECT;
+      uint8_t* pStrAddr;
+      uint8_t i;
+      uint8_t numConnectable = 0;
+      uint16_t connHandle = ((gapTerminateLinkEvent_t*) pMsg)->connectionHandle;
+      if (autoConnect)
+      {
+        groupListElem_t *tempMember;
+        //Traverse from tail to head because of the sorting which put the connected at the end of the list.
+        for (tempMember = (groupListElem_t *)osal_list_tail(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_prev((osal_list_elem *)tempMember))
+        {
+          if (tempMember->connHandle == connHandle)
+          {
+            //Move disconnected member to the head of the list for next connection.
+            osal_list_remove(&groupList,(osal_list_elem *)tempMember);
+            osal_list_putHead(&groupList,(osal_list_elem *)tempMember);
+            //Clear the connected flag.
+            tempMember->status &= ~GROUP_MEMBER_CONNECTED;
+            //Clear the connnection handle.
+            tempMember->connHandle = GROUP_INITIALIZED_CONNECTION_HANDLE;
+          }
+        }
+      }
+      // Cancel timers
+      SimpleCentral_CancelRssi(connHandle);
+
+      // Mark this connection deleted in the connected device list.
+      connIndex = SimpleCentral_removeConnInfo(connHandle);
+      if (autoConnect)
+      {
+        SimpleCentral_autoConnect();
+      }
+      // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
+      SIMPLECENTRAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
+
+      pStrAddr = (uint8_t*) Util_convertBdAddr2Str(connList[connIndex].addr);
+
+      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "%s is disconnected",
+                     pStrAddr);
+      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
+
+      for (i = 0; i < TBM_GET_NUM_ITEM(&scMenuConnect); i++)
+      {
+        if (!memcmp(TBM_GET_ACTION_DESC(&scMenuConnect, i), pStrAddr,
+                     SC_ADDR_STR_SIZE))
+        {
+          // Enable this device in the connection choices
+          tbm_setItemStatus(&scMenuConnect, 1 << i, SC_ITEM_NONE);
+        }
+
+        if (TBM_IS_ITEM_ACTIVE(&scMenuConnect, i))
+        {
+          numConnectable++;
+        }
+      }
+
+      if (numConn > 0)
+      {
+        // There still is an active connection to select
+        itemsToEnable |= SC_ITEM_SELECTCONN;
+      }
+
+      // Enable/disable items properly.
+      tbm_setItemStatus(&scMenuMain,
+                        itemsToEnable, SC_ITEM_ALL & ~itemsToEnable);
+
+      // If we are in the context which the teminated connection was associated
+      // with, go to main menu.
+      if (connHandle == scConnHandle)
+      {
+        tbm_goTo(&scMenuMain);
+      }
+
+      break;
+    }
+
+    case GAP_UPDATE_LINK_PARAM_REQ_EVENT:
+    {
+      gapUpdateLinkParamReqReply_t rsp;
+      gapUpdateLinkParamReq_t *pReq;
+
+      pReq = &((gapUpdateLinkParamReqEvent_t *)pMsg)->req;
+
+      rsp.connectionHandle = pReq->connectionHandle;
+      rsp.signalIdentifier = pReq->signalIdentifier;
+
+      if (acceptParamUpdateReq)
+      {
+        rsp.intervalMin = pReq->intervalMin;
+        rsp.intervalMax = pReq->intervalMax;
+        rsp.connLatency = pReq->connLatency;
+        rsp.connTimeout = pReq->connTimeout;
+        rsp.accepted = TRUE;
+      }
+      else
+      {
+        // Reject the request.
+        rsp.accepted = FALSE;
+      }
+
+      // Send Reply
+      VOID GAP_UpdateLinkParamReqReply(&rsp);
+
+      if (autoConnect)
+      {
+        SimpleCentral_autoConnect();
+      }
+
+      break;
+    }
+
+    case GAP_LINK_PARAM_UPDATE_EVENT:
+    {
+      gapLinkUpdateEvent_t *pPkt = (gapLinkUpdateEvent_t *)pMsg;
+      // Get the address from the connection handle
+      linkDBInfo_t linkInfo;
+
+      BLE_LOG_INT_STR(0, BLE_LOG_MODULE_APP, "APP : GAP msg status=%d, opcode=%s\n", 0, "GAP_LINK_PARAM_UPDATE_EVENT");
+      if (linkDB_GetInfo(pPkt->connectionHandle, &linkInfo) ==  SUCCESS)
+      {
+        if(pPkt->status == SUCCESS)
+        {
+          Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                         "Updated: %s, connTimeout:%d",
+                         Util_convertBdAddr2Str(linkInfo.addr),
+                         linkInfo.connTimeout*CONN_TIMEOUT_MS_CONVERSION);
+        }
+        else
+        {
+          // Display the address of the connection update failure
+          Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                         "Update Failed 0x%h: %s", pPkt->opcode,
+                         Util_convertBdAddr2Str(linkInfo.addr));
+        }
+      }
+
+      if (autoConnect)
+      {
+        SimpleCentral_autoConnect();
+      }
+
+      break;
+    }
+
+#if defined ( NOTIFY_PARAM_UPDATE_RJCT )
+
+    case GAP_LINK_PARAM_UPDATE_REJECT_EVENT:
+    {
+      linkDBInfo_t linkInfo;
+      gapLinkUpdateEvent_t *pPkt = (gapLinkUpdateEvent_t *)pMsg;
+
+      // Get the address from the connection handle
+      linkDB_GetInfo(pPkt->connectionHandle, &linkInfo);
+
+      // Display the address of the connection update failure
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
+                     "Peer Device's Update Request Rejected 0x%h: %s", pPkt->opcode,
+                     Util_convertBdAddr2Str(linkInfo.addr));
+
+      break;
+    }
+#endif
+
+    default:
+      break;
+  }
+}
