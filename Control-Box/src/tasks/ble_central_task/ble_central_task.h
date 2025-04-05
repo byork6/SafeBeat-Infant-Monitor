@@ -495,3 +495,12 @@ void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg);
  *          if connHandle is not found, MAX_NUM_BLE_CONNS will be returned.
  */
 uint8_t SimpleCentral_removeConnInfo(uint16_t connHandle);
+
+/*********************************************************************
+ * @fn      SimpleCentral_spin
+ *
+ * @brief   Spin forever
+ *
+ * @param   none
+ */
+void SimpleCentral_spin(void);

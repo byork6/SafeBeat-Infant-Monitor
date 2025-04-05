@@ -1292,3 +1292,11 @@ uint8_t SimpleCentral_removeConnInfo(uint16_t connHandle){
 
   return i;
 }
+
+void SimpleCentral_spin(void){
+    volatile uint8_t x;
+
+    while(1){
+        x++;
+    }
+}
