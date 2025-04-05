@@ -1264,11 +1264,7 @@ void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg){
         = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
                        pMsg->msg.readByTypeRsp.pDataList[4]);
 
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Simple Svc Found");
-
-      // Now we can use GATT Read/Write
-      tbm_setItemStatus(&scMenuPerConn,
-                        SC_ITEM_GATTREAD | SC_ITEM_GATTWRITE, SC_ITEM_NONE);
+      printf("Simple Svc Found");
     }
 
     discState = BLE_DISC_STATE_IDLE;
