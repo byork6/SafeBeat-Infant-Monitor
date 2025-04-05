@@ -336,3 +336,18 @@ void SimpleCentral_autoConnect(void);
  *          if there is no match, NULL will be returned.
  */
 char* SimpleCentral_getConnAddrStr(uint16_t connHandle);
+
+/*********************************************************************
+ * @fn		SimpleCentral_isMember
+ *
+ * @brief	Check if Advertiser is part of the group according to its Adv Data
+ *
+ * @param	advData   - pointer to adv data
+ *          groupNmae - group name which need to be compared with
+ *          len       - length of the group name
+ *
+ * @return  TRUE: part of the group
+ *          FALSE: not part of the group
+ */
+
+uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , uint8_t len);

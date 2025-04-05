@@ -612,3 +612,10 @@ char* SimpleCentral_getConnAddrStr(uint16_t connHandle){
    return NULL;
 }
 #endif
+
+uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , uint8_t len){
+    if (osal_memcmp((uint8_t *)advData, (uint8_t *)groupName, len)){
+        return TRUE;
+    }
+    return FALSE;
+}
