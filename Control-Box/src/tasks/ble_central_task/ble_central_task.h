@@ -465,3 +465,13 @@ status_t SimpleCentral_CancelRssi(uint16_t connHandle);
  *          if there is no room, MAX_NUM_BLE_CONNS will be returned.
  */
 uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr);
+
+/*********************************************************************
+ * @fn      SimpleCentral_getConnIndex
+ *
+ * @brief   Find index in the connected device list by connHandle
+ *
+ * @return  the index of the entry that has the given connection handle.
+ *          if there is no match, MAX_NUM_BLE_CONNS will be returned.
+ */
+uint8_t SimpleCentral_getConnIndex(uint16_t connHandle);

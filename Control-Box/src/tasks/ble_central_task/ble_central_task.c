@@ -1167,8 +1167,7 @@ status_t SimpleCentral_CancelRssi(uint16_t connHandle){
   return SUCCESS;
 }
 
-uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr)
-{
+uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr){
   uint8_t i;
 
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
@@ -1180,6 +1179,20 @@ uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr)
       memcpy(connList[i].addr, pAddr, B_ADDR_LEN);
       numConn++;
 
+      break;
+    }
+  }
+
+  return i;
+}
+
+uint8_t SimpleCentral_getConnIndex(uint16_t connHandle){
+  uint8_t i;
+
+  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+  {
+    if (connList[i].connHandle == connHandle)
+    {
       break;
     }
   }
