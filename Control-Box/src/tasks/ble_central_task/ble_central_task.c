@@ -432,9 +432,7 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
             break;
         }
         case SC_EVT_SCAN_ENABLED:
-            // Disable everything but "Stop Discovering" on the menu
-            tbm_setItemStatus(&scMenuMain, SC_ITEM_STOPDISC, (SC_ITEM_ALL & ~SC_ITEM_STOPDISC));
-            printf("Discovering...");
+            printf("This block was for the menu and now does nothing.");
             break;
         case SC_EVT_SCAN_DISABLED:{
             uint16_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY;
@@ -451,10 +449,6 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
                         itemsToEnable |= SC_ITEM_SELECTCONN;
                     }
                 }
-                // Enable "Discover Devices", "Set Scanning PHY", and possibly
-                // "Connect to" and/or "Work with".
-                // Disable "Stop Discovering".
-                tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
             }
             else{
                 uint8_t numReport;
@@ -476,11 +470,6 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
                     // Also enable "Work with"
                     itemsToEnable |= SC_ITEM_SELECTCONN;
                 }
-                // Enable "Discover Devices", "Set Scanning PHY", and possibly
-                // "Connect to" and/or "Work with".
-                // Disable "Stop Discovering".
-
-                tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
                 // Allocate buffer to display addresses
                 if (pAddrs != NULL){
                     // A scan has been done previously, release the previously allocated buffer
@@ -490,7 +479,6 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
                 if (pAddrs == NULL){
                 numReport = 0;
                 }
-                TBM_SET_NUM_ITEM(&scMenuConnect, numReport);
                 pAddrTemp = pAddrs;
                 if (pAddrs != NULL){
                     for (i = 0; i < numReport; i++, pAddrTemp += SC_ADDR_STR_SIZE){
@@ -504,17 +492,7 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
                             GapScan_getAdvReport(i, &advRpt);
                             memcpy(pAddrTemp, Util_convertBdAddr2Str(advRpt.addr), SC_ADDR_STR_SIZE);
                         #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
-                        // Assign the string to the corresponding action description of the menu
-                        TBM_SET_ACTION_DESC(&scMenuConnect, i, pAddrTemp);
                     }
-                    // Disable any non-active scan results
-                    for (; i < DEFAULT_MAX_SCAN_RES; i++){
-                        tbm_setItemStatus(&scMenuConnect, TBM_ITEM_NONE, (1 << i));
-                    }
-                    // Note: pAddrs is not freed since it will be used by the two button menu
-                    // to display the discovered address.
-                    // This implies that at least the last discovered addresses
-                    // will be maintained until a new scan is done.
                 }
                 break;
             }
