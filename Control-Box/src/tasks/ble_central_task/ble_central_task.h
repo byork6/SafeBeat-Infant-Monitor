@@ -382,3 +382,12 @@ void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg);
  * @return  none
  */
 void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processPairState
+ *
+ * @brief   Process the new paring state.
+ *
+ * @return  none
+ */
+void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData);

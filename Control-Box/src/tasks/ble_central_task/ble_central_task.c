@@ -1054,3 +1054,81 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       break;
   }
 }
+
+void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData){
+  uint8_t status = pPairData->status;
+  uint8_t pairMode = 0;
+
+  if (state == GAPBOND_PAIRING_STATE_STARTED)
+  {
+    Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing started");
+  }
+  else if (state == GAPBOND_PAIRING_STATE_COMPLETE)
+  {
+    if (status == SUCCESS)
+    {
+      linkDBInfo_t linkInfo;
+
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing success");
+
+      if (linkDB_GetInfo(pPairData->connHandle, &linkInfo) == SUCCESS)
+      {
+        // If the peer was using private address, update with ID address
+        if ((linkInfo.addrType == ADDRTYPE_PUBLIC_ID ||
+             linkInfo.addrType == ADDRTYPE_RANDOM_ID) &&
+             !Util_isBufSet(linkInfo.addrPriv, 0, B_ADDR_LEN))
+        {
+          // Update the address of the peer to the ID address
+          Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Addr updated: %s",
+                         Util_convertBdAddr2Str(linkInfo.addr));
+
+          // Update the connection list with the ID address
+          uint8_t i = SimpleCentral_getConnIndex(pPairData->connHandle);
+
+          SIMPLECENTRAL_ASSERT(i < MAX_NUM_BLE_CONNS);
+          memcpy(connList[i].addr, linkInfo.addr, B_ADDR_LEN);
+        }
+      }
+    }
+    else
+    {
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing fail: %d", status);
+    }
+
+    GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
+
+    if ((autoConnect) && (pairMode == GAPBOND_PAIRING_MODE_INITIATE))
+    {
+      SimpleCentral_autoConnect();
+    }
+  }
+  else if (state == GAPBOND_PAIRING_STATE_ENCRYPTED)
+  {
+    if (status == SUCCESS)
+    {
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Encryption success");
+    }
+    else
+    {
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Encryption failed: %d", status);
+    }
+
+    GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
+
+    if ((autoConnect) && (pairMode == GAPBOND_PAIRING_MODE_INITIATE))
+    {
+      SimpleCentral_autoConnect();
+    }
+  }
+  else if (state == GAPBOND_PAIRING_STATE_BOND_SAVED)
+  {
+    if (status == SUCCESS)
+    {
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Bond save success");
+    }
+    else
+    {
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Bond save failed: %d", status);
+    }
+  }
+}
