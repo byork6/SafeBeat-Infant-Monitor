@@ -1140,8 +1140,7 @@ void SimpleCentral_clockHandler(UArg arg){
   }
 }
 
-status_t SimpleCentral_CancelRssi(uint16_t connHandle)
-{
+status_t SimpleCentral_CancelRssi(uint16_t connHandle){
   uint8_t connIndex = SimpleCentral_getConnIndex(connHandle);
 
   // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
@@ -1166,4 +1165,24 @@ status_t SimpleCentral_CancelRssi(uint16_t connHandle)
   Display_clearLine(dispHandle, SC_ROW_ANY_CONN);
 
   return SUCCESS;
+}
+
+uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr)
+{
+  uint8_t i;
+
+  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+  {
+    if (connList[i].connHandle == LINKDB_CONNHANDLE_INVALID)
+    {
+      // Found available entry to put a new connection info in
+      connList[i].connHandle = connHandle;
+      memcpy(connList[i].addr, pAddr, B_ADDR_LEN);
+      numConn++;
+
+      break;
+    }
+  }
+
+  return i;
 }

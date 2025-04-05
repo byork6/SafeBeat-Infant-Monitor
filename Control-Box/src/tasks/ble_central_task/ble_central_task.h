@@ -454,3 +454,14 @@ void SimpleCentral_clockHandler(UArg arg);
  *          bleIncorrectMode: Has not started
  */
 status_t SimpleCentral_CancelRssi(uint16_t connHandle);
+
+/*********************************************************************
+ * @fn      SimpleCentral_addConnInfo
+ *
+ * @brief   Add a device to the connected device list
+ *
+ * @return  index of the connected device list entry where the new connection
+ *          info is put in.
+ *          if there is no room, MAX_NUM_BLE_CONNS will be returned.
+ */
+uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr);
