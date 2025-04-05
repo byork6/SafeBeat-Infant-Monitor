@@ -1199,3 +1199,78 @@ uint8_t SimpleCentral_getConnIndex(uint16_t connHandle){
 
   return i;
 }
+
+void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg){
+  if (discState == BLE_DISC_STATE_MTU)
+  {
+    // MTU size response received, discover simple service
+    if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
+    {
+      uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
+                                         HI_UINT16(SIMPLEPROFILE_SERV_UUID) };
+
+      discState = BLE_DISC_STATE_SVC;
+
+      // Discovery simple service
+      VOID GATT_DiscPrimaryServiceByUUID(pMsg->connHandle, uuid,
+                                         ATT_BT_UUID_SIZE, selfEntity);
+    }
+  }
+  else if (discState == BLE_DISC_STATE_SVC)
+  {
+    // Service found, store handles
+    if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP &&
+        pMsg->msg.findByTypeValueRsp.numInfo > 0)
+    {
+      svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
+      svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
+    }
+
+    // If procedure complete
+    if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) &&
+         (pMsg->hdr.status == bleProcedureComplete))  ||
+        (pMsg->method == ATT_ERROR_RSP))
+    {
+      if (svcStartHdl != 0)
+      {
+        attReadByTypeReq_t req;
+
+        // Discover characteristic
+        discState = BLE_DISC_STATE_CHAR;
+
+        req.startHandle = svcStartHdl;
+        req.endHandle = svcEndHdl;
+        req.type.len = ATT_BT_UUID_SIZE;
+        req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
+        req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
+
+        VOID GATT_DiscCharsByUUID(pMsg->connHandle, &req, selfEntity);
+      }
+    }
+  }
+  else if (discState == BLE_DISC_STATE_CHAR)
+  {
+    // Characteristic found, store handle
+    if ((pMsg->method == ATT_READ_BY_TYPE_RSP) &&
+        (pMsg->msg.readByTypeRsp.numPairs > 0))
+    {
+      uint8_t connIndex = SimpleCentral_getConnIndex(scConnHandle);
+
+      // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
+      SIMPLECENTRAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
+
+      // Store the handle of the simpleprofile characteristic 1 value
+      connList[connIndex].charHandle
+        = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
+                       pMsg->msg.readByTypeRsp.pDataList[4]);
+
+      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Simple Svc Found");
+
+      // Now we can use GATT Read/Write
+      tbm_setItemStatus(&scMenuPerConn,
+                        SC_ITEM_GATTREAD | SC_ITEM_GATTWRITE, SC_ITEM_NONE);
+    }
+
+    discState = BLE_DISC_STATE_IDLE;
+  }
+}

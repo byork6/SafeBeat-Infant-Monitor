@@ -475,3 +475,12 @@ uint8_t SimpleCentral_addConnInfo(uint16_t connHandle, uint8_t *pAddr);
  *          if there is no match, MAX_NUM_BLE_CONNS will be returned.
  */
 uint8_t SimpleCentral_getConnIndex(uint16_t connHandle);
+
+/*********************************************************************
+ * @fn      SimpleCentral_processGATTDiscEvent
+ *
+ * @brief   Process GATT discovery event
+ *
+ * @return  none
+ */
+void SimpleCentral_processGATTDiscEvent(gattMsgEvent_t *pMsg);
