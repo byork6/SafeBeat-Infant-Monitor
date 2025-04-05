@@ -24,6 +24,21 @@ static gapBondCBs_t bondMgrCBs =
 icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #endif // USE_DEFAULT_USER_CFG
 
+#define APP_EVT_EVENT_MAX           0xA
+char *appEventStrings[] = {
+  "APP_EVT_ZERO              ",
+  "APP_EVT_KEY_CHANGE        ",
+  "APP_EVT_SCAN_ENABLED      ",
+  "APP_EVT_SCAN_DISABLED     ",
+  "APP_EVT_ADV_REPORT        ",
+  "APP_EVT_SVC_DISC          ",
+  "APP_EVT_READ_RSSI         ",
+  "APP_EVT_PAIR_STATE        ",
+  "APP_EVT_PASSCODE_NEEDED   ",
+  "APP_EVT_READ_RPA          ",
+  "APP_EVT_INSUFFICIENT_MEM  ",
+};
+
 // Auto connect Disabled/Enabled {0 - Disabled, 1- Group A , 2-Group B, ...}
 static uint8_t autoConnect = AUTOCONNECT_DISABLE;
 
@@ -469,69 +484,6 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg){
         case SC_EVT_SCAN_ENABLED:
             printf("This block was for the menu and now does nothing.");
             break;
-        case SC_EVT_SCAN_DISABLED:{
-            uint16_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY;
-            if (autoConnect){
-                itemsToEnable |= SC_ITEM_AUTOCONNECT;
-                if (numGroupMembers < MAX_NUM_BLE_CONNS){
-                    printf("AutoConnect: Not all members found, only %d members were found",numGroupMembers);
-                }
-                else{
-                    printf("AutoConnect: Number of members in the group %d",numGroupMembers);
-                    SimpleCentral_autoConnect();
-                    if (numConn > 0){
-                        // Also enable "Work with"
-                        itemsToEnable |= SC_ITEM_SELECTCONN;
-                    }
-                }
-            }
-            else{
-                uint8_t numReport;
-                uint8_t i;
-                static uint8_t* pAddrs = NULL;
-                uint8_t* pAddrTemp;
-                #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
-                    numReport = numScanRes;
-                #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
-                    GapScan_Evt_AdvRpt_t advRpt;
-                    numReport = ((GapScan_Evt_End_t*) (pMsg->pData))->numReport;
-                #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
-                printf("%d devices discovered", numReport);
-                if (numReport > 0){
-                    // Also enable "Connect to"
-                    itemsToEnable |= SC_ITEM_CONNECT;
-                }
-                if (numConn > 0){
-                    // Also enable "Work with"
-                    itemsToEnable |= SC_ITEM_SELECTCONN;
-                }
-                // Allocate buffer to display addresses
-                if (pAddrs != NULL){
-                    // A scan has been done previously, release the previously allocated buffer
-                    ICall_free(pAddrs);
-                }
-                pAddrs = ICall_malloc(numReport * SC_ADDR_STR_SIZE);
-                if (pAddrs == NULL){
-                numReport = 0;
-                }
-                pAddrTemp = pAddrs;
-                if (pAddrs != NULL){
-                    for (i = 0; i < numReport; i++, pAddrTemp += SC_ADDR_STR_SIZE){
-                        #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
-                            // Get the address from the list, convert it to string, and
-                            // copy the string to the address buffer
-                            memcpy(pAddrTemp, Util_convertBdAddr2Str(scanList[i].addr), SC_ADDR_STR_SIZE);
-                        #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
-                            // Get the address from the report, convert it to string, and
-                            // copy the string to the address buffer
-                            GapScan_getAdvReport(i, &advRpt);
-                            memcpy(pAddrTemp, Util_convertBdAddr2Str(advRpt.addr), SC_ADDR_STR_SIZE);
-                        #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
-                    }
-                }
-                break;
-            }
-        }
         case SC_EVT_SVC_DISC:
             SimpleCentral_startSvcDiscovery();
             break;
@@ -774,8 +726,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
 
     case GAP_CONNECTING_CANCELLED_EVENT:
     {
-      uint16_t itemsToEnable = SC_ITEM_SCANPHY | SC_ITEM_STARTDISC |
-                               SC_ITEM_CONNECT | SC_ITEM_AUTOCONNECT;
       if (autoConnect)
       {
         if (memberInProg != NULL)
@@ -789,11 +739,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
         printf("AutoConnect: Number of members in the group %d",numGroupMembers);
         //Keep on connecting to the remaining members in the list
         SimpleCentral_autoConnect();
-      }
-
-      if (numConn > 0)
-      {
-        itemsToEnable |= SC_ITEM_SELECTCONN;
       }
       printf("Conneting attempt cancelled");
 
@@ -823,7 +768,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
         }
       }
       uint8_t  connIndex;
-      uint32_t itemsToDisable = SC_ITEM_STOPDISC | SC_ITEM_CANCELCONN;
       uint8_t* pStrAddr;
       uint8_t i;
       uint8_t numConnectable = 0;
@@ -842,16 +786,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       printf("Connected to %s", pStrAddr);
       printf("Num Conns: %d", numConn);
 
-      // Disable "Connect To" until another discovery is performed
-      itemsToDisable |= SC_ITEM_CONNECT;
-
-      // If we already have maximum allowed number of connections,
-      // disable device discovery and additional connection making.
-      if (numConn >= MAX_NUM_BLE_CONNS)
-      {
-        itemsToDisable |= SC_ITEM_SCANPHY | SC_ITEM_STARTDISC;
-      }
-
       GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
 
       if ((autoConnect) && (pairMode != GAPBOND_PAIRING_MODE_INITIATE))
@@ -865,7 +799,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
     {
       uint8_t connIndex;
       BLE_LOG_INT_STR(0, BLE_LOG_MODULE_APP, "APP : GAP msg status=%d, opcode=%s\n", 0, "GAP_LINK_TERMINATED_EVENT");
-      uint32_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY | SC_ITEM_AUTOCONNECT;
       uint8_t* pStrAddr;
       uint8_t i;
       uint8_t numConnectable = 0;
@@ -904,12 +837,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
 
       printf("%s is disconnected", pStrAddr);
       printf("Num Conns: %d", numConn);
-
-      if (numConn > 0)
-      {
-        // There still is an active connection to select
-        itemsToEnable |= SC_ITEM_SELECTCONN;
-      }
 
       break;
     }
@@ -1161,8 +1088,6 @@ status_t SimpleCentral_CancelRssi(uint16_t connHandle){
   // Free clock struct
   ICall_free(connList[connIndex].pRssiClock);
   connList[connIndex].pRssiClock = NULL;
-
-  Display_clearLine(dispHandle, SC_ROW_ANY_CONN);
 
   return SUCCESS;
 }

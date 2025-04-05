@@ -26,6 +26,7 @@
 // Example includes
 #include <hal_assert.h>
 #include <osal_list.h>
+#include <simple_gatt_profile.h>
 
 // TASK DECLARATIONS
 // BLE Central Task Constants
@@ -104,26 +105,6 @@ typedef struct{
 #define SCAN_TYPE_PASSIVE           SCAN_PARAM_DFLT_TYPE
 #define SCAN_INTERVAL               160  // 100ms
 #define SCAN_WINDOW                 160  // 100ms
-// Duplicate menu item indices.
-#define SC_ITEM_NONE                TBM_ITEM_NONE
-#define SC_ITEM_ALL                 TBM_ITEM_ALL
-// Note: The defines should be updated accordingly if there is any change
-//       in the order of the items of the menu objects the items belong to.
-#define SC_ITEM_SCANPHY             TBM_ITEM(0)  // "Set Scanning PHY"
-#define SC_ITEM_STARTDISC           TBM_ITEM(1)  // "Discover Devices"
-#define SC_ITEM_STOPDISC            TBM_ITEM(2)  // "Stop Discovering"
-#define SC_ITEM_CONNECT             TBM_ITEM(3)  // "Connect To"
-#define SC_ITEM_CANCELCONN          TBM_ITEM(4)  // "Cancel Connecting"
-#define SC_ITEM_SELECTCONN          TBM_ITEM(5)  // "Work With"
-#define SC_ITEM_AUTOCONNECT         TBM_ITEM(6)  // "Auto Connect"
-
-#define SC_ITEM_GATTREAD            TBM_ITEM(0)  // "GATT Read"
-#define SC_ITEM_GATTWRITE           TBM_ITEM(1)  // "GATT Write"
-#define SC_ITEM_STRTRSSI            TBM_ITEM(2)  // "Start RSSI Reading"
-#define SC_ITEM_STOPRSSI            TBM_ITEM(3)  // "Stop RSSI Reading"
-#define SC_ITEM_UPDATE              TBM_ITEM(4)  // "Connection Update"
-#define SC_ITEM_CONNPHY             TBM_ITEM(5)  // "Set Connection PHY"
-#define SC_ITEM_DISCONNECT          TBM_ITEM(6)  // "Disconnect"
 // Application events
 // #define SC_EVT_KEY_CHANGE          0x01 ---- // Removed this line because we are not using the keys from ex.
 #define SC_EVT_SCAN_ENABLED         0x02
@@ -156,21 +137,6 @@ typedef struct{
 #define SC_ADDR_STR_SIZE            15
 // Supervision timeout conversion rate to miliseconds
 #define CONN_TIMEOUT_MS_CONVERSION            10
-
-#define APP_EVT_EVENT_MAX           0xA
-char *appEventStrings[] = {
-  "APP_EVT_ZERO              ",
-  "APP_EVT_KEY_CHANGE        ",
-  "APP_EVT_SCAN_ENABLED      ",
-  "APP_EVT_SCAN_DISABLED     ",
-  "APP_EVT_ADV_REPORT        ",
-  "APP_EVT_SVC_DISC          ",
-  "APP_EVT_READ_RSSI         ",
-  "APP_EVT_PAIR_STATE        ",
-  "APP_EVT_PASSCODE_NEEDED   ",
-  "APP_EVT_READ_RPA          ",
-  "APP_EVT_INSUFFICIENT_MEM  ",
-};
 
 // VARIABLE DECLARATIONS
 // Event globally used to post local events and pend on system and local events
