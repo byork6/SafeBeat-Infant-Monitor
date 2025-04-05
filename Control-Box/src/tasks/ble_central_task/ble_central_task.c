@@ -25,7 +25,7 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #endif // USE_DEFAULT_USER_CFG
 
 // Auto connect Disabled/Enabled {0 - Disabled, 1- Group A , 2-Group B, ...}
-uint8_t autoConnect = AUTOCONNECT_DISABLE;
+static uint8_t autoConnect = AUTOCONNECT_DISABLE;
 
 //Number of group members found
 static uint8_t numGroupMembers = 0;
@@ -43,6 +43,22 @@ static osal_list_list groupList;
 
 // Current Random Private Address
 static uint8 rpa[B_ADDR_LEN] = {0};
+
+// Value to write
+static uint8_t charVal = 0;
+
+// Accept or reject L2CAP connection parameter update request
+static bool acceptParamUpdateReq = true;
+
+// Discovery state
+static uint8_t discState = BLE_DISC_STATE_IDLE;
+
+// Discovered service start and end handle
+static uint16_t svcStartHdl = 0;
+static uint16_t svcEndHdl = 0;
+
+// Connection handle of current connection
+static uint16_t scConnHandle = LINKDB_CONNHANDLE_INVALID;
 
 // FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
@@ -596,7 +612,7 @@ void SimpleCentral_autoConnect(void){
             }
         }
         else{
-            Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "AutoConnect turned off: Max connection reached.");
+            printf("AutoConnect turned off: Max connection reached.");
         }
     }
 }
@@ -628,7 +644,7 @@ void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg){
                                              pMsg->pReturnParam[2]);
                 int8 rssi = (int8)pMsg->pReturnParam[3];
 
-                Display_printf(dispHandle, SC_ROW_ANY_CONN, 0, "%s: RSSI %d dBm", SimpleCentral_getConnAddrStr(connHandle), rssi);
+                printf("%s: RSSI %d dBm", SimpleCentral_getConnAddrStr(connHandle), rssi);
             #endif
             break;
         }
@@ -643,42 +659,37 @@ void SimpleCentral_processGATTMsg(gattMsgEvent_t *pMsg){
         if (pMsg->hdr.status == blePending){
             // No HCI buffer was available. App can try to retransmit the response
             // on the next connection event. Drop it for now.
-            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                       "ATT Rsp dropped %d", pMsg->method);
+            printf("ATT Rsp dropped %d", pMsg->method);
         }
         else if ((pMsg->method == ATT_READ_RSP)   || ((pMsg->method == ATT_ERROR_RSP) && (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ))){
             if (pMsg->method == ATT_ERROR_RSP){
-                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
+                printf("Read Error %d", pMsg->msg.errorRsp.errCode);
             }
             else{
                 // After a successful read, display the read value
-                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Read rsp: 0x%02x", pMsg->msg.readRsp.pValue[0]);
+                printf("Read rsp: 0x%02x", pMsg->msg.readRsp.pValue[0]);
             }
         }
         else if ((pMsg->method == ATT_WRITE_RSP)  || ((pMsg->method == ATT_ERROR_RSP) && (pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ))){
             if (pMsg->method == ATT_ERROR_RSP){
-                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
+                printf("Write Error %d", pMsg->msg.errorRsp.errCode);
             }
             else{
                 // After a successful write, display the value that was written and
                 // increment value
-                Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                             "Write sent: 0x%02x", charVal);
+                printf("Write sent: 0x%02x", charVal);
             }
-            tbm_goTo(&scMenuPerConn);
         }
         else if (pMsg->method == ATT_FLOW_CTRL_VIOLATED_EVENT){
             // ATT request-response or indication-confirmation flow control is
             // violated. All subsequent ATT requests or indications will be dropped.
             // The app is informed in case it wants to drop the connection.
             // Display the opcode of the message that caused the violation.
-            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                       "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
+            printf("FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
         }
         else if (pMsg->method == ATT_MTU_UPDATED_EVENT){
             // MTU size updated
-            Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                         "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
+            printf("MTU Size: %d", pMsg->msg.mtuEvt.MTU);
         }
         else if (discState != BLE_DISC_STATE_IDLE){
             SimpleCentral_processGATTDiscEvent(pMsg);
@@ -741,26 +752,18 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
 
       scMaxPduSize = pPkt->dataPktLen;
 
-      // Enable "Discover Devices", "Set Scanning PHY", "AutoConnect" , and "Set Address Type"
-      // in the main menu
-      tbm_setItemStatus(&scMenuMain,
-                        SC_ITEM_STARTDISC | SC_ITEM_SCANPHY | SC_ITEM_AUTOCONNECT, SC_ITEM_NONE);
-
-      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Initialized");
-      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
+      printf( "Initialized");
+      printf("Num Conns: %d", numConn);
 
       // Display device address
-      Display_printf(dispHandle, SC_ROW_IDA, 0, "%s Addr: %s",
-                     (addrMode <= ADDRMODE_RANDOM) ? "Dev" : "ID",
-                     Util_convertBdAddr2Str(pPkt->devAddr));
+      printf("%s Addr: %s", (addrMode <= ADDRMODE_RANDOM) ? "Dev" : "ID", Util_convertBdAddr2Str(pPkt->devAddr));
 
       if (addrMode > ADDRMODE_RANDOM)
       {
         // Update the current RPA.
         memcpy(rpa, GAP_GetDevAddress(FALSE), B_ADDR_LEN);
 
-        Display_printf(dispHandle, SC_ROW_RPA, 0, "RP Addr: %s",
-                       Util_convertBdAddr2Str(rpa));
+        printf("RP Addr: %s", Util_convertBdAddr2Str(rpa));
 
         // Create one-shot clock for RPA check event.
         Util_constructClock(&clkRpaRead, SimpleCentral_clockHandler,
@@ -783,7 +786,7 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
           numGroupMembers--;
           memberInProg = NULL;
         }
-        Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
+        printf("AutoConnect: Number of members in the group %d",numGroupMembers);
         //Keep on connecting to the remaining members in the list
         SimpleCentral_autoConnect();
       }
@@ -792,14 +795,7 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       {
         itemsToEnable |= SC_ITEM_SELECTCONN;
       }
-
-      Display_printf(dispHandle, SC_ROW_NON_CONN, 0,
-                     "Conneting attempt cancelled");
-
-      // Enable "Discover Devices", "Connect To", and "Set Scanning PHY"
-      // and disable everything else.
-      tbm_setItemStatus(&scMenuMain,
-                        itemsToEnable, SC_ITEM_ALL & ~itemsToEnable);
+      printf("Conneting attempt cancelled");
 
       break;
     }
@@ -842,9 +838,9 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       connList[connIndex].charHandle = 0;
 
       pStrAddr = (uint8_t*) Util_convertBdAddr2Str(connList[connIndex].addr);
-
-      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Connected to %s", pStrAddr);
-      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
+      
+      printf("Connected to %s", pStrAddr);
+      printf("Num Conns: %d", numConn);
 
       // Disable "Connect To" until another discovery is performed
       itemsToDisable |= SC_ITEM_CONNECT;
@@ -855,24 +851,6 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       {
         itemsToDisable |= SC_ITEM_SCANPHY | SC_ITEM_STARTDISC;
       }
-
-      for (i = 0; i < TBM_GET_NUM_ITEM(&scMenuConnect); i++)
-      {
-        if (!memcmp(TBM_GET_ACTION_DESC(&scMenuConnect, i), pStrAddr,
-            SC_ADDR_STR_SIZE))
-        {
-          // Disable this device from the connection choices
-          tbm_setItemStatus(&scMenuConnect, SC_ITEM_NONE, 1 << i);
-        }
-        else if (TBM_IS_ITEM_ACTIVE(&scMenuConnect, i))
-        {
-          numConnectable++;
-        }
-      }
-
-      // Enable/disable Main menu items properly
-      tbm_setItemStatus(&scMenuMain,
-                        SC_ITEM_ALL & ~(itemsToDisable), itemsToDisable);
 
       GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
 
@@ -924,40 +902,13 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
 
       pStrAddr = (uint8_t*) Util_convertBdAddr2Str(connList[connIndex].addr);
 
-      Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "%s is disconnected",
-                     pStrAddr);
-      Display_printf(dispHandle, SC_ROW_NUM_CONN, 0, "Num Conns: %d", numConn);
-
-      for (i = 0; i < TBM_GET_NUM_ITEM(&scMenuConnect); i++)
-      {
-        if (!memcmp(TBM_GET_ACTION_DESC(&scMenuConnect, i), pStrAddr,
-                     SC_ADDR_STR_SIZE))
-        {
-          // Enable this device in the connection choices
-          tbm_setItemStatus(&scMenuConnect, 1 << i, SC_ITEM_NONE);
-        }
-
-        if (TBM_IS_ITEM_ACTIVE(&scMenuConnect, i))
-        {
-          numConnectable++;
-        }
-      }
+      printf("%s is disconnected", pStrAddr);
+      printf("Num Conns: %d", numConn);
 
       if (numConn > 0)
       {
         // There still is an active connection to select
         itemsToEnable |= SC_ITEM_SELECTCONN;
-      }
-
-      // Enable/disable items properly.
-      tbm_setItemStatus(&scMenuMain,
-                        itemsToEnable, SC_ITEM_ALL & ~itemsToEnable);
-
-      // If we are in the context which the teminated connection was associated
-      // with, go to main menu.
-      if (connHandle == scConnHandle)
-      {
-        tbm_goTo(&scMenuMain);
       }
 
       break;
@@ -1009,17 +960,12 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       {
         if(pPkt->status == SUCCESS)
         {
-          Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                         "Updated: %s, connTimeout:%d",
-                         Util_convertBdAddr2Str(linkInfo.addr),
-                         linkInfo.connTimeout*CONN_TIMEOUT_MS_CONVERSION);
+          printf("Updated: %s, connTimeout:%d", Util_convertBdAddr2Str(linkInfo.addr), linkInfo.connTimeout*CONN_TIMEOUT_MS_CONVERSION);
         }
         else
         {
           // Display the address of the connection update failure
-          Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                         "Update Failed 0x%h: %s", pPkt->opcode,
-                         Util_convertBdAddr2Str(linkInfo.addr));
+          printf("Update Failed 0x%h: %s", pPkt->opcode, Util_convertBdAddr2Str(linkInfo.addr));
         }
       }
 
@@ -1042,10 +988,7 @@ void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg){
       linkDB_GetInfo(pPkt->connectionHandle, &linkInfo);
 
       // Display the address of the connection update failure
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0,
-                     "Peer Device's Update Request Rejected 0x%h: %s", pPkt->opcode,
-                     Util_convertBdAddr2Str(linkInfo.addr));
-
+      printf("Peer Device's Update Request Rejected 0x%h: %s", pPkt->opcode, Util_convertBdAddr2Str(linkInfo.addr));
       break;
     }
 #endif
@@ -1061,7 +1004,7 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
 
   if (state == GAPBOND_PAIRING_STATE_STARTED)
   {
-    Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing started");
+    printf("Pairing started");
   }
   else if (state == GAPBOND_PAIRING_STATE_COMPLETE)
   {
@@ -1069,7 +1012,7 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
     {
       linkDBInfo_t linkInfo;
 
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing success");
+      printf("Pairing success");
 
       if (linkDB_GetInfo(pPairData->connHandle, &linkInfo) == SUCCESS)
       {
@@ -1079,9 +1022,7 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
              !Util_isBufSet(linkInfo.addrPriv, 0, B_ADDR_LEN))
         {
           // Update the address of the peer to the ID address
-          Display_printf(dispHandle, SC_ROW_NON_CONN, 0, "Addr updated: %s",
-                         Util_convertBdAddr2Str(linkInfo.addr));
-
+          printf("Addr updated: %s", Util_convertBdAddr2Str(linkInfo.addr));
           // Update the connection list with the ID address
           uint8_t i = SimpleCentral_getConnIndex(pPairData->connHandle);
 
@@ -1092,7 +1033,7 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
     }
     else
     {
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Pairing fail: %d", status);
+      printf("Pairing fail: %d", status);
     }
 
     GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
@@ -1106,11 +1047,11 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
   {
     if (status == SUCCESS)
     {
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Encryption success");
+      printf("Encryption success");
     }
     else
     {
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Encryption failed: %d", status);
+      printf("Encryption failed: %d", status);
     }
 
     GAPBondMgr_GetParameter(GAPBOND_PAIRING_MODE, &pairMode);
@@ -1124,11 +1065,11 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
   {
     if (status == SUCCESS)
     {
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Bond save success");
+      printf("Bond save success");
     }
     else
     {
-      Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Bond save failed: %d", status);
+      printf("Bond save failed: %d", status);
     }
   }
 }
@@ -1136,7 +1077,7 @@ void SimpleCentral_processPairState(uint8_t state, scPairStateData_t* pPairData)
 void SimpleCentral_processPasscode(scPasscodeData_t *pData){
     // Display passcode to user
     if (pData->uiOutputs != 0){
-        Display_printf(dispHandle, SC_ROW_CUR_CONN, 0, "Passcode: %d", B_APP_DEFAULT_PASSCODE);
+        printf("Passcode: %d", B_APP_DEFAULT_PASSCODE);
     }
     // Send passcode response
     GAPBondMgr_PasscodeRsp(pData->connHandle, SUCCESS, B_APP_DEFAULT_PASSCODE);
@@ -1152,4 +1093,49 @@ void SimpleCentral_startSvcDiscovery(void){
     // ATT MTU size should be set to the minimum of the Client Rx MTU
     // and Server Rx MTU values
     VOID GATT_ExchangeMTU(scConnHandle, &req, selfEntity);
+}
+
+void SimpleCentral_scanCb(uint32_t evt, void* pMsg, uintptr_t arg){
+    uint8_t event;
+
+    if (evt & GAP_EVT_ADV_REPORT){
+      event = SC_EVT_ADV_REPORT;
+    }
+    else if (evt & GAP_EVT_SCAN_ENABLED){
+      event = SC_EVT_SCAN_ENABLED;
+    }
+    else if (evt & GAP_EVT_SCAN_DISABLED){
+      event = SC_EVT_SCAN_DISABLED;
+    }
+    else if (evt & GAP_EVT_INSUFFICIENT_MEMORY){
+      event = SC_EVT_INSUFFICIENT_MEM;
+    }
+    else{
+      return;
+    }
+
+    if(SimpleCentral_enqueueMsg(event, SUCCESS, pMsg) != SUCCESS){
+      ICall_free(pMsg);
+    }
+}
+
+void SimpleCentral_clockHandler(UArg arg){
+  uint8_t evtId = (uint8_t) (arg & 0xFF);
+
+  switch (evtId)
+  {
+    case SC_EVT_READ_RSSI:
+      SimpleCentral_enqueueMsg(SC_EVT_READ_RSSI, (uint8_t) (arg >> 8) , NULL);
+      break;
+
+    case SC_EVT_READ_RPA:
+      // Restart timer
+      Util_startClock(&clkRpaRead);
+      // Let the application handle the event
+      SimpleCentral_enqueueMsg(SC_EVT_READ_RPA, 0, NULL);
+      break;
+
+    default:
+      break;
+  }
 }

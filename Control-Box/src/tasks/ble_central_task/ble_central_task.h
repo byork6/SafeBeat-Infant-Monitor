@@ -98,15 +98,6 @@ typedef struct{
 	uint8_t  status;            // bitwise status flag
 } groupListElem_t;
 
-// VARIABLE DECLARATIONS
-// Event globally used to post local events and pend on system and local events
-ICall_SyncHandle syncEvent;
-// Queue object used for app messages
-Queue_Struct appMsg;
-Queue_Handle appMsgQueue;
-// List of connections
-connRec_t connList[MAX_NUM_BLE_CONNS];
-
 // MACROS & CONSTANTS
 #define DEFAULT_SCAN_PHY            SCAN_PRIM_PHY_1M
 // #define SCAN_TYPE_PASSIVE          SCAN_TYPE_PASSIVE
@@ -149,20 +140,6 @@ connRec_t connList[MAX_NUM_BLE_CONNS];
 #define SC_QUEUE_EVT                UTIL_QUEUE_EVENT_ID // Event_Id_30
 #define SC_ALL_EVENTS                        (SC_ICALL_EVT           | \
                                               SC_QUEUE_EVT)
-#define APP_EVT_EVENT_MAX           0xA
-char *appEventStrings[] = {
-  "APP_EVT_ZERO              ",
-  "APP_EVT_KEY_CHANGE        ",
-  "APP_EVT_SCAN_ENABLED      ",
-  "APP_EVT_SCAN_DISABLED     ",
-  "APP_EVT_ADV_REPORT        ",
-  "APP_EVT_SVC_DISC          ",
-  "APP_EVT_READ_RSSI         ",
-  "APP_EVT_PAIR_STATE        ",
-  "APP_EVT_PASSCODE_NEEDED   ",
-  "APP_EVT_READ_RPA          ",
-  "APP_EVT_INSUFFICIENT_MEM  ",
-};
 // Spin if the expression is not true
 #define SIMPLECENTRAL_ASSERT(expr) if (!(expr)) SimpleCentral_spin();
 // Timeout for the initiator to cancel connection if not successful
@@ -177,6 +154,38 @@ char *appEventStrings[] = {
 #define GROUP_INITIALIZED_CONNECTION_HANDLE     0xFFFF
 // Size of string-converted device address ("0xXXXXXXXXXXXX")
 #define SC_ADDR_STR_SIZE            15
+// Supervision timeout conversion rate to miliseconds
+#define CONN_TIMEOUT_MS_CONVERSION            10
+
+#define APP_EVT_EVENT_MAX           0xA
+char *appEventStrings[] = {
+  "APP_EVT_ZERO              ",
+  "APP_EVT_KEY_CHANGE        ",
+  "APP_EVT_SCAN_ENABLED      ",
+  "APP_EVT_SCAN_DISABLED     ",
+  "APP_EVT_ADV_REPORT        ",
+  "APP_EVT_SVC_DISC          ",
+  "APP_EVT_READ_RSSI         ",
+  "APP_EVT_PAIR_STATE        ",
+  "APP_EVT_PASSCODE_NEEDED   ",
+  "APP_EVT_READ_RPA          ",
+  "APP_EVT_INSUFFICIENT_MEM  ",
+};
+
+// VARIABLE DECLARATIONS
+// Event globally used to post local events and pend on system and local events
+ICall_SyncHandle syncEvent;
+// Queue object used for app messages
+Queue_Struct appMsg;
+Queue_Handle appMsgQueue;
+// List of connections
+connRec_t connList[MAX_NUM_BLE_CONNS];
+//Connection in progress to avoid double initiate
+groupListElem_t *memberInProg;
+// Maximum PDU size (default = 27 octets)
+uint16_t scMaxPduSize;
+// Clock instance for RPA read events.
+Clock_Struct clkRpaRead;
 
 // FUNCTION PROTOTYPES
 /**
@@ -409,3 +418,27 @@ void SimpleCentral_processPasscode(scPasscodeData_t *pData);
  * @return  none
  */
 void SimpleCentral_startSvcDiscovery(void);
+
+/*********************************************************************
+ * @fn      SimpleCentral_scanCb
+ *
+ * @brief   Callback called by GapScan module
+ *
+ * @param   evt - event
+ * @param   msg - message coming with the event
+ * @param   arg - user argument
+ *
+ * @return  none
+ */
+void SimpleCentral_scanCb(uint32_t evt, void* msg, uintptr_t arg);
+
+/*********************************************************************
+ * @fn      SimpleCentral_clockHandler
+ *
+ * @brief   clock handler function
+ *
+ * @param   arg - argument from the clock initiator
+ *
+ * @return  none
+ */
+void SimpleCentral_clockHandler(UArg arg);
