@@ -114,8 +114,6 @@ extern CircularQueue displayMemQueue;
 #include "temperature_monitoring_task.h"
 #include "display_driver_task.h"
 #include "ble_central_task.h"
-#include "simple_central/application/simple_central.h"
-
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
