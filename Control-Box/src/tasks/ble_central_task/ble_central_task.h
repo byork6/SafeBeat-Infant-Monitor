@@ -325,3 +325,14 @@ void SimpleCentral_processAppMsg(scEvt_t *pMsg);
  * @return  none
  */
 void SimpleCentral_autoConnect(void);
+
+/*********************************************************************
+ * @fn      SimpleCentral_getConnAddrStr
+ *
+ * @brief   Return, in string form, the address of the peer associated with
+ *          the connHandle.
+ *
+ * @return  A null-terminated string of the address.
+ *          if there is no match, NULL will be returned.
+ */
+char* SimpleCentral_getConnAddrStr(uint16_t connHandle);

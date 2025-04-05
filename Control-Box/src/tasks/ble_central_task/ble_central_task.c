@@ -600,3 +600,15 @@ void SimpleCentral_autoConnect(void){
         }
     }
 }
+
+#ifndef Display_DISABLE_ALL
+char* SimpleCentral_getConnAddrStr(uint16_t connHandle){
+    uint8_t i;
+    for (i = 0; i < MAX_NUM_BLE_CONNS; i++){
+        if (connList[i].connHandle == connHandle){
+            return Util_convertBdAddr2Str(connList[i].addr);
+        }
+    }
+   return NULL;
+}
+#endif
