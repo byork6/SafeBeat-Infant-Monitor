@@ -299,86 +299,72 @@ uint8_t SimpleCentral_processStackMsg(ICall_Hdr *pMsg){
     BLE_LOG_INT_INT(0, BLE_LOG_MODULE_APP, "APP : Stack msg status=%d, event=0x%x\n", pMsg->status, pMsg->event);
 
     switch (pMsg->event){
-      case GAP_MSG_EVENT:
-        SimpleCentral_processGapMsg((gapEventHdr_t*) pMsg);
-        break;
-
-      case GATT_MSG_EVENT:
-        SimpleCentral_processGATTMsg((gattMsgEvent_t *)pMsg);
-        break;
-
-      case HCI_GAP_EVENT_EVENT:{
-        // Process HCI message
-        switch (pMsg->status){
-          case HCI_COMMAND_COMPLETE_EVENT_CODE:
-            SimpleCentral_processCmdCompleteEvt((hciEvt_CmdComplete_t *) pMsg);
+        case GAP_MSG_EVENT:
+            SimpleCentral_processGapMsg((gapEventHdr_t*) pMsg);
             break;
-
-          case HCI_BLE_HARDWARE_ERROR_EVENT_CODE:
-            AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,0);
+        case GATT_MSG_EVENT:
+            SimpleCentral_processGATTMsg((gattMsgEvent_t *)pMsg);
             break;
-
-          // HCI Commands Events
-          case HCI_COMMAND_STATUS_EVENT_CODE:{
-              hciEvt_CommandStatus_t *pMyMsg = (hciEvt_CommandStatus_t *)pMsg;
-              switch ( pMyMsg->cmdOpcode ){
-                case HCI_LE_SET_PHY:{
-                    if (pMyMsg->cmdStatus == HCI_ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE){
-                        printf("PHY Change failure, peer does not support this");
+        case HCI_GAP_EVENT_EVENT:{
+            // Process HCI message
+            switch (pMsg->status){
+                case HCI_COMMAND_COMPLETE_EVENT_CODE:
+                    SimpleCentral_processCmdCompleteEvt((hciEvt_CmdComplete_t *) pMsg);
+                    break;
+                case HCI_BLE_HARDWARE_ERROR_EVENT_CODE:
+                    AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,0);
+                    break;
+                // HCI Commands Events
+                case HCI_COMMAND_STATUS_EVENT_CODE:{
+                    hciEvt_CommandStatus_t *pMyMsg = (hciEvt_CommandStatus_t *)pMsg;
+                    switch ( pMyMsg->cmdOpcode ){
+                        case HCI_LE_SET_PHY:{
+                            if (pMyMsg->cmdStatus == HCI_ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE){
+                                printf("PHY Change failure, peer does not support this");
+                            }
+                            else{
+                                printf("PHY Update Status: 0x%02x", pMyMsg->cmdStatus);
+                            }
+                        }
+                        break;
+                        case HCI_DISCONNECT:
+                            break;
+                        default:{
+                            printf("Unknown Cmd Status: 0x%04x::0x%02x", pMyMsg->cmdOpcode, pMyMsg->cmdStatus);
+                        }
+                        break;
                     }
-                    else{
-                        printf("PHY Update Status: 0x%02x", pMyMsg->cmdStatus);
-                    }
-                  }
-                  break;
-                case HCI_DISCONNECT:
-                  break;
-
-                default:{
-                    printf("Unknown Cmd Status: 0x%04x::0x%02x", pMyMsg->cmdOpcode, pMyMsg->cmdStatus);
-                  }
+                }
                 break;
-              }
+                // LE Events
+                case HCI_LE_EVENT_CODE:{
+                    hciEvt_BLEPhyUpdateComplete_t *pPUC = (hciEvt_BLEPhyUpdateComplete_t*) pMsg;
+                    if (pPUC->BLEEventCode == HCI_BLE_PHY_UPDATE_COMPLETE_EVENT){
+                        if (pPUC->status != SUCCESS){
+                            printf("%s: PHY change failure", SimpleCentral_getConnAddrStr(pPUC->connHandle));
+                        }
+                        else{
+                            printf("%s: PHY updated to %s", SimpleCentral_getConnAddrStr(pPUC->connHandle), 
+                                // Only symmetrical PHY is supported.
+                                // rxPhy should be equal to txPhy.
+                                (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_1M) ? "1 Mbps" :
+                                (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_2M) ? "2 Mbps" :
+                                (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_CODED) ? "CODED" : "Unexpected PHY Value");
+                        }
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
-            break;
-
-          // LE Events
-          case HCI_LE_EVENT_CODE:{
-            hciEvt_BLEPhyUpdateComplete_t *pPUC
-              = (hciEvt_BLEPhyUpdateComplete_t*) pMsg;
-
-            if (pPUC->BLEEventCode == HCI_BLE_PHY_UPDATE_COMPLETE_EVENT){
-              if (pPUC->status != SUCCESS){
-                printf("%s: PHY change failure", SimpleCentral_getConnAddrStr(pPUC->connHandle));
-              }
-              else{
-                printf("%s: PHY updated to %s", SimpleCentral_getConnAddrStr(pPUC->connHandle), 
-                    // Only symmetrical PHY is supported.
-                    // rxPhy should be equal to txPhy.
-                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_1M) ? "1 Mbps" :
-                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_2M) ? "2 Mbps" :
-                    (pPUC->rxPhy == PHY_UPDATE_COMPLETE_EVENT_CODED) ? "CODED" : "Unexpected PHY Value");
-              }
-            }
-
-            break;
-          }
-
-          default:
             break;
         }
-
-        break;
-      }
-
-      case L2CAP_SIGNAL_EVENT:
-        // place holder for L2CAP Connection Parameter Reply
-        break;
-
-      default:
-        break;
+        case L2CAP_SIGNAL_EVENT:
+            // place holder for L2CAP Connection Parameter Reply
+            break;
+        default:
+            break;
     }
-
     return (safeToDealloc);
 }
 
