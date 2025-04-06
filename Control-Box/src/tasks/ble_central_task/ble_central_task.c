@@ -184,30 +184,35 @@ void BLECentral_init(void){
     ///////////////////////////// START OF EXAMPLE CODE INIT /////////////////////////////
     // NOTE: Everything from here until the while loop is from the Simple_Central Example.
     // All of the code below is for the BLE initializtion.
-    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
-    printf("APP --- init\n");
+    // BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
+    printf("STARTING BLECentral_init...\n");
 
     // ******************************************************************
     // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
     // ******************************************************************
     // Register the current thread as an ICall dispatcher application
     // so that the application can send and receive messages.
+    printf("ICall_registerApp\n");
     ICall_registerApp(&selfEntity, &syncEvent);
 
     // Create an RTOS queue for message from profile to be sent to app.
+    printf("Util_constructQueue\n");
     appMsgQueue = Util_constructQueue(&appMsg);
 
     // Initialize internal data
+    printf("ConnList\n");
     for (i = 0; i < MAX_NUM_BLE_CONNS; i++){
       connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
       connList[i].pRssiClock = NULL;
     }
 
+    printf("GGS_SetParameter\n");
     GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN,(void *)attDeviceName);
 
     //Set default values for Data Length Extension
     //Extended Data Length Feature is already enabled by default
     //in build_config.opt in stack project.
+    printf("HCI_EXT_SetMaxDataLenCmd\n");
     {
       //Change initial values of RX/TX PDU and Time, RX is set to max. by default(251 octets, 2120us)
       #define APP_SUGGESTED_RX_PDU_SIZE 251     //default is 251 octets(RX)
@@ -222,33 +227,41 @@ void BLECentral_init(void){
     }
 
     // Initialize GATT Client
+    printf("GATT_InitClient\n");
     VOID GATT_InitClient();
 
     // Register to receive incoming ATT Indications/Notifications
+    printf("GATT_RegisterForInd\n");
     GATT_RegisterForInd(selfEntity);
 
     // Initialize GATT attributes
+    printf("GGS_AddService\n");
     GGS_AddService(GAP_SERVICE);               // GAP
+    printf("GATTServApp_AddService\n");
     GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
 
     // Register for GATT local events and ATT Responses pending for transmission
+    printf("GATT_RegisterForMsgs\n");
     GATT_RegisterForMsgs(selfEntity);
 
-    // Set Bond Manager parameters
-    setBondManagerParameters();
+    // Set Bond Manager parameters --- Optional
+    // setBondManagerParameters();
 
-    // Start Bond Manager and register callback
+    // Start Bond Manager and register callback --- Optional
     // This must be done before initialing the GAP layer
-    VOID GAPBondMgr_Register(&bondMgrCBs);
+    // VOID GAPBondMgr_Register(&bondMgrCBs);
 
     // Accept all parameter update requests
+    printf("GAP_SetParamValue\n");
     GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, GAP_UPDATE_REQ_ACCEPT_ALL);
 
     // Register with GAP for HCI/Host messages (for RSSI)
+    printf("GAP_RegisterForMsgs\n");
     GAP_RegisterForMsgs(selfEntity);
 
-    BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- call GAP_DeviceInit", GAP_PROFILE_CENTRAL);
+    // BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- call GAP_DeviceInit", GAP_PROFILE_CENTRAL);
     // Initialize GAP layer for Central role and register to receive GAP events
+    printf("GAP_DeviceInit\n");
     GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, addrMode, &pRandomAddress);
     ///////////////////////////// EMD OF EXAMPLE CODE INIT /////////////////////////////
 }
