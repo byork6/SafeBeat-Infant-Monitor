@@ -15,17 +15,17 @@ void *mainThread(void *arg0){
     }
 
     // INIT BLE
-    /* Register Application callback to trap asserts raised in the Stack */
+    // BLE Stack will raise asserts if errors occur
     printf("Init assert callback\n");
     RegisterAssertCback(AssertHandler);
 
-    // Enable iCache prefetching
-    printf("Init VIMS\n");
-    VIMSConfigure(VIMS_BASE, TRUE, TRUE);
+    // Enable iCache prefetching --- Optional
+    // printf("Init VIMS\n");
+    // VIMSConfigure(VIMS_BASE, TRUE, TRUE);
 
-    // Enable cache
-    printf("Init VIMS Mode\n");
-    VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
+    // Enable cache --- Optional
+    // printf("Init VIMS Mode\n");
+    // VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
 
     // INIT BOARD
     // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
