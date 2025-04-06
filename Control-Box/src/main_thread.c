@@ -29,7 +29,7 @@ void *mainThread(void *arg0){
 
     // INIT BOARD
     // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
-    printf("Init Board\n");
+    printf("CALLING BOARD INIT FUNCTIONS...\n");
     initBOARD();
     
     // Enable the power policy -- If all tasks are blocked the idleLoop will execute the power policy. 
