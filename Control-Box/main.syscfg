@@ -11,7 +11,17 @@
  */
 const ble         = scripting.addModule("/ti/ble5stack/ble");
 const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const AESCBC      = scripting.addModule("/ti/drivers/AESCBC", {}, false);
+const AESCBC1     = AESCBC.addInstance();
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM", {}, false);
+const AESCCM1     = AESCCM.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG", {}, false);
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB", {}, false);
+const AESECB1     = AESECB.addInstance();
 const Board       = scripting.addModule("/ti/drivers/Board");
+const ECDH        = scripting.addModule("/ti/drivers/ECDH", {}, false);
+const ECDH1       = ECDH.addInstance();
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
@@ -34,6 +44,8 @@ const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
 const SPI2        = SPI.addInstance();
+const TRNG        = scripting.addModule("/ti/drivers/TRNG", {}, false);
+const TRNG1       = TRNG.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
 const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
 const UART21      = UART2.addInstance();
@@ -61,7 +73,17 @@ CCFG.dioBootloaderBackdoor    = 18;
 CCFG.levelBootloaderBackdoor  = "Active low";
 CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
+AESCBC1.$name = "CONFIG_AESCBC_0";
+
+AESCCM1.$name = "CONFIG_AESCCM_0";
+
+AESCTRDRBG1.$name = "CONFIG_AESCTRDRBG_0";
+
+AESECB1.$name = "CONFIG_AESECB_0";
+
 Board.generateInitializationFunctions = false;
+
+ECDH1.$name = "CONFIG_ECDH_0";
 
 GPIO1.mode            = "Output";
 GPIO1.$name           = "CONFIG_GREEN_LED";
@@ -162,6 +184,8 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "picoPin");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
+
+TRNG1.$name = "CONFIG_TRNG_0";
 
 UART21.$name              = "BOOTLOADER_UART";
 UART21.uart.txPin.$assign = "DIO_17";
