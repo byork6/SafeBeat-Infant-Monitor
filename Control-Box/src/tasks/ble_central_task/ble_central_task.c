@@ -110,45 +110,45 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
         printf("BLE Central Count: %d\n", i);
 
         ///////////////////////////// START OF EXAMPLE LOOP /////////////////////////////
-        uint32_t events;
+        // uint32_t events;
 
-        events = Event_pend(syncEvent, Event_Id_NONE, SC_ALL_EVENTS, ICALL_TIMEOUT_FOREVER);
+        // events = Event_pend(syncEvent, Event_Id_NONE, SC_ALL_EVENTS, ICALL_TIMEOUT_FOREVER);
 
-        if (events){
-          ICall_EntityID dest;
-          ICall_ServiceEnum src;
-          ICall_HciExtEvt *pMsg = NULL;
+        // if (events){
+        //   ICall_EntityID dest;
+        //   ICall_ServiceEnum src;
+        //   ICall_HciExtEvt *pMsg = NULL;
 
-          if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS){
-            uint8 safeToDealloc = TRUE;
+        //   if (ICall_fetchServiceMsg(&src, &dest, (void **)&pMsg) == ICALL_ERRNO_SUCCESS){
+        //     uint8 safeToDealloc = TRUE;
 
-            if ((src == ICALL_SERVICE_CLASS_BLE) && (dest == selfEntity)){
-              ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
+        //     if ((src == ICALL_SERVICE_CLASS_BLE) && (dest == selfEntity)){
+        //       ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
 
-              // Check for BLE stack events first
-              if (pEvt->signature != 0xffff){
-                // Process inter-task message
-                safeToDealloc = SimpleCentral_processStackMsg((ICall_Hdr *)pMsg);
-              }
-            }
+        //       // Check for BLE stack events first
+        //       if (pEvt->signature != 0xffff){
+        //         // Process inter-task message
+        //         safeToDealloc = SimpleCentral_processStackMsg((ICall_Hdr *)pMsg);
+        //       }
+        //     }
 
-            if (pMsg && safeToDealloc){
-              ICall_freeMsg(pMsg);
-            }
-          }
+        //     if (pMsg && safeToDealloc){
+        //       ICall_freeMsg(pMsg);
+        //     }
+        //   }
 
-          // If RTOS queue is not empty, process app message
-          if (events & SC_QUEUE_EVT){
-            scEvt_t *pMsg;
-            while ((pMsg = (scEvt_t *)Util_dequeueMsg(appMsgQueue))){
-              // Process message
-              SimpleCentral_processAppMsg(pMsg);
+        //   // If RTOS queue is not empty, process app message
+        //   if (events & SC_QUEUE_EVT){
+        //     scEvt_t *pMsg;
+        //     while ((pMsg = (scEvt_t *)Util_dequeueMsg(appMsgQueue))){
+        //       // Process message
+        //       SimpleCentral_processAppMsg(pMsg);
 
-              // Free the space from the message
-              ICall_free(pMsg);
-            }
-          }
-        }
+        //       // Free the space from the message
+        //       ICall_free(pMsg);
+        //     }
+        //   }
+        // }
         ////////////////////////////// END OF EXAMPLE LOOP //////////////////////////////
 
         ////////////////////////////// MY CODE STARTS HERE //////////////////////////////
@@ -174,7 +174,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
         // }
         // Task_sleep(g_taskSleepDuration);
         ////////////////////////////// MY CODE ENDS HERE //////////////////////////////
-
+        Task_sleep(g_taskSleepDuration);
     }
 }
 
