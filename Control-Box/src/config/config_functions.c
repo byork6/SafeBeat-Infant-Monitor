@@ -16,17 +16,18 @@ void initBOARD(void){
     ICall_init();
     printf("ICall_createRemoteTasks\n");
     ICall_createRemoteTasks();
-    printf("ECDH_init\n");
-    ECDH_init();
-    printf("AESECB_init\n");
-    AESECB_init();
-    printf("AESCCM_init\n");
-    AESCCM_init();
-    printf("TRNG_init\n");
-    TRNG_init();
-    printf("AESCTRDRBG_init\n");
-    AESCTRDRBG_init();
-    printf("BOARD INIT FUNCTIONS COMPLETED.\n");
+    // All of these below are use by the example --- Optional
+    // printf("ECDH_init\n");
+    // ECDH_init();
+    // printf("AESECB_init\n");
+    // AESECB_init();
+    // printf("AESCCM_init\n");
+    // AESCCM_init();
+    // printf("TRNG_init\n");
+    // TRNG_init();
+    // printf("AESCTRDRBG_init\n");
+    // AESCTRDRBG_init();
+    // printf("BOARD INIT FUNCTIONS COMPLETED.\n");
 }
 
 void constructAllResources() {
