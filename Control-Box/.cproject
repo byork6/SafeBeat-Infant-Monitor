@@ -46,6 +46,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/temperature_monitoring_task"/>
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/display_driver_task"/>
                                     <listOptionValue value="${PROJECT_ROOT}/src/tasks/ble_central_task"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/ble_central_task/simple_central/iCall"/>
                                     <listOptionValue value="${PROJECT_LOC}/Application"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti"/>
@@ -156,6 +157,9 @@
                             </tool>
                         </toolChain>
                     </folderInfo>
+                    <sourceEntries>
+                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                    </sourceEntries>
                 </configuration>
             </storageModule>
             <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

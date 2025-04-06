@@ -12,11 +12,17 @@ void initBOARD(void){
     SDFatFS_init();
     printf("Temperature_init\n");
     Temperature_init();
+    // #if defined(ICALL_JT)
+    //     #pragma message("ICALL_JT is defined at compile time.")
+    //     #else
+    //     #error "ICALL_JT is NOT defined!"
+    // #endif
     printf("ICall_init\n");
     ICall_init();
-    printf("ICall_createRemoteTasks\n");
-    ICall_createRemoteTasks();
     // All of these below are use by the example --- Optional
+    // nOTE: This should only be included if using a two-image project, all of our code is compiled at once so ours is one image.
+    // printf("ICall_createRemoteTasks\n");
+    // ICall_createRemoteTasks();
     // printf("ECDH_init\n");
     // ECDH_init();
     // printf("AESECB_init\n");

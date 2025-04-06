@@ -564,8 +564,10 @@ void ICall_init(void)
   ICall_initPrim();
 #else
   /* Initialize heap */
-  ICall_heapInit();
+// NOTE: I uncommented this... code was getting stuck inside here.
+//   ICall_heapInit();
 #endif
+printf("End of ICALL_init()\n");
 }
 
 /* See header file for comments */

@@ -185,7 +185,7 @@ void BLECentral_init(void){
     // NOTE: Everything from here until the while loop is from the Simple_Central Example.
     // All of the code below is for the BLE initializtion.
     // BLE_LOG_INT_TIME(0, BLE_LOG_MODULE_APP, "APP : ---- init ", BLE_CENTRAL_TASK_PRIORITY);
-    printf("STARTING BLECentral_init...\n");
+    printf("STARTING BLECENTRAL_INIT...\n");
 
     // ******************************************************************
     // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
