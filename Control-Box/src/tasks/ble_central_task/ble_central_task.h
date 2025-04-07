@@ -2,15 +2,16 @@
 
 // INCLUDES
 // BLE5Stack
-#include <ti/ble5stack/inc/gap.h>
-#include <ti/ble5stack/inc/gatt.h>
-#include <ti/ble5stack/inc/gatt_uuid.h>
-#include <ti/ble5stack/inc/gatt_profile_uuid.h>
-#include <ti/ble5stack/inc/gattservapp.h>
-#include <ti/ble5stack/inc/att.h>
-#include <ti/ble5stack/icall/src/inc/icall.h>
-#include <ti/ble5stack/icall/inc/icall_ble_api.h>
-#include <ti/ble5stack/inc/gapbondmgr.h>
+#include <ti/ble5stack_flash/inc/gap.h>
+#include <ti/ble5stack_flash/inc/gatt.h>
+#include <ti/ble5stack_flash/inc/gatt_uuid.h>
+#include <ti/ble5stack_flash/inc/gatt_profile_uuid.h>
+#include <ti/ble5stack_flash/inc/gattservapp.h>
+#include <ti/ble5stack_flash/inc/att.h>
+#include <ti/ble5stack_flash/icall/src/inc/icall.h>
+#include <ti/ble5stack_flash/icall/inc/icall_ble_api.h>
+#include <ti/ble5stack_flash/inc/gapbondmgr.h>
+#include <ti/ble5stack_flash/rom/map_direct.h>
 
 // DEFINE GUARDS
 #ifdef __cplusplus

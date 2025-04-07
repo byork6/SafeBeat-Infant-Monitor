@@ -50,3 +50,10 @@ void bleCentral_init(void){
     GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, addrMode, pRandomAddress);
 }
 
+// void  *MAP_l2capFindLocalCID( uint16 CID ){
+
+// }
+
+// void MAP_l2capGetCoChannelInfo(void *pCoC, void *pInfo ){
+
+// }

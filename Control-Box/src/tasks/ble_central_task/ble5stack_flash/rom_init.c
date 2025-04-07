@@ -419,7 +419,7 @@ extern void gapScan_saveRptAndNotify(void);
 extern void gapScan_processAdvRptCb(void);
 extern void gapScan_processStartEndCb(void);
 extern void gapScan_processErrorCb(void);
-extern void gapScan_processSessionEndEvt(void);
+extern void gapScan_processSessionEndEvt(GapScan_AdvRptSession_t* pSession, uint8_t status);
 extern void gapInit_connect_internal(void);
 extern void gapInit_sendConnCancelledEvt(void);
 extern void gapInit_initiatingEnd(void);
