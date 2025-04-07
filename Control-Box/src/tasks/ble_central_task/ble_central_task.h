@@ -1,17 +1,28 @@
 #pragma once
 
 // INCLUDES
-// BLE5Stack
+// ble5stack_flash
+#include <ti/ble5stack_flash/icall/src/icall_platform.h>
+#include <ti/ble5stack_flash/icall/src/inc/icall.h>
+#include <ti/ble5stack_flash/icall/src/inc/icall_user_config.h>
+#include <ti/ble5stack_flash/icall/inc/icall_addrs.h>
+#include <ti/ble5stack_flash/icall/inc/icall_ble_api.h>
+#include <ti/ble5stack_flash/icall/inc/icall_ble_apimsg.h>
+#include <ti/ble5stack_flash/inc/att.h>
 #include <ti/ble5stack_flash/inc/gap.h>
+#include <ti/ble5stack_flash/inc/gapbondmgr.h>
 #include <ti/ble5stack_flash/inc/gatt.h>
 #include <ti/ble5stack_flash/inc/gatt_uuid.h>
-#include <ti/ble5stack_flash/inc/gatt_profile_uuid.h>
 #include <ti/ble5stack_flash/inc/gattservapp.h>
-#include <ti/ble5stack_flash/inc/att.h>
-#include <ti/ble5stack_flash/icall/src/inc/icall.h>
-#include <ti/ble5stack_flash/icall/inc/icall_ble_api.h>
-#include <ti/ble5stack_flash/inc/gapbondmgr.h>
-#include <ti/ble5stack_flash/rom/map_direct.h>
+#include <ti/ble5stack_flash/inc/gatt_profile_uuid.h>
+#include <ti/ble5stack_flash/inc/hci.h>
+#include <ti/ble5stack_flash/osal/src/inc/osal_snv.h>
+// nv
+#include <ti/common/nv/crc.h>
+#include <ti/common/nv/nvintf.h>
+#include <ti/common/nv/nvocmp.h>
+// util
+#include <ti/ble5stack_flash/common/cc26xx/util.h>
 
 // DEFINE GUARDS
 #ifdef __cplusplus
