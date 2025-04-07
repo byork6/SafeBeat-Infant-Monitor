@@ -14,19 +14,6 @@ void *mainThread(void *arg0){
         PowerCC26X2_releaseLatches();
     }
 
-    // INIT BLE
-    // BLE Stack will raise asserts if errors occur
-    printf("Init assert callback\n");
-    RegisterAssertCback(AssertHandler);
-
-    // Enable iCache prefetching --- Optional
-    // printf("Init VIMS\n");
-    // VIMSConfigure(VIMS_BASE, TRUE, TRUE);
-
-    // Enable cache --- Optional
-    // printf("Init VIMS Mode\n");
-    // VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
-
     // INIT BOARD
     // Initialize the board with TI-Driver configurations based on main.syscfg generated files.
     printf("CALLING BOARD INIT FUNCTIONS...\n");
@@ -43,6 +30,5 @@ void *mainThread(void *arg0){
     constructAllResources();
 
     // RETURNS TO BIOS_START()
-    printf("BIOS Starting...\n");
     return NULL;
 }

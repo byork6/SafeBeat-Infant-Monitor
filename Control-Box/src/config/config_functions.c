@@ -12,27 +12,6 @@ void initBOARD(void){
     SDFatFS_init();
     printf("Temperature_init\n");
     Temperature_init();
-    // #if defined(ICALL_JT)
-    //     #pragma message("ICALL_JT is defined at compile time.")
-    //     #else
-    //     #error "ICALL_JT is NOT defined!"
-    // #endif
-    printf("ICall_init\n");
-    ICall_init();
-    printf("ICall_createRemoteTasks\n");
-    ICall_createRemoteTasks();
-    // All of these below are use by the example --- Optional
-    // printf("ECDH_init\n");
-    // ECDH_init();
-    // printf("AESECB_init\n");
-    // AESECB_init();
-    // printf("AESCCM_init\n");
-    // AESCCM_init();
-    // printf("TRNG_init\n");
-    // TRNG_init();
-    // printf("AESCTRDRBG_init\n");
-    // AESCTRDRBG_init();
-    // printf("BOARD INIT FUNCTIONS COMPLETED.\n");
 }
 
 void constructAllResources() {
