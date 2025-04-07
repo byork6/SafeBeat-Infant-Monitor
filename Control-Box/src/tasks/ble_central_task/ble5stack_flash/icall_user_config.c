@@ -50,31 +50,43 @@
 #ifdef ICALL_JT
 
 #include "hal_types.h"
+#ifndef USE_RCL
 #include <ti/drivers/rf/RF.h>
+#endif
 #include "icall_user_config.h"
 #include "icall.h"
+#ifdef CC33xx
+#include "icall_porting.h"
+#endif // CC33xx
 
 #include <ti/drivers/AESCCM.h>
-#include <ti/drivers/aesccm/AESCCMCC26XX.h>
 #include <ti/drivers/AESECB.h>
-#include <ti/drivers/aesecb/AESECBCC26XX.h>
-#include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
-#ifndef FREERTOS
-#include <ti/sysbios/knl/Swi.h>
-#endif
-#include <ti_drivers_config.h>
-#include <ti/drivers/ECDH.h>
 
+#ifdef CC23X0
+#include <ti/drivers/aesccm/AESCCMLPF3.h>
+#include <ti/drivers/aesecb/AESECBLPF3.h>
+#include <ti/drivers/ecdh/ECDHLPF3SW.h>
+#include <ti/drivers/cryptoutils/sharedresources/CryptoResourceLPF3.h>
+#include <ti/drivers/RNG.h>
+#else
+#include <ti/drivers/aesccm/AESCCMCC26XX.h>
+#include <ti/drivers/aesecb/AESECBCC26XX.h>
 #if !defined(DeviceFamily_CC26X1)
 #include <ti/drivers/ecdh/ECDHCC26X2.h>
 #else
 #include <ti/drivers/ecdh/ECDHCC26X1.h>
-#endif
-
-#include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+#endif // CC26X1
 #include <ti/drivers/cryptoutils/sharedresources/CryptoResourceCC26XX.h>
-#include <ti/drivers/utils/Random.h>
 #include <ti/drivers/TRNG.h>
+#endif // CC23X0
+#include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
+#if !defined(FREERTOS) && !defined(CC33xx)
+#include <ti/sysbios/knl/Swi.h>
+#endif // !FREERTOS && !CC33xx
+#include <ti_drivers_config.h>
+#include <ti/drivers/ECDH.h>
+#include <ti/drivers/utils/Random.h>
+
 
 /*******************************************************************************
  * MACROS
@@ -100,7 +112,7 @@
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-
+#ifndef CC23X0
 // RF Driver API Table
 // This table is populated in the same order as the API are listed in file rf_api.h
 // any change of order, or any API added/substracted, should be reflected in icall_jt.h
@@ -134,6 +146,7 @@ rfDrvTblPtr_t rfDriverTable[] =
   (uint32) RF_TxPowerTable_findValue
 };
 
+#ifndef CC33xx
 // ECC Driver API Table
 eccDrvTblPtr_t eccDriverTable[] =
 {
@@ -180,6 +193,7 @@ trngDrvTblPtr_t trngDriverTable[] =
 // nvintf NV API function pointer table
 // Populated at runtime
 NVINTF_nvFuncts_t nvintfFncStruct = {0};
+#endif // !CC33xx
 
 // This table is populated in the same order as the API are listed in file icall_jt.h
 // any change of order, or any API added/substracted, should be reflected in icall_jt.h
@@ -187,7 +201,11 @@ const icallServiceTblPtr_t icallServiceTable[] =
 {
   (uint32_t) ICall_send,
   (uint32_t) ICall_enrollService,
+#ifndef CC33xx // This was mapped to ASSERT_GENERAL in icall_porting.h
   (uint32_t) ICall_abort,
+#else
+  (uint32_t) NULL,
+#endif // CC33xx
   (uint32_t) ICall_setTimerMSecs,
   (uint32_t) ICall_setTimer,
   (uint32_t) ICall_wait,
@@ -204,14 +222,16 @@ const icallServiceTblPtr_t icallServiceTable[] =
   (uint32_t) ICall_getHeapStats,
   (uint32_t) ICall_mallocLimited,
 };
-
+#endif
 // this table needs to be field by the application , so it cannot be store in flash.
 applicationService_t bleAppServiceInfoTable =
 {
   .timerTickPeriod     = 0,               // timerTick_period, This need to be filled at runtime, or the stack will assert an error.
   .timerMaxMillisecond = 0,               // timerMaxMillisecond. This need to be filled at runtime, or the stack will assert an error.
   .assertCback         = ASSERT_CBACK,
+#ifndef CC23X0
   .icallServiceTbl     = icallServiceTable,
+#endif
 };
 
 #endif /* ICALL_JT */

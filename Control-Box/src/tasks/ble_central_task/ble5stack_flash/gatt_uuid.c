@@ -375,6 +375,12 @@ const uint8 *GATT_FindUUIDRec( const uint8 *pUUID, uint8 len )
   {
     // 128-bit UUID
   }
+  else
+  {
+        /* this else clause is required, even if the
+           programmer expects this will never be reached
+           Fix Misra-C Required: MISRA.IF.NO_ELSE */
+  }
 
   return ( pRec );
 }

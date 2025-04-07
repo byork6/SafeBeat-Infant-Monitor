@@ -96,7 +96,7 @@ void GAP_DeviceInit_per_role(uint8_t profileRole);
 /*********************************************************************
  * API FUNCTIONS
  * OneBleLib: Duplicate GAP_DeviceInit without init gap bond manager - save flash size when not using GapBondMgr
- * OneBleLib comopiled as PERIPHERAL and CENTRAL:  
+ * OneBleLib comopiled as PERIPHERAL and CENTRAL:
  *         to privent for example init scan module in BROADCASTER
  */
 
@@ -230,9 +230,9 @@ bStatus_t GAP_DeviceInit(uint8_t profileRole, uint8_t taskID,
 {
   bStatus_t stat = INVALIDPARAMETER;   // Return status
 
-  // Validate correct role, address modes and init state 
+  // Validate correct role, address modes and init state
   stat = GAP_DeviceInit_validate_params(profileRole, taskID, addrMode, pRandomAddr);
-  
+
   if (stat == SUCCESS)
   {
 #ifdef GAP_BOND_MGR
@@ -466,7 +466,7 @@ void GAP_UpdateResolvingList(uint8_t *pIRK)
 }
 
 /*********************************************************************
- * Called to setup the device.  Call just once. 
+ * Called to setup the device.  Call just once.
  * !!!!!!! Only when GAP_BOND_MGR is not defined !!!!!!!!!
  *
  * Public function defined in gap.h.
@@ -476,9 +476,9 @@ bStatus_t GAP_DeviceInit_noGAPBondMgr(uint8_t profileRole, uint8_t taskID,
 {
   bStatus_t stat = INVALIDPARAMETER;   // Return status
 
-  // Validate correct role, address modes and init state 
+  // Validate correct role, address modes and init state
   stat = GAP_DeviceInit_validate_params(profileRole, taskID, addrMode, pRandomAddr);
-  
+
   if (stat == SUCCESS)
   {
     // Set the internal GAP address mode
@@ -543,43 +543,6 @@ void GAP_UpdateResolvingList_noGAPBondMgr(uint8_t *pIRK)
 {
   // Pass local IRK to the controller
   HCI_LE_AddDeviceToResolvingListCmd( 0, 0, 0, pIRK );
-}
-
-/*******************************************************************************
- * This API is used to disable the RF
- *
- * Defined in gap.h.
- */
-void GAP_DeInit( void )
-{
-  // Close the RF
-  MAP_LL_DeInit();
-}
-
-/*******************************************************************************
- * This API is used to re-enable the RF
- *
- * Defined in gap.h.
- */
-void GAP_ReInit( void )
-{
-  // Open the RF
-  MAP_LL_ReInit();
-}
-
-/*******************************************************************************
- * This API is used to update the local RPA (Resolvable Private
- * Address) in case on demand (and not just when the RPA timeout expired).
- *
- * NOTE: This API would be changed / deprecated once the "HCI_LE_Set_Data_Related_Address_Changes"
- *       Command would be supported.
- *
- * Defined in gap.h.
- */
-void GAP_UpdateRPA( void )
-{
-  //UpdateRPA on demand
-  MAP_LL_UpdateRPA();
 }
 
 /*********************************************************************

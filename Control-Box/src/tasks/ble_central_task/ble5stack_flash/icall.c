@@ -48,6 +48,17 @@
  
  
  *****************************************************************************/
+#ifdef CC33xx
+#include "HwiP.h"
+#include "SwiP.h"
+#include "ClockP.h"
+#include "TaskP.h"
+#include "SemaphoreP.h"
+#include "EventP.h"
+#include "ClockP.h"
+#include "icall_porting.h"
+#include "icall_addrs.h"
+#else
 #include <ti/sysbios/hal/Hwi.h>
 #include <ti/sysbios/gates/GateHwi.h>
 #include <ti/sysbios/knl/Swi.h>
@@ -56,10 +67,12 @@
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/BIOS.h>
+#endif // !CC33xx
+
+// This include file will ensure HEAPMGR_CONFIG is properly setup in the ti-rtos
+// config file.
 #include "osal.h"
 #include <stdint.h>
-
-#include <semaphore.h>
 
 #include "icall.h"
 #include "icall_platform.h"
@@ -261,7 +274,6 @@ typedef struct _icall_task_entry_t
   Task_Handle task;
   ICall_SyncHandle syncHandle;
   ICall_MsgQueue queue;
-  uint8 isPosixTask;
 } ICall_TaskEntry;
 
 /** @internal data structure about an entity using ICall module */
@@ -300,10 +312,15 @@ typedef struct _icall_schedule_t
 /* Enter critical section implementation. See header file for comment. */
 ICall_CSState ICall_enterCSImpl(void)
 {
+#ifdef CC33xx
+  ICall_CSState cs = (ICall_CSState)osi_DisablePreemption();
+  return cs;
+#else
   ICall_CSStateUnion cu;
   cu.each.hwikey = (uint_least16_t) Hwi_disable();
   cu.each.swikey = (uint_least16_t) Swi_disable();
   return cu.state;
+#endif // CC33xx
 }
 
 /* See header file for comment */
@@ -312,23 +329,25 @@ ICall_EnterCS ICall_enterCriticalSection = ICall_enterCSImpl;
 /* leave critical section implementation. See header file for comment */
 void ICall_leaveCSImpl(ICall_CSState key)
 {
+#ifdef CC33xx
+  osi_RestorePreemption((const uint32)key);
+#else
   ICall_CSStateUnion *cu = (ICall_CSStateUnion *) &key;
   Swi_restore((UInt) cu->each.swikey);
   Hwi_restore((UInt) cu->each.hwikey);
+#endif // CC33xx
 }
 
 /* See header file for comment */
 ICall_LeaveCS ICall_leaveCriticalSection = ICall_leaveCSImpl;
 
+#ifndef CC33xx
 /* Implementing a simple heap using heapmgr.h template.
  * This simple heap depends on critical section implementation
  * and hence the template is used after critical section definition. */
 void *ICall_heapMalloc(uint32_t size);
 void *ICall_heapRealloc(void *blk, uint32_t size);
 void ICall_heapFree(void *blk);
-
-static void ICall_AbsoluteTimePlusTimerInMilli(uint_least32_t timeout,struct timespec *tsTimer);
-static void ICall_eventPost(ICall_TaskEntry *taskentry);
 
 #define HEAPMGR_INIT       ICall_heapInit
 #define HEAPMGR_MALLOC     ICall_heapMalloc
@@ -365,14 +384,8 @@ static ICall_CSState ICall_heapCSState;
 #else
 #include <rtos_heaposal.h>
 #endif
+#endif // !CC33xx
 
-//Use the const flag to indicate to the compiler that there are no Posix tasks in the system,
-//so all Posix code blocks are not compiled.
-#if (defined(NPI_USE_UART) || (defined(NPI_USE_SPI)))
-    const uint8 posixTaskSysInd = TRUE;
-#else
-    const uint8 posixTaskSysInd = FALSE;
-#endif
 /**
  * @internal Searches for a task entry within @ref ICall_tasks.
  * @param taskhandle  TI-RTOS task handle
@@ -421,58 +434,12 @@ static ICall_TaskEntry *ICall_newTask(Task_Handle taskhandle)
       ICall_TaskEntry *taskentry = &ICall_tasks[i];
       taskentry->task = taskhandle;
       taskentry->queue = NULL;
-      taskentry->isPosixTask = FALSE;
-
       taskentry->syncHandle = ICALL_SYNC_HANDLE_CREATE();
       if (taskentry->syncHandle == NULL)
       {
         /* abort */
         ICALL_HOOK_ABORT_FUNC();
       }
-      ICall_leaveCSImpl(key);
-      return taskentry;
-    }
-    if (taskhandle == ICall_tasks[i].task)
-    {
-      ICall_leaveCSImpl(key);
-      return &ICall_tasks[i];
-    }
-  }
-  ICall_leaveCSImpl(key);
-  return NULL;
-}
-
-/**
- * @internal Searches for a task entry within @ref ICall_tasks or
- *           build an entry if the entry table is empty.
- * @param  taskhandle  TI-RTOS task handle, POSIX semaphore as event handler
- * @return Pointer to task entry when found, or NULL.
- */
-static ICall_TaskEntry *ICall_newTaskWithSem(Task_Handle taskhandle)
-{
-  size_t i;
-  ICall_CSState key;
-
-  key = ICall_enterCSImpl();
-  for (i = 0; i < ICALL_MAX_NUM_TASKS; i++)
-  {
-    if (!ICall_tasks[i].task)
-    {
-      /* Empty slot */
-      ICall_TaskEntry *taskentry = &ICall_tasks[i];
-      taskentry->task = taskhandle;
-      taskentry->queue = NULL;
-      taskentry->isPosixTask = TRUE;
-
-      /* Create the Event handler (based on semaphore) for the ICall messages */
-      taskentry->syncHandle = (sem_t *)ICall_malloc(sizeof(sem_t));
-      if (taskentry->syncHandle == NULL)
-      {
-        /* abort */
-        ICALL_HOOK_ABORT_FUNC();
-      }
-
-      sem_init(taskentry->syncHandle, 0, 0);
       ICall_leaveCSImpl(key);
       return taskentry;
     }
@@ -624,7 +591,6 @@ void ICall_createRemoteTasksAtRuntime(ICall_RemoteTask_t *remoteTaskTable, uint8
     params.stackSize = remoteTaskTable[i].imgTaskStackSize;
     params.arg0 = (UArg) remoteTaskTable[i].startupEntry;
     params.arg1 = (UArg) remoteTaskTable[i].ICall_imgInitParam;
-    params.name = "icall";
 
     task = Task_create(ICall_taskEntry, &params, NULL);
     if (task == NULL)
@@ -678,6 +644,7 @@ ICall_TaskHandle ICall_getRemoteTaskHandle(uint8 index)
   return((ICall_TaskHandle)task);
 }
 
+#ifndef CC33xx
 /* Primitive service implementation follows */
 
 #ifndef ICALL_JT
@@ -858,7 +825,7 @@ static ICall_Errno ICall_primFree(ICall_FreeArgs *args)
   return ICALL_ERRNO_SUCCESS;
 }
 #endif /* ICALL_JT */
-
+#endif // !CC33xx
 /**
  * @internal Queues a message to a message queue.
  * @param q_ptr    message queue
@@ -949,6 +916,7 @@ static void ICall_msgPrepend( ICall_MsgQueue *q_ptr, ICall_MsgQueue head )
   ICall_leaveCSImpl(key);
 }
 
+#ifndef CC33xx
 #ifndef ICALL_JT
 /**
  * @internal Sends a message to an entity.
@@ -1045,6 +1013,7 @@ static ICall_Errno ICall_primFetchMsg(ICall_FetchMsgArgs *args)
   return ICALL_ERRNO_SUCCESS;
 }
 #endif /* ICALL_JT */
+#endif /* !CC33xx */
 
 #ifdef ICALL_EVENTS
 /**
@@ -1080,10 +1049,10 @@ static ICall_Errno ICall_primRepostSync(void)
   }
 
   /*
-   * There exists 1 or more messages in the queue.  Repost synchronization
+   * There exists 1 or more messages in the queue.  Repost sychronization
    * object.
    */
-  ICall_eventPost(taskentry);
+  ICALL_SYNC_HANDLE_POST(taskentry->syncHandle);
 
   return ICALL_ERRNO_SUCCESS;
 }
@@ -1114,6 +1083,7 @@ static ICall_Errno ICall_primEntityId2ServiceId(ICall_EntityID entityId,
   return ICALL_ERRNO_SUCCESS;
 }
 
+#ifndef CC33xx
 #ifndef ICALL_JT
 /**
  * @internal Transforms and entityId into a serviceId.
@@ -1196,6 +1166,8 @@ static ICall_Errno ICall_primFetchServiceMsg(ICall_FetchMsgArgs *args)
   return errno;
 }
 #endif /* ICALL_JT */
+#endif /* !CC33xx */
+
 /**
  * @internal
  * Converts milliseconds to number of ticks.
@@ -1222,6 +1194,7 @@ static ICall_Errno ICall_msecs2Ticks(uint_fast32_t msecs, UInt *ticks)
   return ICALL_ERRNO_SUCCESS;
 }
 
+#ifndef CC33xx
 #ifndef ICALL_JT
 /**
  * @internal
@@ -1338,7 +1311,7 @@ static ICall_Errno ICall_primDisableInt(ICall_IntNumArgs *args)
 }
 
 /**
- * @internal Enables master interrupt and context switching.
+ * @internal Enables central interrupt and context switching.
  * @param args arguments corresponding to those of ICall_enableMInt()
  * @return return values corresponding to those of ICall_enableMInt()
  */
@@ -1350,7 +1323,7 @@ static ICall_Errno ICall_primEnableMInt(ICall_FuncArgsHdr *args)
 }
 
 /**
- * @internal Disables master interrupt and context switching.
+ * @internal Disables central interrupt and context switching.
  * @param args arguments corresponding to those of ICall_disableMInt()
  * @return return values corresponding to those of ICall_disableMInt()
  */
@@ -1418,6 +1391,7 @@ static ICall_Errno ICall_primGetTicks(ICall_GetUint32Args *args)
   return ICALL_ERRNO_SUCCESS;
 }
 #endif /* ICALL_JT */
+#endif /* !CC33xx */
 
 /**
  * @internal
@@ -1433,6 +1407,7 @@ static Void ICall_clockFunc(UArg arg)
   entry->cback(entry->arg);
 }
 
+#ifndef CC33xx
 #ifndef ICALL_JT
 /**
  * @internal
@@ -2433,6 +2408,7 @@ void ICall_verify(void)
   }
 }
 #endif /* COVERAGE_TEST */
+#endif /* !CC33xx */
 
 #ifdef ICALL_JT
 /**
@@ -2644,8 +2620,7 @@ ICall_fetchServiceMsg(ICall_ServiceEnum *src,
     {
       /* Source entity ID cannot be translated to service id */
       ICall_freeMsg(*msg);
-      errno = ICALL_ERRNO_CORRUPT_MSG;
-      return errno;
+      return ICALL_ERRNO_CORRUPT_MSG;
     }
     *src = servId;
 
@@ -2718,31 +2693,10 @@ ICall_Errno ICall_wait(uint_fast32_t milliseconds)
       return (errno);
     }
   }
-  //Using the posixTaskSysInd flag to remove code blocks where they aren't needed
-  if (posixTaskSysInd && taskentry->isPosixTask)
-  {
-    if (milliseconds == ICALL_TIMEOUT_FOREVER)
-    {
-      sem_wait(taskentry->syncHandle);
-      return (ICALL_ERRNO_SUCCESS);
-    }
-    else
-    {
-      struct timespec ts = {0};
-      ICall_AbsoluteTimePlusTimerInMilli(milliseconds, &ts);
 
-      if (sem_timedwait(taskentry->syncHandle, &ts) == 0 /* semaphore is available */)
-      {
-          return (ICALL_ERRNO_SUCCESS);
-      }
-    }
-  }
-  else
+  if (ICALL_SYNC_HANDLE_PEND(taskentry->syncHandle, timeout))
   {
-    if (ICALL_SYNC_HANDLE_PEND(taskentry->syncHandle, timeout))
-    {
-      return (ICALL_ERRNO_SUCCESS);
-    }
+    return (ICALL_ERRNO_SUCCESS);
   }
 
   return (ICALL_ERRNO_TIMEOUT);
@@ -2780,17 +2734,8 @@ ICall_enrollService(ICall_ServiceEnum service,
                     ICall_SyncHandle *msgSyncHdl)
 {
   size_t i;
+  ICall_TaskEntry *taskentry = ICall_newTask(Task_self());
   ICall_CSState key;
-  ICall_TaskEntry *taskentry;
-
-  if (service == ICALL_SERVICE_CLASS_NPI)
-  {
-    taskentry = ICall_newTaskWithSem(Task_self());
-  }
-  else
-  {
-    taskentry = ICall_newTask(Task_self());
-  }
 
   /* Note that certain service does not handle a message
    * and hence, taskentry might be NULL.
@@ -2893,7 +2838,8 @@ void ICall_getHeapMgrGetMetrics(uint32_t *pBlkMax,
                            pMemUB);
 }
 
-#endif
+#endif /* HEAPMGR_METRICS */
+
 /**
  * Sends a message to an entity.
  * @param src     entity id of the sender
@@ -2953,7 +2899,7 @@ ICall_Errno ICall_send(ICall_EntityID src,
   }
 #endif // ICALL_NO_APP_EVENTS
   ICall_msgEnqueue(&ICall_entities[dest].task->queue, msg);
-  ICall_eventPost(ICall_entities[dest].task);
+  ICALL_SYNC_HANDLE_POST(ICall_entities[dest].task->syncHandle);
 
   return (ICALL_ERRNO_SUCCESS);
 }
@@ -3038,6 +2984,7 @@ ICall_Errno ICall_entityId2ServiceId(ICall_EntityID entityId,
  * guaranteed in a root image which contains the C runtime
  * entry function that is executed upon startup.
  */
+#ifndef CC33xx
 ICall_Errno
 ICall_abort(void)
 {
@@ -3079,7 +3026,7 @@ ICall_disableInt(int intnum)
 }
 
 /**
- * Enables master interrupt and context switching.
+ * Enables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno
@@ -3091,7 +3038,7 @@ ICall_enableMInt(void)
 }
 
 /**
- * Disables master interrupt and context switching.
+ * Disables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno
@@ -3147,6 +3094,7 @@ ICall_registerISR_Ext(int intnum, void (*isrfunc)(void), int intPriority )
   }
   return (ICALL_ERRNO_SUCCESS);
 }
+#endif /* !CC33xx */
 
 /**
  * Gets the current tick counter value.
@@ -3349,12 +3297,16 @@ ICall_stopTimer(ICall_TimerID id)
 bool
 ICall_pwrUpdActivityCounter(bool incFlag)
 {
+#ifdef CC33xx
+  return TRUE;
+#endif /* !CC33xx */
   ICall_PwrUpdActivityCounterArgs args;
   args.incFlag = incFlag;
   ICallPlatform_pwrUpdActivityCounter(&args);
   return (args.pwrRequired);
 }
 
+#ifndef CC33xx
 /**
  * Configures power constraint/dependency set/release actions upon
  * activity counter change.
@@ -3379,6 +3331,7 @@ ICall_pwrConfigACAction(ICall_PwrBitmap_t bitmap)
   args.bitmap = bitmap;
   return (ICallPlatform_pwrConfigACAction(&args));
 }
+#endif // !CC33xx
 
 /**
  * Sets power constraints and dependencies.
@@ -3394,6 +3347,9 @@ ICall_pwrConfigACAction(ICall_PwrBitmap_t bitmap)
 ICall_Errno
 ICall_pwrRequire(ICall_PwrBitmap_t bitmap)
 {
+#ifdef CC33xx
+  return ICALL_ERRNO_SUCCESS;
+#endif /* !CC33xx */
   ICall_PwrBitmapArgs args;
   args.bitmap = bitmap;
   return (ICallPlatform_pwrRequire(&args));
@@ -3413,11 +3369,15 @@ ICall_pwrRequire(ICall_PwrBitmap_t bitmap)
 ICall_Errno
 ICall_pwrDispense(ICall_PwrBitmap_t bitmap)
 {
+#ifdef CC33xx
+  return ICALL_ERRNO_SUCCESS;
+#endif /* !CC33xx */
   ICall_PwrBitmapArgs args;
   args.bitmap = bitmap;
   return (ICallPlatform_pwrDispense(&args));
 }
 
+#ifndef CC33xx
 /**
  * Checks whether HF XOSC is stable.
  * This function must be called after HF XOSC is turned on
@@ -3591,7 +3551,7 @@ ICall_createSemaphore(uint_fast8_t mode, int initcount)
   return (sem);
 
 }
-#endif
+#endif /* ICALL_RTOS_SEMAPHORE_API */
 
 #ifdef ICALL_RTOS_SEMAPHORE_API
 /**
@@ -3734,6 +3694,7 @@ ICall_waitSemaphore(ICall_Semaphore sem, uint_fast32_t milliseconds)
   return (ICALL_ERRNO_TIMEOUT);
 }
 #endif /* ICALL_RTOS_SEMAPHORE_API */
+#endif // !CC33xx
 
 /**
  * Waits for and retrieves a message received at the message queue
@@ -3774,9 +3735,8 @@ ICall_waitMatch(uint_least32_t milliseconds,
 #ifndef ICALL_EVENTS
   uint_fast16_t consumedCount = 0;
 #endif
-  UInt timeout = 0;
-  uint_fast32_t timeoutStamp = 0;
-
+  UInt timeout;
+  uint_fast32_t timeoutStamp;
   ICall_Errno errno;
 
   {
@@ -3819,64 +3779,6 @@ ICall_waitMatch(uint_least32_t milliseconds,
 
   errno = ICALL_ERRNO_TIMEOUT;
   timeoutStamp = Clock_getTicks() + timeout;
-
-  //Using the posixTaskSysInd flag to remove code blocks where they aren't needed
-  if (posixTaskSysInd && taskentry->isPosixTask)
-  {
-    struct timespec ts = {0};
-
-    ICall_AbsoluteTimePlusTimerInMilli(milliseconds, &ts);
-
-    while (sem_timedwait(taskentry->syncHandle, &ts) == 0/* Semaphore obtained */)
-    {
-      ICall_EntityID fetchSrc;
-      ICall_EntityID fetchDst;
-      ICall_ServiceEnum servId;
-      void *fetchMsg;
-      errno = ICall_fetchMsg(&fetchSrc, &fetchDst, &fetchMsg);
-      if (errno == ICALL_ERRNO_SUCCESS)
-      {
-        if (ICall_primEntityId2ServiceId(fetchSrc, &servId) ==
-              ICALL_ERRNO_SUCCESS)
-        {
-          if (matchFn(servId, fetchDst, fetchMsg))
-          {
-            /* Matching message found*/
-            if (src != NULL)
-            {
-              *src = servId;
-            }
-            if (dest != NULL)
-            {
-              *dest = fetchDst;
-            }
-            *msg = fetchMsg;
-            errno = ICALL_ERRNO_SUCCESS;
-            break;
-          }
-        }
-        /* Message was received but it wasn't expected one.
-         * Add to the prepend queue */
-        ICall_msgEnqueue(&prependQueue, fetchMsg);
-        /* Event are binary semaphore, so if several messages are posted while
-         * we are processing one, it's possible that some of them are 'missed' and
-         * not processed. Sending a event to ourself force this loop to run until
-         * all the messages in the queue are processed.
-         */
-#ifdef ICALL_EVENTS
-        sem_post(taskentry->syncHandle);
-#endif
-      }
-      errno = ICALL_ERRNO_TIMEOUT;
-#ifndef ICALL_EVENTS
-    /* Keep the decremented semaphore count */
-    consumedCount++;
-#endif
-
-    }
-  }
-  else
-  {
 #ifdef ICALL_LITE
   while(ICALL_SYNC_HANDLE_PEND_WM(taskentry->syncHandle, timeout))
 #else /* !ICALL_LITE */
@@ -3913,7 +3815,7 @@ ICall_waitMatch(uint_least32_t milliseconds,
        * Add to the prepend queue */
       ICall_msgEnqueue(&prependQueue, fetchMsg);
 #ifdef ICALL_EVENTS
-    /* Event are binary semaphore, so if several messages are posted while
+    /* Event are binary semaphore, so if several messsages are posted while
      * we are processing one, it's possible that some of them are 'missed' and
      * not processed. Sending a event to ourself force this loop to run until
      * all the messages in the queue are processed.
@@ -3945,7 +3847,7 @@ ICall_waitMatch(uint_least32_t milliseconds,
       timeout = newTimeout;
     }
   }
-  }
+
 #ifdef ICALL_EVENTS
   /*
    * Because Events are binary semaphores, the task's queue must be checked for
@@ -3961,7 +3863,7 @@ ICall_waitMatch(uint_least32_t milliseconds,
   /* Re-increment the consumed semaphores */
   for (; consumedCount > 0; consumedCount--)
   {
-    ICall_eventPost(taskentry);
+    Semaphore_post(taskentry->syncHandle);
   }
 #endif /* ICALL_EVENTS */
   return (errno);
@@ -4227,16 +4129,8 @@ ICall_Errno ICall_sendServiceComplete(ICall_EntityID src,
   hdr->dstentity = dest;
   hdr->format = format;
   ICall_msgEnqueue(&ICall_entities[dest].task->queue, msg);
+  ICALL_SYNC_HANDLE_POST_WM(ICall_entities[dest].task->syncHandle);
 
-  //Using the posixTaskSysInd flag to remove code blocks where they aren't needed
-  if (posixTaskSysInd && ICall_entities[dest].task->isPosixTask)
-  {
-    sem_post(ICall_entities[dest].task->syncHandle);
-  }
-  else
-  {
-    ICALL_SYNC_HANDLE_POST_WM(ICall_entities[dest].task->syncHandle);
-  }
   return (ICALL_ERRNO_SUCCESS);
 }
 #endif /* ICALL_LITE*/
@@ -4255,7 +4149,7 @@ ICall_Errno ICall_registerAppCback(uint8_t *selfEntity, appCallback_t appCallbac
   // so that the application can send and receive messages.
   status = ICall_registerApp(&localSelfEntity, &localSyncEvent);
 
-  // Application should use the task entity ID
+  // applicatios should use the task entity ID
   *selfEntity = localSelfEntity;
 
   // Save app callback to be used instead of enqueue/event_pend/dequeue
@@ -4264,25 +4158,3 @@ ICall_Errno ICall_registerAppCback(uint8_t *selfEntity, appCallback_t appCallbac
   return status;
 }
 #endif // ICALL_NO_APP_EVENTS
-
-/* Util function that take time in ticks and convert it into ms - relate to system clock (returns system clock + converted ms) */
-static void ICall_AbsoluteTimePlusTimerInMilli(uint_least32_t milliseconds, struct timespec *tsTimer)
-{
-  clock_gettime(CLOCK_REALTIME, tsTimer);
-
-  tsTimer->tv_sec += (milliseconds / 1000);
-  tsTimer->tv_nsec += (milliseconds % 1000) * 1000000;
-}
-
-static void ICall_eventPost(ICall_TaskEntry *taskentry)
-{
-  //Using the posixTaskSysInd flag to remove code blocks where they aren't needed
-  if (posixTaskSysInd && taskentry->isPosixTask)
-  {
-    sem_post(taskentry->syncHandle);
-  }
-  else
-  {
-    ICALL_SYNC_HANDLE_POST(taskentry->syncHandle);
-  }
-}
