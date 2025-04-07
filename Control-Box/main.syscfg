@@ -66,6 +66,7 @@ ble.deviceRole                         = "CENTRAL_CFG";
 ble.deviceName                         = "Control-Box";
 ble.maxConnNum                         = 1;
 ble.L2CAPCOC                           = true;
+ble.tbmActiveItemsOnly                 = false;
 ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
 ble.connUpdateParamsCentral.$name      = "ti_ble5stack_general_ble_conn_update_params0";
 
