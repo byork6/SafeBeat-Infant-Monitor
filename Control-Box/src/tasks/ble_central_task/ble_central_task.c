@@ -225,7 +225,7 @@ void BLECentral_init(void){
       //http://software-dl.ti.com/lprf/ble5stack-latest/
       HCI_EXT_SetMaxDataLenCmd(APP_SUGGESTED_TX_PDU_SIZE, APP_SUGGESTED_TX_TIME, APP_SUGGESTED_RX_PDU_SIZE, APP_SUGGESTED_RX_TIME);
     }
-
+    
     // Initialize GATT Client
     printf("GATT_InitClient\n");
     VOID GATT_InitClient();
