@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-// TASK DECLARATIONS
+// TASK DECLARATIONS AND MACROS
 // BLE Central Task Constants
 #define BLE_CENTRAL_TASK_STACK_SIZE (BLE_CENTRAL_STACK_SIZE)
 #define BLE_CENTRAL_TASK_PRIORITY   (BLE_CENTRAL_PRIORITY)
@@ -25,9 +25,14 @@ Task_Struct g_BleCentralTaskStruct;
 Task_Handle g_bleCentralTaskHandle;
 uint8_t g_bleCentralTaskStack[BLE_CENTRAL_TASK_STACK_SIZE];
 
+// MACROS
+
+
 // TYPE DEFINITIONS
 
-// MACROS & CONSTANTS
+
+// VARIABLE DEFINITIONS
+ICall_EntityID selfEntity;
 
 // FUNCTION PROTOTYPES
 /**

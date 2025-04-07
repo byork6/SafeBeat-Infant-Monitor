@@ -1,6 +1,7 @@
 #include "common.h"
 
-// GLOBAL VARIABLES
+// VARIABLE DECLARATIONS
+static uint8_t addrMode = DEFAULT_ADDRESS_MODE;
 
 // FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
@@ -36,6 +37,14 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
 }
 
 void bleCentral_init(void){
-    // TODO: Write custom init code
+    // Register with stack to receive GAP and GATT messages
+    ICall_registerApp(&selfEntity, NULL);
+
+    // Initialize GATT
+    GATT_InitClient();
+    GATT_RegisterForMsgs(ICALL_SERVICE_CLASS_BLE);
+
+    // Set the GAP Role (this sets the device as Central)
+    GAP_DeviceInit(GAP_PROFILE_CENTRAL, selfEntity, addrMode, pRandomAddress);
 }
 
