@@ -5,7 +5,6 @@
  * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
  * @versions {"tool":"1.21.1+3772"}
  */
-scripting.excludeFromBuild("ti_ble_config.c");
 
 /**
  * Import the modules used in this configuration.

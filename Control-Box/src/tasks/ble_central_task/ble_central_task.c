@@ -2,6 +2,8 @@
 
 // VARIABLE DECLARATIONS
 static uint8_t addrMode = DEFAULT_ADDRESS_MODE;
+uint8_t tasksCnt = 0;
+uint16_t *tasksEvents = NULL;
 
 // FUNCTION DEFINITIONS
 Task_Handle bleCentral_constructTask(){
