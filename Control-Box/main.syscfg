@@ -5,6 +5,7 @@
  * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
  * @versions {"tool":"1.21.1+3772"}
  */
+scripting.excludeFromBuild("ti_ble_config.c");
 
 /**
  * Import the modules used in this configuration.
@@ -65,6 +66,8 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 ble.deviceRole                         = "CENTRAL_CFG";
 ble.bondPairing                        = "GAPBOND_PAIRING_MODE_INITIATE";
 ble.deviceName                         = "Control-Box";
+ble.maxConnNum                         = 1;
+ble.extAdv                             = false;
 ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
 ble.connUpdateParamsCentral.$name      = "ti_ble5stack_general_ble_conn_update_params0";
 

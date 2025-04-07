@@ -21,12 +21,7 @@ void bleCentral_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
     static int i = 0;
-
-    printf("ICall_init\n");
-    ICall_init();
-    printf("ICall_createRemoteTasks\n");
-    ICall_createRemoteTasks();
-
+    
     bleCentral_init();
 
     printf("Entering bleCentral_executeTask()...\n");

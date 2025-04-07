@@ -53,6 +53,7 @@
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/drivers"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack"/>
+                                    <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/rom"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/controller/cc26xx/inc"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/inc"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common"/>
@@ -86,6 +87,7 @@
                                     <listOptionValue value="HEAPMGR_CONFIG=0x80"/>
                                     <listOptionValue value="HEAPMGR_SIZE=0x0"/>
                                     <listOptionValue value="ICALL_JT"/>
+                                    <listOptionValue value="GAP_BOND_MGR"/>
                                     <listOptionValue value="USE_ICALL"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.1003190244" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.MCPU.cortex-m4" valueType="enumerated"/>

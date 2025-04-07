@@ -10,6 +10,7 @@
 #include <ti/ble5stack/inc/att.h>
 #include <ti/ble5stack/icall/src/inc/icall.h>
 #include <ti/ble5stack/icall/inc/icall_ble_api.h>
+#include <ti/ble5stack/inc/gapbondmgr.h>
 
 // DEFINE GUARDS
 #ifdef __cplusplus
