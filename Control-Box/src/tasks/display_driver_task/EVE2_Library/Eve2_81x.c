@@ -1032,6 +1032,7 @@ void Wait4CoProFIFOEmpty(void)
         Offset++;
         sprintf(buffy, "%c", ErrChar);
         Log(buffy);
+
       }while ( (ErrChar != 0) && (Offset < 128) ); // when the last stuffed character was null, we are done
       Log("\n");
 

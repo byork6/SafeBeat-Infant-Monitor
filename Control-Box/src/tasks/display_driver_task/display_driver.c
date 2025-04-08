@@ -20,7 +20,7 @@ Task_Handle displayDriver_constructTask(){
     return (Task_Handle)&g_DisplayDriverTaskStruct;
 }
 
-void displayDriver_executeTask(UArg arg0, UArg arg1) {
+/*void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
     int i = 0;
@@ -73,6 +73,46 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         
         renderDisplay(testHeartRate, testRespirationRate); //added this line to call the function
 
+        Task_sleep(g_taskSleepDuration);
+    }
+}*/
+//Minimal Test version 
+void displayDriver_executeTask(UArg arg0, UArg arg1) {
+    (void)arg0;
+    (void)arg1;
+
+    HAL_Eve_Reset_HW();
+
+    while (g_spiDisplayHandle == NULL){
+        SPI_Params spiParams;
+        spiParams.bitRate = 1000000;
+        spiParams.frameFormat = SPI_POL0_PHA0;
+        spiParams.dataSize = 8;
+
+        SPI_Params_init(&spiParams);
+        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
+
+        if (g_spiDisplayHandle != NULL){
+            printf("Display SPI initialized.\n");
+            break;
+        }
+        else{
+            printf("Display SPI not initialized, trying again...\n");
+            Task_sleep(g_taskSleepDuration);
+        }
+    }
+
+    printf("Selecting display...\n");
+    HAL_SPI_Enable();
+
+    printf("Entering FT81x_init...\n");
+    FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
+    printf("Clear screen...\n");
+    ClearScreen();
+    printf("Make screen...\n");
+    MakeScreen_MatrixOrbital(30);
+
+    while (1) {
         Task_sleep(g_taskSleepDuration);
     }
 }

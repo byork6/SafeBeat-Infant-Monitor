@@ -50,7 +50,7 @@ void HAL_SPI_ReadBuffer(uint8_t *Buffer, uint32_t Length){
 }
 
 void HAL_Delay(uint32_t milliSeconds){
-    Task_sleep(MS_TO_TICKS(500));
+    Task_sleep(MS_TO_TICKS(milliSeconds));
 }
 
 void HAL_Eve_Reset_HW(void){
