@@ -32,3 +32,4 @@ Generated Source/
 *.swp
 *.swo
 *.DS_Store
+*.theia-workspace
