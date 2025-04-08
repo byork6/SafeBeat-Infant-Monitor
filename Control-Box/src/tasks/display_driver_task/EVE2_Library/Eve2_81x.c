@@ -606,6 +606,7 @@ uint8_t Cmd_READ_REG_ID(void)
 //    Log("\nGood ID: 0x%02x\n", readData[0]);
     printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
     printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
+    printf("GOOD REG_ID... DEVICE STARTING\n");
     return 1;
   }
   else
@@ -613,6 +614,7 @@ uint8_t Cmd_READ_REG_ID(void)
 //    Log("0x%02x ", readData[0]);
     printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
     printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
+    printf("BAD REG_ID... DEVICE WILL NOT START\n");
     return 0;
   }
 }
