@@ -108,15 +108,22 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
     HAL_SPI_Enable();
 
-    uint8_t reg_id = rd8(0x302000); // REG_ID
-    printf("[Display Task] REG_ID = 0x%02X (expected 0x7C)\n", reg_id);
+    /* **************************************************************************************************** */
+    // NOTE: I am not sure this catch should go here, this is already done inside FT81x_Init. If anything
+    // it would be good to do this with the initResult like shown below or just read the value of reg_id but
+    // not stop execution if it is not 0x07C, this is because we will not get that as a return val until we do some stuff
+    // that is inside the FT81x_init function.
 
-    if (reg_id != 0x7C) {
-        printf("[Display Task] REG_ID check failed. Display may not be responding.\n");
-        return;
-    }
+    // uint8_t reg_id = rd8(0x302000); // REG_ID
+    // printf("[Display Task] REG_ID = 0x%02X (expected 0x7C)\n", reg_id);
 
-    printf("[Display Task] REG_ID confirmed. Proceeding with initialization.\n");
+    // if (reg_id != 0x7C) {
+    //     printf("[Display Task] REG_ID check failed. Display may not be responding.\n");
+    //     return;
+    // }
+    // 
+    // printf("[Display Task] REG_ID confirmed. Proceeding with initialization.\n")
+    /* **************************************************************************************************** */
 
     wr8(REG_PWM_DUTY + RAM_REG, 128);  // Backlight
     wr8(REG_PCLK + RAM_REG, 1);        // Pixel clock
