@@ -35,6 +35,7 @@
 // Be aware that Eve stores only the offset into the "FIFO" as 16 bits, so any use of the offset 
 // requires adding the base address (RAM_CMD 0x308000) to the resultant 32 bit value.
 
+#include <../../common/common.h>
 #include <stdio.h>
 #include <stdint.h>              // Find integer types like "uint8_t"  
 #include <stdbool.h>			 // for true/false
@@ -311,25 +312,28 @@ int FT81x_Init(int display, int board, int touch)
     printf("Eve_Reset...\n");
 	Eve_Reset(); // Hard reset of the Eve chip
 
+    // Reset core
+    HostCommand(HCMD_CORERESET);
+
 	// Wakeup Eve	
     printf("Wakeup eve...\n");
 	if (board >= BOARD_EVE3)
 	{
 		HostCommand(HCMD_CLKEXT);
 	}	
-    printf("Host cmd...\n");
+    
+    printf("Sending host cmd ACTIVE...\n");
 	HostCommand(HCMD_ACTIVE);
-    printf("Hal delay...\n");
+    printf("Hal delay for 300 ms...\n");
 	HAL_Delay(300);
 
-    printf("Do rdy...\n");
+    printf("Check if display is ready...\n");
 	do
 	{
-        printf("Spinning...\n");
 		Ready = Cmd_READ_REG_ID();
 	} while (!Ready);
 
-	//  Log("Eve now ACTIVE\n");         //
+	//  Log("Eve now ACTIVE\n");
 
     printf("Eve ready...\n");
 	Ready = rd32(REG_CHIP_ID);
@@ -597,23 +601,24 @@ uint8_t Cmd_READ_REG_ID(void)
   HAL_SPI_Write(0x30);                   // Base address RAM_REG = 0x302000
   HAL_SPI_Write(0x20);    
   HAL_SPI_Write(REG_ID);                 // REG_ID offset = 0x00
+  printf("Sleeping for 1 second...\n");
+  usleep(1000000);
   HAL_SPI_ReadBuffer(readData, 1);       // There was a dummy read of the first byte in there
-  HAL_SPI_Disable();
-  
+  HAL_SPI_Disable();  
   
   if (readData[0] == 0x7C)           // FT81x Datasheet section 5.1, Table 5-2. Return value always 0x7C
   {
 //    Log("\nGood ID: 0x%02x\n", readData[0]);
-    printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
-    printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
+    printf("REG_ID byte 1 = 0x%02X\n", readData[0]);
+    printf("REG_ID byte 2 = 0x%02X\n", readData[1]);
     printf("GOOD REG_ID... DEVICE STARTING\n");
     return 1;
   }
   else
   {
 //    Log("0x%02x ", readData[0]);
-    printf("REG_ID = 0x%02X\n", readData[0]);  // Add this for debug
-    printf("REG_ID = 0x%02X\n", readData[1]);  // Add this for debug
+    printf("REG_ID byte 1 = 0x%02X\n", readData[0]);
+    printf("REG_ID byte 2 = 0x%02X\n", readData[1]);
     printf("BAD REG_ID... DEVICE WILL NOT START\n");
     return 0;
   }

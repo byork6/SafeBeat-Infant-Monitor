@@ -37,7 +37,7 @@ void microSdWrite_executeTask(UArg arg0, UArg arg1){
     while(1){
         i++;
         printf("MicroSdWrite Count: %d\n", i);
-        
+        // TODO: Uncomment this
         GPIO_write(SD_SPI_CSN_PIN, 0);
         GPIO_write(DISPLAY_SPI_CSN_PIN, 1);
         
@@ -72,6 +72,7 @@ SdInitStatus initSDCard(){
                ffcio_rename);
 
     // Reset SD chip select and set Display chip select for microSD card --- Chip select is active low
+    // TODO: Uncomment this
     GPIO_write(SD_SPI_CSN_PIN, 0);
     GPIO_write(DISPLAY_SPI_CSN_PIN, 1);
 

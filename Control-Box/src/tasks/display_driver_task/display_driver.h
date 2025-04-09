@@ -7,6 +7,13 @@ Task_Struct g_DisplayDriverTaskStruct;
 Task_Handle g_displayDriverTaskHandle;
 uint8_t g_displayDriverTaskStack[DISPLAY_DRIVER_TASK_STACK_SIZE];
 
+SPI_Handle g_spiDisplayHandle;
+SPI_Params g_spiDisplayParams;
+SPI_Transaction g_spiDisplayTransaction;
+bool displayTransferOK;
+#define MSGSIZE                             2
+uint8_t displayTransmitBuffer[MSGSIZE];
+uint8_t displayReceiveBuffer[MSGSIZE];
 
 /**
  * @brief Creates a TI-RTOS task for the display driver.

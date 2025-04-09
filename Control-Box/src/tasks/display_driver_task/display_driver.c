@@ -1,8 +1,8 @@
 #include "../../common/common.h"
 #include "EVE2_Library/hw_api.h"
+#include "ti_drivers_config.h"
 
 // Define global variable for spi handle --- declared in common.h using extern
-SPI_Handle g_spiDisplayHandle = NULL;
 
 Task_Handle displayDriver_constructTask(){
     // Construct task
@@ -86,26 +86,40 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     HAL_Eve_Reset_HW();
     printf("[Display Task] Reset completed.\n");
 
-    while (g_spiDisplayHandle == NULL) {
-        SPI_Params spiParams;
-        SPI_Params_init(&spiParams);
-        spiParams.bitRate = 1000000;
-        spiParams.frameFormat = SPI_POL0_PHA0;
-        spiParams.dataSize = 8;
+    SPI_Params_init(&g_spiDisplayParams);
+    g_spiDisplayParams.dataSize = 8;
+    g_spiDisplayParams.bitRate = 1000000;
 
-        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
-
-        if (g_spiDisplayHandle != NULL) {
-            printf("[Display Task] SPI opened successfully.\n");
-            break;
-        } else {
-            printf("[Display Task] SPI open failed. Retrying...\n");
-            Task_sleep(g_taskSleepDuration);
+    do{
+        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &g_spiDisplayParams);
+        if (g_spiDisplayHandle == NULL) {
+            printf("SPI_open FAILED\n");
+            Task_sleep(g_taskSleepDuration); // SPI_open() failed
         }
-    }
+        else{
+            printf("SPI_open SUCCESS\n");
+            break;
+        }
+    }while(1);
 
-    GPIO_write(SD_SPI_CSN_PIN, 1);
-    GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
+    // while (g_spiDisplayHandle == NULL) {
+    //     SPI_Params spiParams;
+    //     SPI_Params_init(&spiParams);
+    //     spiParams.bitRate = 1000000;
+    //     spiParams.frameFormat = SPI_POL0_PHA0;
+    //     spiParams.dataSize = 8;
+
+    //     g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
+
+    //     if (g_spiDisplayHandle != NULL) {
+    //         printf("[Display Task] SPI opened successfully.\n");
+    //         break;
+    //     } else {
+    //         printf("[Display Task] SPI open failed. Retrying...\n");
+    //         Task_sleep(g_taskSleepDuration);
+    //     }
+    // }
+
     HAL_SPI_Enable();
 
     /* **************************************************************************************************** */
@@ -125,8 +139,8 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     // printf("[Display Task] REG_ID confirmed. Proceeding with initialization.\n")
     /* **************************************************************************************************** */
 
-    wr8(REG_PWM_DUTY + RAM_REG, 128);  // Backlight
-    wr8(REG_PCLK + RAM_REG, 1);        // Pixel clock
+    // wr8(REG_PWM_DUTY + RAM_REG, 128);  // Backlight
+    // wr8(REG_PCLK + RAM_REG, 1);        // Pixel clock
 
     int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
     if (!initResult) {
