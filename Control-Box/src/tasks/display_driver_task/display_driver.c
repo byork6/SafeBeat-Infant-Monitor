@@ -81,36 +81,59 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
 
-    HAL_Eve_Reset_HW();
+    printf("[Display Task] Starting...\n");
 
-    while (g_spiDisplayHandle == NULL){
+    HAL_Eve_Reset_HW();
+    printf("[Display Task] Reset completed.\n");
+
+    while (g_spiDisplayHandle == NULL) {
         SPI_Params spiParams;
+        SPI_Params_init(&spiParams);
         spiParams.bitRate = 1000000;
         spiParams.frameFormat = SPI_POL0_PHA0;
         spiParams.dataSize = 8;
 
-        SPI_Params_init(&spiParams);
         g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
 
-        if (g_spiDisplayHandle != NULL){
-            printf("Display SPI initialized.\n");
+        if (g_spiDisplayHandle != NULL) {
+            printf("[Display Task] SPI opened successfully.\n");
             break;
-        }
-        else{
-            printf("Display SPI not initialized, trying again...\n");
+        } else {
+            printf("[Display Task] SPI open failed. Retrying...\n");
             Task_sleep(g_taskSleepDuration);
         }
     }
 
-    printf("Selecting display...\n");
+    GPIO_write(SD_SPI_CSN_PIN, 1);
+    GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
     HAL_SPI_Enable();
 
-    printf("Entering FT81x_init...\n");
-    FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
-    printf("Clear screen...\n");
+    uint8_t reg_id = rd8(0x302000); // REG_ID
+    printf("[Display Task] REG_ID = 0x%02X (expected 0x7C)\n", reg_id);
+
+    if (reg_id != 0x7C) {
+        printf("[Display Task] REG_ID check failed. Display may not be responding.\n");
+        return;
+    }
+
+    printf("[Display Task] REG_ID confirmed. Proceeding with initialization.\n");
+
+    wr8(REG_PWM_DUTY + RAM_REG, 128);  // Backlight
+    wr8(REG_PCLK + RAM_REG, 1);        // Pixel clock
+
+    int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
+    if (!initResult) {
+        printf("[Display Task] FT81x_Init failed. Aborting task.\n");
+        return;
+    }
+
+    printf("[Display Task] FT81x_Init completed successfully.\n");
+
+    printf("[Display Task] Drawing MatrixOrbital test screen...\n");
     ClearScreen();
-    printf("Make screen...\n");
     MakeScreen_MatrixOrbital(30);
+
+    printf("[Display Task] Display setup complete. Idling now.\n");
 
     while (1) {
         Task_sleep(g_taskSleepDuration);
