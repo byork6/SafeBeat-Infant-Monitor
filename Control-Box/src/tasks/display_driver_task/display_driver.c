@@ -86,9 +86,10 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     HAL_Eve_Reset_HW();
     printf("[Display Task] Reset completed.\n");
 
-    SPI_Params_init(&g_spiDisplayParams);
-    g_spiDisplayParams.dataSize = 8;
     g_spiDisplayParams.bitRate = 1000000;
+    g_spiDisplayParams.frameFormat = SPI_POL0_PHA0;
+    g_spiDisplayParams.dataSize = 8;
+    SPI_Params_init(&g_spiDisplayParams);
 
     do{
         g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &g_spiDisplayParams);

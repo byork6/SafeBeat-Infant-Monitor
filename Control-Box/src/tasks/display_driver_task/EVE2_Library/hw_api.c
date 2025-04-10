@@ -40,21 +40,34 @@ uint8_t HAL_SPI_Write(uint8_t data){
 
 void HAL_SPI_WriteBuffer(uint8_t *Buffer, uint32_t Length){
     SPI_Transaction transaction;
+    bool isTransferSuccessful;
     memset(&transaction, 0, sizeof(transaction));
 
     transaction.count = Length;
     transaction.txBuf = Buffer;
     transaction.rxBuf = NULL;
 
-    SPI_transfer(g_spiDisplayHandle, &transaction);
+    // Debug print of data being written
+    printf("SPI WriteBuffer: ");
+    for (uint32_t i = 0; i < Length; i++) {
+        printf("0x%02X ", Buffer[i]);
+    }
+    printf("\n");
+
+    isTransferSuccessful = SPI_transfer(g_spiDisplayHandle, &transaction);
+    if (isTransferSuccessful == false){
+        printf("SPI WRITE BUFFER FAILED\n");
+    }
+    else{
+        printf("SPI write buffer success.\n");
+    }
 }
 
 void HAL_SPI_ReadBuffer(uint8_t *Buffer, uint32_t Length){
     SPI_Transaction transaction;
-    uint8_t dummyTx = 0x00;
 
     transaction.count = Length;
-    transaction.txBuf = &dummyTx;
+    transaction.txBuf = NULL;
     transaction.rxBuf = Buffer;
 
     SPI_transfer(g_spiDisplayHandle, &transaction);
