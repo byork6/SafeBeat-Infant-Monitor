@@ -5,7 +5,6 @@ void HAL_SPI_Enable(void){
     GPIO_write(11, GPIO_SET_OUT_AND_DRIVE_HIGH);
     GPIO_write(23, GPIO_SET_OUT_AND_DRIVE_LOW);
     printf("Display SPI Enabled\n");
-    // printf("Sleeping for 1 second...\n");
     usleep(1000000);
 }
 
@@ -13,7 +12,6 @@ void HAL_SPI_Disable(void){
     GPIO_write(11, GPIO_SET_OUT_AND_DRIVE_LOW);
     GPIO_write(23, GPIO_SET_OUT_AND_DRIVE_HIGH);
     printf("Display SPI Disabled\n");
-    // printf("Sleeping for 1 second...\n");
     usleep(1000000);
 }
 
@@ -23,14 +21,13 @@ uint8_t HAL_SPI_Write(uint8_t data){
     displayTransmitBuffer[0] = data;
 
     // Fill in transmitBuffer
-    g_spiDisplayTransaction.count = MSGSIZE;
+    g_spiDisplayTransaction.count = 1;
     g_spiDisplayTransaction.txBuf = (void *)displayTransmitBuffer;
     g_spiDisplayTransaction.rxBuf = (void *)displayReceiveBuffer;
 
     displayTransferOK = SPI_transfer(g_spiDisplayHandle, &g_spiDisplayTransaction);
     if (!displayTransferOK) {
         printf("Transfer NOT OK");
-        printf("Spinning...");
         // Error in SPI or transfer already in progress.
         while (1);
     }
@@ -80,11 +77,11 @@ void HAL_Delay(uint32_t milliSeconds){
 void HAL_Eve_Reset_HW(void){
     printf("Drive PD LOW\n");
     GPIO_write(CONFIG_DISPLAY_SPI_PD, 0);  // Enter reset
-    usleep(20000);            // 20 ms
+    usleep(2000000);            // 20 ms
     
     printf("Drive PD HIGH\n");
     GPIO_write(CONFIG_DISPLAY_SPI_PD, 1);  // Exit reset
-    usleep(300000);          // Wait 300 ms
+    usleep(500000);          // Wait 300 ms
 }
 
 void HAL_Close(void){

@@ -31,7 +31,7 @@ void createAllResources() {
 void logData(int heartRate, int respiratoryRate, const char* timestamp) {
     char logEntry[128] = {0};  // Temporary buffer for formatted string
 
-    snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
+    printf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
             heartRate, respiratoryRate, timestamp);
 
     appendToSdAndDisplayQueue(logEntry);  // Append formatted string to circular queues

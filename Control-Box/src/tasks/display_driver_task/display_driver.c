@@ -20,62 +20,6 @@ Task_Handle displayDriver_constructTask(){
     return (Task_Handle)&g_DisplayDriverTaskStruct;
 }
 
-/*void displayDriver_executeTask(UArg arg0, UArg arg1) {
-    (void)arg0;
-    (void)arg1;
-    int i = 0;
-    
-    HAL_Eve_Reset_HW();
-
-    // Init SPI
-    while (g_spiDisplayHandle == NULL){
-        SPI_Params spiParams;
-        spiParams.bitRate = 1000000;                     // 1 MHz (slow and safe)
-        spiParams.frameFormat = SPI_POL0_PHA0;           // FT81x expects SPI Mode 0
-        spiParams.dataSize = 8;                          // 8 bits per word
-
-        SPI_Params_init(&spiParams);
-        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
-
-        if (g_spiDisplayHandle != NULL){
-            printf("Display SPI initialized.\n");
-            break;
-        }
-        else{
-            printf("Display SPI not initialized, trying again...\n");
-            Task_sleep(g_taskSleepDuration);
-        }
-    }
-
-    printf("Selecting display...\n");
-    HAL_SPI_Enable();
-
-    // Init Display
-    printf("Entering FT81x_init...\n");
-    FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC); 
-    printf("Clear screen...\n");
-    ClearScreen();
-    printf("Make screen...\n");
-    MakeScreen_MatrixOrbital(30);
-
-    printf("Entering displayDriver_executeTask()...\n");
-
-    while (1) {
-        i++;
-        printf("Display driver Count: %d\n", i);
-
-        // Placeholder test values — replace with real data later
-        int testHeartRate = 110;
-        int testRespirationRate = 35;
-
-        GPIO_write(SD_SPI_CSN_PIN, 1);
-        GPIO_write(DISPLAY_SPI_CSN_PIN, 0);
-        
-        renderDisplay(testHeartRate, testRespirationRate); //added this line to call the function
-
-        Task_sleep(g_taskSleepDuration);
-    }
-}*/
 //Minimal Test version 
 void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
@@ -83,19 +27,16 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
 
     printf("[Display Task] Starting...\n");
 
-    HAL_Eve_Reset_HW();
-    printf("[Display Task] Reset completed.\n");
-
-    g_spiDisplayParams.bitRate = 1000000;
-    g_spiDisplayParams.frameFormat = SPI_POL0_PHA0;
-    g_spiDisplayParams.dataSize = 8;
     SPI_Params_init(&g_spiDisplayParams);
+    g_spiDisplayParams.bitRate = 1000000;
+    g_spiDisplayParams.dataSize = 8;
+    g_spiDisplayParams.frameFormat = SPI_POL0_PHA0;
 
     do{
         g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &g_spiDisplayParams);
         if (g_spiDisplayHandle == NULL) {
             printf("SPI_open FAILED\n");
-            Task_sleep(g_taskSleepDuration); // SPI_open() failed
+            Task_sleep(g_taskSleepDuration);
         }
         else{
             printf("SPI_open SUCCESS\n");
@@ -103,59 +44,26 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         }
     }while(1);
 
-    // while (g_spiDisplayHandle == NULL) {
-    //     SPI_Params spiParams;
-    //     SPI_Params_init(&spiParams);
-    //     spiParams.bitRate = 1000000;
-    //     spiParams.frameFormat = SPI_POL0_PHA0;
-    //     spiParams.dataSize = 8;
+    
 
-    //     g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &spiParams);
-
-    //     if (g_spiDisplayHandle != NULL) {
-    //         printf("[Display Task] SPI opened successfully.\n");
-    //         break;
-    //     } else {
-    //         printf("[Display Task] SPI open failed. Retrying...\n");
-    //         Task_sleep(g_taskSleepDuration);
-    //     }
-    // }
-
-    HAL_SPI_Enable();
-
-    /* **************************************************************************************************** */
-    // NOTE: I am not sure this catch should go here, this is already done inside FT81x_Init. If anything
-    // it would be good to do this with the initResult like shown below or just read the value of reg_id but
-    // not stop execution if it is not 0x07C, this is because we will not get that as a return val until we do some stuff
-    // that is inside the FT81x_init function.
-
-    // uint8_t reg_id = rd8(0x302000); // REG_ID
-    // printf("[Display Task] REG_ID = 0x%02X (expected 0x7C)\n", reg_id);
-
-    // if (reg_id != 0x7C) {
-    //     printf("[Display Task] REG_ID check failed. Display may not be responding.\n");
+    // ****************** MATRIX ORBITAL BULLSHIT *********************
+    // int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
+    // if (!initResult) {
+    //     printf("[Display Task] FT81x_Init failed. Aborting task.\n");
     //     return;
     // }
-    // 
-    // printf("[Display Task] REG_ID confirmed. Proceeding with initialization.\n")
-    /* **************************************************************************************************** */
+
+    // printf("[Display Task] FT81x_Init completed successfully.\n");
 
     // wr8(REG_PWM_DUTY + RAM_REG, 128);  // Backlight
     // wr8(REG_PCLK + RAM_REG, 1);        // Pixel clock
 
-    int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
-    if (!initResult) {
-        printf("[Display Task] FT81x_Init failed. Aborting task.\n");
-        return;
-    }
+    // printf("[Display Task] Drawing MatrixOrbital test screen...\n");
+    // ClearScreen();
+    // MakeScreen_MatrixOrbital(30);
 
-    printf("[Display Task] FT81x_Init completed successfully.\n");
-
-    printf("[Display Task] Drawing MatrixOrbital test screen...\n");
-    ClearScreen();
-    MakeScreen_MatrixOrbital(30);
-
-    printf("[Display Task] Display setup complete. Idling now.\n");
+    // printf("[Display Task] Display setup complete. Idling now.\n");
+    // ****************** MATRIX ORBITAL BULLSHIT *********************
 
     while (1) {
         Task_sleep(g_taskSleepDuration);
@@ -209,7 +117,7 @@ void renderDisplay(int heartRate, int respirationRate) {
 
     // Heart Rate
     char hrBuffer[50];
-    sprintf(hrBuffer, "Heart Rate: %d BPM", heartRate);
+    printf(hrBuffer, "Heart Rate: %d BPM", heartRate);
     Send_CMD(COLOR_RGB(255, 255, 255)); // White
     Cmd_Text(screenWidth / 2, screenHeight / 3, 31, OPT_CENTER, hrBuffer);
 

@@ -309,26 +309,24 @@ int FT81x_Init(int display, int board, int touch)
 	HOffset = PIXHOFFSET;
 	VOffset = PIXVOFFSET;
 	Touch = touch;
+    // Reset MCU
     printf("Eve_Reset...\n");
 	Eve_Reset(); // Hard reset of the Eve chip
-    HAL_Delay(300);
 
     // Reset core
     // HostCommand(HCMD_CORERESET);
-    // HAL_Delay(300);
 
-	// Wakeup Eve	
-    printf("Wakeup eve...\n");
-	// if (board >= BOARD_EVE3)
-	// {
-	// 	HostCommand(HCMD_CLKEXT);
-	// }	
+	// // Start clock
+    // printf("Clock init...\n");
+    // HostCommand(HCMD_CLKEXT);
+    // HostCommand(HCMD_CLK48M);
     
     printf("Sending host cmd ACTIVE...\n");
-    usleep(1000000);
 	HostCommand(HCMD_ACTIVE);
     printf("Hal delay for 300 ms...\n");
-	HAL_Delay(300);
+	HAL_Delay(20);
+    HostCommand(HCMD_SLEEP);
+    HAL_Delay(20);
 
     printf("Check if display is ready...\n");
 	do
@@ -565,7 +563,7 @@ uint8_t rd8(uint32_t address)
   
   HAL_SPI_Enable();
   
-  HAL_SPI_Write((address >> 16) & 0x3F);    
+  HAL_SPI_Write((address >> 16) & 0x3F);
   HAL_SPI_Write((address >> 8) & 0xff);    
   HAL_SPI_Write(address & 0xff);
   
@@ -598,34 +596,57 @@ void UpdateFIFO(void)
 // Read the specific ID register and return TRUE if it is the expected 0x7C otherwise.
 uint8_t Cmd_READ_REG_ID(void)
 {
-  uint8_t txBuf[4] = {
+
+  
+  HAL_SPI_Enable();
+//   // READ CHIP ID
+//   printf("Reading chip ID...\n");
+//   uint8_t txBuf0[4] = {
+//     0xC0, // Address byte 1 (MSB)
+//     0x00, // Address byte 2
+//     0x00, // Address byte 3 (REG_ID = offset 0x00)
+//     0x00  // Dummy byte required by FT81x
+//   };
+//   uint8_t rxBuf0[4] = {0};
+//   HAL_SPI_WriteBuffer(txBuf0, 4);
+//   usleep(1000000);
+//   HAL_SPI_ReadBuffer(rxBuf0, 4);
+//   printf("CHIP ID byte 1 = 0x%02X\n", rxBuf0[0]);
+//   printf("CHIP ID byte 2 = 0x%02X\n", rxBuf0[1]);
+//   printf("CHIP ID byte 3 = 0x%02X\n", rxBuf0[2]);
+//   printf("CHIP ID byte 4 = 0x%02X\n", rxBuf0[3]);
+
+
+//   uint32_t chipID = 0;
+//   chipID = rd32(REG_CHIP_ID);
+//   printf("Chip ID: 0x%08x\n", chipID);
+  uint16_t x = rd16(REG_CMD_WRITE);
+
+  uint8_t txBuf1[4] = {
     0x30, // Address byte 1 (MSB)
     0x20, // Address byte 2
     0x00, // Address byte 3 (REG_ID = offset 0x00)
     0x00  // Dummy byte required by FT81x
-};
-  uint8_t rxBuf[4] = {0};
-  
-  HAL_SPI_Enable();
+  };
+  uint8_t rxBuf1[4] = {0};
 
   HAL_SPI_Write(0x30);                   // Base address RAM_REG = 0x302000
   HAL_SPI_Write(0x20);    
   HAL_SPI_Write(REG_ID);                 // REG_ID offset = 0x00
-//   HAL_SPI_WriteBuffer(txBuf, 4);
+  HAL_SPI_WriteBuffer(txBuf1, 4);
+
   printf("Sleeping for 1 second...\n");
   usleep(10000000);
+  
 
-  HAL_SPI_ReadBuffer(rxBuf, 3);       // There was a dummy read of the first byte in there
+  HAL_SPI_ReadBuffer(rxBuf1, 3);       // There was a dummy read of the first byte in there
   HAL_SPI_Disable();  
   
-  if (rxBuf[0] == 0x7C)           // FT81x Datasheet section 5.1, Table 5-2. Return value always 0x7C
+  if (rxBuf1[0] == 0x7C)           // FT81x Datasheet section 5.1, Table 5-2. Return value always 0x7C
   {
 //    Log("\nGood ID: 0x%02x\n", readData[0]);
     printf("READING REG_ID VALUE HERE\n");
-    printf("REG_ID byte 1 = 0x%02X\n", rxBuf[0]);
-    printf("REG_ID byte 2 = 0x%02X\n", rxBuf[1]);
-    printf("REG_ID byte 3 = 0x%02X\n", rxBuf[2]);
-    // printf("REG_ID byte 4 = 0x%02X\n", rxBuf[3]);
+    printf("REG_ID = 0x%06x\n", rxBuf1);
     printf("GOOD REG_ID... DEVICE STARTING\n");
     return 1;
   }
@@ -633,10 +654,7 @@ uint8_t Cmd_READ_REG_ID(void)
   {
 //    Log("0x%02x ", readData[0]);
     printf("READING REG_ID VALUE HERE\n");
-    printf("REG_ID byte 1 = 0x%02X\n", rxBuf[0]);
-    printf("REG_ID byte 2 = 0x%02X\n", rxBuf[1]);
-    printf("REG_ID byte 3 = 0x%02X\n", rxBuf[2]);
-    // printf("REG_ID byte 4 = 0x%02X\n", rxBuf[3]);
+    printf("REG_ID = 0x%06X\n", rxBuf1);
     printf("BAD REG_ID... DEVICE WILL NOT START\n");
     return 0;
   }
@@ -1055,7 +1073,7 @@ void Wait4CoProFIFOEmpty(void)
         // Get the error character and display it
         ErrChar = rd8(RAM_ERR_REPORT + Offset);
         Offset++;
-        sprintf(buffy, "%c", ErrChar);
+        printf(buffy, "%c", ErrChar);
         Log(buffy);
 
       }while ( (ErrChar != 0) && (Offset < 128) ); // when the last stuffed character was null, we are done
