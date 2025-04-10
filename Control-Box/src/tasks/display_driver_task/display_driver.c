@@ -44,10 +44,7 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         }
     }while(1);
 
-    
-
-    // ****************** MATRIX ORBITAL BULLSHIT *********************
-    // int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
+    int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
     // if (!initResult) {
     //     printf("[Display Task] FT81x_Init failed. Aborting task.\n");
     //     return;
