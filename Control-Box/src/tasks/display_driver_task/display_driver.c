@@ -71,74 +71,74 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
 }
 
 void ClearScreen(void){
-	Send_CMD(CMD_DLSTART);
-	Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));
-	Send_CMD(CLEAR(1, 1, 1));
-	Send_CMD(DISPLAY());
-	Send_CMD(CMD_SWAP);
-	UpdateFIFO();                            // Trigger the CoProcessor to start processing commands out of the FIFO
-	Wait4CoProFIFOEmpty();                   // wait here until the coprocessor has read and executed every pending command.		
-	HAL_Delay(10);
+	// Send_CMD(CMD_DLSTART);
+	// Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));
+	// Send_CMD(CLEAR(1, 1, 1));
+	// Send_CMD(DISPLAY());
+	// Send_CMD(CMD_SWAP);
+	// UpdateFIFO();                            // Trigger the CoProcessor to start processing commands out of the FIFO
+	// Wait4CoProFIFOEmpty();                   // wait here until the coprocessor has read and executed every pending command.		
+	// HAL_Delay(10);
 }
 
 //unsure if this is test code or code for when display starts up -Charan
 void MakeScreen_MatrixOrbital(uint8_t DotSize){
-	Send_CMD(CMD_DLSTART);                   //Start a new display list
-	Send_CMD(VERTEXFORMAT(0));               //setup VERTEX2F to take pixel coordinates
-	Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));      //Determine the clear screen color
-	Send_CMD(CLEAR(1, 1, 1));	               //Clear the screen and the curren display list
-	Send_CMD(COLOR_RGB(26, 26, 192));        // change colour to blue
-	Send_CMD(POINT_SIZE(DotSize * 16));      // set point size to DotSize pixels. Points = (pixels x 16)
-	Send_CMD(BEGIN(POINTS));                 // start drawing point
-	Send_CMD(TAG(1));                        // Tag the blue dot with a touch ID
-	Send_CMD(VERTEX2F(Display_Width() / 2, Display_Height() / 2));     // place blue point
-	Send_CMD(END());                         // end drawing point
-	Send_CMD(COLOR_RGB(255, 255, 255));      //Change color to white for text
-	Cmd_Text(Display_Width() / 2, Display_Height() / 2, 30, OPT_CENTER, " MATRIX         ORBITAL"); //Write text in the center of the screen
-	Send_CMD(DISPLAY());                     //End the display list
-	Send_CMD(CMD_SWAP);                      //Swap commands into RAM
-	UpdateFIFO();                            // Trigger the CoProcessor to start processing the FIFO
-}
+// 	// Send_CMD(CMD_DLSTART);                   //Start a new display list
+// 	// Send_CMD(VERTEXFORMAT(0));               //setup VERTEX2F to take pixel coordinates
+// 	// Send_CMD(CLEAR_COLOR_RGB(0, 0, 0));      //Determine the clear screen color
+// 	// Send_CMD(CLEAR(1, 1, 1));	               //Clear the screen and the curren display list
+// 	// Send_CMD(COLOR_RGB(26, 26, 192));        // change colour to blue
+// 	// Send_CMD(POINT_SIZE(DotSize * 16));      // set point size to DotSize pixels. Points = (pixels x 16)
+// 	// Send_CMD(BEGIN(POINTS));                 // start drawing point
+// 	// Send_CMD(TAG(1));                        // Tag the blue dot with a touch ID
+// 	// Send_CMD(VERTEX2F(Display_Width() / 2, Display_Height() / 2));     // place blue point
+// 	// Send_CMD(END());                         // end drawing point
+// 	// Send_CMD(COLOR_RGB(255, 255, 255));      //Change color to white for text
+// 	// Cmd_Text(Display_Width() / 2, Display_Height() / 2, 30, OPT_CENTER, " MATRIX         ORBITAL"); //Write text in the center of the screen
+// 	// Send_CMD(DISPLAY());                     //End the display list
+// 	// Send_CMD(CMD_SWAP);                      //Swap commands into RAM
+// 	// UpdateFIFO();                            // Trigger the CoProcessor to start processing the FIFO
+// }
 
-//i worked on this
-void renderDisplay(int heartRate, int respirationRate) {
-    printf("HR: %d  |  RR: %d\n", heartRate, respirationRate); //for debugging
+// //i worked on this
+// void renderDisplay(int heartRate, int respirationRate) {
+//     printf("HR: %d  |  RR: %d\n", heartRate, respirationRate); //for debugging
 
-    int screenWidth = Display_Width();
-    int screenHeight = Display_Height();
+//     int screenWidth = Display_Width();
+//     int screenHeight = Display_Height();
 
-    Send_CMD(CMD_DLSTART);
-    Send_CMD(CLEAR_COLOR_RGB(0, 0, 0)); // Black background
-    Send_CMD(CLEAR(1, 1, 1));
+//     Send_CMD(CMD_DLSTART);
+//     Send_CMD(CLEAR_COLOR_RGB(0, 0, 0)); // Black background
+//     Send_CMD(CLEAR(1, 1, 1));
 
-    // Title bar
-    Send_CMD(COLOR_RGB(0, 255, 255)); // Cyan title
-    Cmd_Text(screenWidth / 2, screenHeight / 10, 30, OPT_CENTER, "INFANT ECG MONITOR");
+//     // Title bar
+//     Send_CMD(COLOR_RGB(0, 255, 255)); // Cyan title
+//     Cmd_Text(screenWidth / 2, screenHeight / 10, 30, OPT_CENTER, "INFANT ECG MONITOR");
 
-    // Heart Rate
-    char hrBuffer[50];
-    printf(hrBuffer, "Heart Rate: %d BPM", heartRate);
-    Send_CMD(COLOR_RGB(255, 255, 255)); // White
-    Cmd_Text(screenWidth / 2, screenHeight / 3, 31, OPT_CENTER, hrBuffer);
+//     // Heart Rate
+//     char hrBuffer[50];
+//     printf(hrBuffer, "Heart Rate: %d BPM", heartRate);
+//     Send_CMD(COLOR_RGB(255, 255, 255)); // White
+//     Cmd_Text(screenWidth / 2, screenHeight / 3, 31, OPT_CENTER, hrBuffer);
 
-    // Alarm Logic
-    bool alarm = (heartRate < LOW_HEART_RATE_THRESHOLD_BPM || heartRate > HIGH_HEART_RATE_THRESHOLD_BPM ||
-                  respirationRate < LOW_RESPIRATORY_RATE_THRESHOLD_BRPM || respirationRate > HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM);
+//     // Alarm Logic
+//     bool alarm = (heartRate < LOW_HEART_RATE_THRESHOLD_BPM || heartRate > HIGH_HEART_RATE_THRESHOLD_BPM ||
+//                   respirationRate < LOW_RESPIRATORY_RATE_THRESHOLD_BRPM || respirationRate > HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM);
 
-    if (alarm) {
-        Send_CMD(COLOR_RGB(255, 0, 0)); // Red text
-        Cmd_Text(screenWidth / 2, (2 * screenHeight) / 3, 30, OPT_CENTER, "ALERT: VITALS OUT OF RANGE");
+//     if (alarm) {
+//         Send_CMD(COLOR_RGB(255, 0, 0)); // Red text
+//         Cmd_Text(screenWidth / 2, (2 * screenHeight) / 3, 30, OPT_CENTER, "ALERT: VITALS OUT OF RANGE");
 
-        // Red blinking indicator (you can later toggle visibility every other render)
-        Send_CMD(POINT_SIZE(30 * 16)); // Circle size
-        Send_CMD(BEGIN(POINTS));
-        Send_CMD(VERTEX2F((screenWidth / 2) * 16, (8 * screenHeight / 10) * 16)); // Lower center
-        Send_CMD(END());
-    }
+//         // Red blinking indicator (you can later toggle visibility every other render)
+//         Send_CMD(POINT_SIZE(30 * 16)); // Circle size
+//         Send_CMD(BEGIN(POINTS));
+//         Send_CMD(VERTEX2F((screenWidth / 2) * 16, (8 * screenHeight / 10) * 16)); // Lower center
+//         Send_CMD(END());
+//     }
 
-    Send_CMD(DISPLAY());
-    Send_CMD(CMD_SWAP);
-    UpdateFIFO();
+//     Send_CMD(DISPLAY());
+//     Send_CMD(CMD_SWAP);
+//     UpdateFIFO();
 
-    // We need to replace printf() with FT813 draw-text commands once graphics integration starts
+//     // We need to replace printf() with FT813 draw-text commands once graphics integration starts
 }
