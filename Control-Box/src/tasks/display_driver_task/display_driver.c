@@ -1,6 +1,5 @@
 #include "../../common/common.h"
 #include "EVE2_Library/hw_api.h"
-#include "ti_drivers_config.h"
 
 // Define global variable for spi handle --- declared in common.h using extern
 
@@ -26,15 +25,14 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
     (void)arg1;
 
     printf("[Display Task] Starting...\n");
-
     SPI_Params_init(&g_spiDisplayParams);
     g_spiDisplayParams.bitRate = 1000000;
     g_spiDisplayParams.dataSize = 8;
     g_spiDisplayParams.frameFormat = SPI_POL0_PHA0;
 
     do{
-        g_spiDisplayHandle = SPI_open(CONFIG_DISPLAY_SPI, &g_spiDisplayParams);
-        if (g_spiDisplayHandle == NULL) {
+        displaySpiHandle = SPI_open(CONFIG_DISPLAY_SPI, &g_spiDisplayParams);
+        if (displaySpiHandle == NULL) {
             printf("SPI_open FAILED\n");
             Task_sleep(g_taskSleepDuration);
         }
@@ -44,7 +42,10 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
         }
     }while(1);
 
-    int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
+    HAL_EVE_Init();
+
+    // ****************** MATRIX ORBITAL BULLSHIT *********************
+    // int initResult = FT81x_Init(DISPLAY_70, BOARD_EVE2, TOUCH_TPC);
     // if (!initResult) {
     //     printf("[Display Task] FT81x_Init failed. Aborting task.\n");
     //     return;

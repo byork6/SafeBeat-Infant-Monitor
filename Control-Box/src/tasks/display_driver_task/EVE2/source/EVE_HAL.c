@@ -49,7 +49,7 @@
 
 /* Only compile for non-linux platforms or when MPSSE is being used. */
 #if !defined(USE_LINUX_SPI_DEV) || defined(USE_MPSSE)
-
+#include "../../common/common.h"
 #include <string.h>
 #include <stdint.h> // for Uint8/16/32 and Int8/16/32 data types
 
@@ -60,14 +60,19 @@
 // Used to navigate command ring buffer
 static uint16_t writeCmdPointer = 0x0000;
 
+#define EVE2_ENABLE     1
+
+
 
 void HAL_EVE_Init(void)
 {
 	uint8_t val;
 
+    printf("Set Display CS\n");
 	MCU_Init();
 
 	// Set Chip Select OFF
+    printf("Reset Display CS\n");
 	HAL_ChipSelect(0);
 
 	// Reset the display
@@ -94,6 +99,7 @@ void HAL_EVE_Init(void)
 #endif
 
 #if defined (EVE2_ENABLE) || defined (EVE3_ENABLE)|| defined (EVE4_ENABLE)
+    printf("Writing Host cmd\n");
 	HAL_HostCmdWrite(0x68, 0x00); // Reset
 #endif
 
@@ -101,12 +107,14 @@ void HAL_EVE_Init(void)
 	HAL_HostCmdWrite(0, 0x00);
 	
 //	MCU_Delay_500ms();		// Optional delay can be commented so long as we check the REG_ID and REG_CPURESET
-
+    printf("Read EVE Reg ID\n");
 	// Read REG_ID register (0x302000) until reads 0x7C
 	while ((val = HAL_MemRead8(EVE_REG_ID)) != 0x7C)
 	{
+        printf("INVALID EVE REG ID\n");
+        printf("EVE_REG_ID: 0x%02x\n", val);
 	}
-
+    printf("EVE_REG_ID: 0x%02x\n", val);
 	// Ensure CPUreset register reads 0 and so FT8xx is ready
 	while (HAL_MemRead8(EVE_REG_CPURESET) != 0x00)
 	{
@@ -115,9 +123,6 @@ void HAL_EVE_Init(void)
 #if defined (EVE3_ENABLE) || defined (EVE4_ENABLE)
 	HAL_MemWrite32(EVE_REG_FREQUENCY, 72000000);
 #endif
-
-	// This function will not return unless an EVE device is present.
-	MCU_Setup();
 }
 
 // --------------------- Chip Select line ----------------------------------

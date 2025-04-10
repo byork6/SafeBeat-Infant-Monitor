@@ -7,7 +7,7 @@ Task_Struct g_DisplayDriverTaskStruct;
 Task_Handle g_displayDriverTaskHandle;
 uint8_t g_displayDriverTaskStack[DISPLAY_DRIVER_TASK_STACK_SIZE];
 
-SPI_Handle g_spiDisplayHandle;
+SPI_Handle displaySpiHandle;
 SPI_Params g_spiDisplayParams;
 SPI_Transaction g_spiDisplayTransaction;
 bool displayTransferOK;
