@@ -37,6 +37,12 @@ rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES,
                                                   MAX_LENGTH,
                                                   NUM_APPENDED_BYTES)];
 
+static const char* connectionStatusStrings[] = {
+    "DISCONNECTED", // 0
+    "CONNECTED",    // 1
+    "CONNECTING"    // 2
+};
+
 
 Task_Handle uartBridge_constructTask() {
     // Declare TaskParams struct name
@@ -64,22 +70,25 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
     int i = 0;
-    int status;
-    uint8_t reconnectAttempts = 0;
+    int rfStatus = 0;
+    int rxQueueStatus = 0;
+    int receiveStatus = 0;
+    int transmissionStatus = 0;
 
+    uint8_t reconnectAttempts = 0;
     printf("Entering uartBridge_executeTask()...\n");
 
     // Initialize RF driver
-    status = initRF();
-    if (status != 0) {
-        printf("Failed to initialize RF driver. Error code: %d\n", status);
+    rfStatus = initRF();
+    if (rfStatus != 0) {
+        printf("Failed to initialize RF driver. Error code: %d\n", rfStatus);
         return;
     }
 
     // Setup RX queue for RF
-    status = setupRXQueue();
-    if (status != 0) {
-        printf("Failed to setup RX queue. Error code: %d\n", status);
+    rxQueueStatus = setupRXQueue();
+    if (rxQueueStatus != 0) {
+        printf("Failed to setup RX queue. Error code: %d\n", rxQueueStatus);
         return;
     }
 
@@ -87,16 +96,16 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
 
     // Start receiving - this will also attempt to establish connection
-    status = startReceive();
-    if (status != 0) {
-        printf("Failed to start RF receive. Error code: %d\n", status);
+    receiveStatus = startReceive();
+    if (receiveStatus != 0) {
+        printf("Failed to start RF receive. Error code: %d\n", receiveStatus);
         connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
     }
     printf("Recieve mode started.\n");
 
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
-        printf("UART connection status: %d\n", connectionStatus);
+        printf("UART connection status: %s\n", connectionStatusStrings[connectionStatus]);
         // Check connection status
         if (connectionStatus == UART_BRIDGE_STATUS_DISCONNECTED) {
             // Try to reconnect
@@ -104,9 +113,9 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
             printf("STATUS: NOT CONNECTED\nAttempting to reconnect...\n");
 
             connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
-            status = startReceive();
+            receiveStatus = startReceive();
 
-            if (status != 0) {
+            if (receiveStatus != 0) {
                 printf("Reconnect failed. Total failed reconnection attempts: %d\nWill retry...\n", reconnectAttempts);
                 connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
             }
@@ -127,7 +136,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
             static uint8_t dummyRespRate = 16;
 
             // Send vital signs every few seconds
-            status = uartBridge_sendVitalSigns(dummyHeartRate, dummyRespRate);
+            transmissionStatus = uartBridge_sendVitalSigns(dummyHeartRate, dummyRespRate);
 
             // Update dummy values for next iteration (in real app, these would come from sensors)
             dummyHeartRate = (dummyHeartRate >= 100) ? 70 : dummyHeartRate + 1;
