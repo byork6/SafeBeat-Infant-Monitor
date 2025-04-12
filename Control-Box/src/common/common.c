@@ -13,16 +13,19 @@ void createAllResources() {
 
     // Task 2 --- Priority = 2
     g_microSdWriteTaskHandle = microSdWrite_constructTask();
+
+    // Task 3 --- Priority = 3
+    g_displayDriverTaskHandle = displayDriver_constructTask();
     
-    // Task 3 --- Priority = 4
+    // Task 4 --- Priority = 4
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 
-    // Task 4 --- Priority = 4
+    // Task 5 --- Priority = 4
     g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
     // Task 5 --- Priority = 5
     g_uartBridgeTaskHandle = uartBridge_constructTask();
-
+    
     // Task 6 --- Priority = 6
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
