@@ -1,4 +1,5 @@
 #include "../../common/common.h"
+#include "src/tasks/uart_bridge_task/uart_bridge_task.h"
 
 Task_Handle powerShutdown_constructTask(){
     // Construct semaphore
@@ -79,6 +80,10 @@ void destructAllResources() {
     if (g_task2Handle != NULL) {
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
+    }
+    if (g_uartBridgeTaskHandle != NULL) {
+        Task_destruct(g_uartBridgeTaskHandle);
+        printf("UART bridge task destructed.\n");
     }
 }
 

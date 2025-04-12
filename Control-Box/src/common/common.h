@@ -14,6 +14,9 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
+#include <ti/drivers/rf/RF.h>
+
+#include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
@@ -35,11 +38,13 @@
 #define TEST_GPIO_PRIORITY          4
 #define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
+#define UART_BRIDGE_PRIORITY        5
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
 #define MICROSD_WRITE_STACK_SIZE    1024
 #define TEST_GPIO_STACK_SIZE        1024
+#define UART_BRIDGE_STACK_SIZE      1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
 #define DRIVE_GPIO_HIGH             1
@@ -86,6 +91,7 @@ extern CircularQueue displayMemQueue;
 #include "../tasks/test_gpio_task/test_gpio_task.h"
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
+#include "../tasks/uart_bridge_task/uart_bridge_task.h"
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////
