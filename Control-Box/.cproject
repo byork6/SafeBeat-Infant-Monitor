@@ -38,6 +38,15 @@
                                     <listOptionValue value="${SYSCONFIG_TOOL_INCLUDE_PATH}"/>
                                     <listOptionValue value="${PROJECT_ROOT}"/>
                                     <listOptionValue value="${PROJECT_ROOT}/${ConfigName}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/common"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/config}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/microSD_write_task}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/power_shutdown_task}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/temperature_monitoring_task}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/test_gpio_task}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/src/tasks/uart_bridge_task}"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages"/>
                                     <listOptionValue value="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang"/>
