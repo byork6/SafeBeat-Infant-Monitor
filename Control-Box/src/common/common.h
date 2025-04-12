@@ -18,9 +18,11 @@
 // General purpose TI Drivesrs
 #include <Power.h>
 #include <GPIO.h>
+#include <gpio/GPIOCC26XX.h>
 #include <SPI.h>
 #include <SDFatFS.h>
 #include <Temperature.h>
+#include <rf/RF.H>
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 
@@ -35,6 +37,9 @@
 #include "ti_drivers_config.h"
 #include "ti_sysbios_config.h"
 #include "ti_ble_config.h"
+#include <xdc/runtime/System.h>
+#include <xdc/runtime/Memory.h>
+#include <xdc/runtime/Types.h>
 
 /////// CUSTOM HEADER CONTENT ///////
 // CUSTOM MACROS

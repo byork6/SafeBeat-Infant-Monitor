@@ -322,11 +322,11 @@ enum {NVOCMP_FINDANY = 0x00, NVOCMP_FINDSYSID, NVOCMP_FINDITMID, NVOCMP_FINDSTRI
         sem_post(&NVOCMP_gPosixSem); return(err); }
 #else
 // Lock driver access via TI-RTOS gatemutex
-#define NVOCMP_LOCK() int32_t key = GateMutexPri_enter(NVOCMP_gMutexPri);
+// #define NVOCMP_LOCK() int32_t key = GateMutexPri_enter(NVOCMP_gMutexPri);
 
 // Unlock driver access via TI-RTOS gatemutex and return error code
 #define NVOCMP_UNLOCK(err) { \
-    GateMutexPri_leave(NVOCMP_gMutexPri, key); return(err); }
+    // GateMutexPri_leave(NVOCMP_gMutexPri, key); return(err); }
 #endif
 
 // Generate a compressed NV ID (NOTE: bit31 must be zero)
@@ -698,7 +698,7 @@ static pthread_mutex_t NVOCMP_gPosixMutex;
 #elif defined (NVOCMP_POSIX_SEM)
 static sem_t NVOCMP_gPosixSem;
 #else
-static GateMutexPri_Handle NVOCMP_gMutexPri;
+// static GateMutexPri_Handle NVOCMP_gMutexPri;
 #endif
 
 // Small NV Item Buffer, for item construction
@@ -1005,7 +1005,7 @@ static uint8_t NVOCMP_initNvApi(void *param)
         pthread_mutexattr_t attr;
 #elif defined(NVOCMP_POSIX_SEM)
 #else
-        GateMutexPri_Params gateParams;
+        // GateMutexPri_Params gateParams;
 #endif
 
         // Only one init per device reset
@@ -1032,8 +1032,8 @@ static uint8_t NVOCMP_initNvApi(void *param)
 #elif defined(NVOCMP_POSIX_SEM)
         sem_init(&NVOCMP_gPosixSem, 0 /* ignored */, 1);
 #else
-        GateMutexPri_Params_init(&gateParams);
-        NVOCMP_gMutexPri = GateMutexPri_create(&gateParams, NULL);
+        // GateMutexPri_Params_init(&gateParams);
+        // NVOCMP_gMutexPri = GateMutexPri_create(&gateParams, NULL);
 #endif
 
         memset(&NVOCMP_nvHandle, 0, sizeof(NVOCMP_nvHandle_t));
@@ -1688,7 +1688,7 @@ static int32_t NVOCMP_lockNvApi(void)
 #elif defined (NVOCMP_POSIX_SEM)
     return(sem_wait(&NVOCMP_gPosixSem));
 #else
-    return(GateMutexPri_enter(NVOCMP_gMutexPri));
+    // return(GateMutexPri_enter(NVOCMP_gMutexPri));
 #endif
 }
 
@@ -1708,7 +1708,7 @@ static void NVOCMP_unlockNvApi(int32_t key)
     (void)key;
     sem_post(&NVOCMP_gPosixSem);
 #else
-    GateMutexPri_leave(NVOCMP_gMutexPri,key);
+    // GateMutexPri_leave(NVOCMP_gMutexPri,key);
 #endif
 }
 
