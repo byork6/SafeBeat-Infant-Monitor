@@ -1,9 +1,10 @@
 #include "../../common/common.h"
 
-// TYPE DEFINITIONS
+
+// --- TYPE DEFINITIONS --- //
 
 
-// STATIC DECLARATIONS
+// --- VARIABLE DECLARATIONS --- //
 // RF Driver handle
 static RF_Object rfObject;
 static RF_Handle rfHandle;
@@ -22,7 +23,8 @@ static uint8_t* packetDataPointer;
 static uint8_t rxPacket[MAX_LENGTH + NUM_APPENDED_BYTES - 1];
 static uint8_t txPacket[MAX_LENGTH];
 
-// VARIABLE DEFINITIONS
+
+// --- VARIABLE DEFINITIONS --- //
 // Connection status
 static volatile uint8_t connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
 
@@ -44,6 +46,7 @@ static const char* connectionStatusStrings[] = {
 };
 
 
+// --- FUNCTION DEFINITIONS --- //
 Task_Handle uartBridge_constructTask() {
     // Declare TaskParams struct name
     Task_Params TaskParams;
@@ -74,8 +77,8 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     int rxQueueStatus = 0;
     int receiveStatus = 0;
     int transmissionStatus = 0;
-
-    uint8_t reconnectAttempts = 0;
+    uint8_t reconnectionAttempts = 0;
+    
     printf("Entering uartBridge_executeTask()...\n");
 
     // Initialize RF driver
@@ -109,25 +112,24 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         // Check connection status
         if (connectionStatus == UART_BRIDGE_STATUS_DISCONNECTED) {
             // Try to reconnect
-            reconnectAttempts++;
-            printf("STATUS: NOT CONNECTED\nAttempting to reconnect...\n");
-
+            reconnectionAttempts++;
             connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
-            receiveStatus = startReceive();
+            printf("Attempting to reconnect...\n");
 
+            receiveStatus = startReceive();
             if (receiveStatus != 0) {
-                printf("Reconnect failed. Total failed reconnection attempts: %d\nWill retry...\n", reconnectAttempts);
+                printf("Reconnect failed. Total failed reconnection attempts: %d\nWill retry...\n", reconnectionAttempts);
                 connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
             }
             else{
                 printf("Reconnection successful.\n");
-                reconnectAttempts = 0;
+                reconnectionAttempts = 0;
             }
         }
         else if (connectionStatus == UART_BRIDGE_STATUS_CONNECTED) {
             printf("STATUS: CONNECTED\nSending data to Monitor-Belt...\n");
             // Reset reconnect counter when connected
-            reconnectAttempts = 0;
+            reconnectionAttempts = 0;
 
             // In a real implementation, you would get heart rate and respiratory rate
             // from sensors or other tasks and send them periodically
