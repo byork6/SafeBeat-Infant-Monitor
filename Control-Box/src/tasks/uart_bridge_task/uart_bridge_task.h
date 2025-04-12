@@ -86,7 +86,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1);
 *
 *   --- Code snippet end ---
 */
-void rfDriverCallbackAntennaSwitching(RF_Handle client, RF_GlobalEvent events, void *arg)
+void rfDriverCallbackAntennaSwitching(RF_Handle client, RF_GlobalEvent events, void *arg);
 
 /**
  * @brief Sends vital sign data over the RF link

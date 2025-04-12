@@ -1,5 +1,4 @@
 #include "../../common/common.h"
-#include "ti_radio_config.h"
 
 // TYPE DEFINITIONS
 
@@ -64,6 +63,7 @@ Task_Handle uartBridge_constructTask() {
 void uartBridge_executeTask(UArg arg0, UArg arg1) {
     (void)arg0;
     (void)arg1;
+    int i = 0;
     int status;
     uint8_t reconnectAttempts = 0;
 
@@ -92,23 +92,31 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         printf("Failed to start RF receive. Error code: %d\n", status);
         connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
     }
+    printf("Recieve mode started.\n");
 
     while (1) {
+        printf("UART Bridge Count: %d\n", i++);
+        printf("UART connection status: %d\n", connectionStatus);
         // Check connection status
         if (connectionStatus == UART_BRIDGE_STATUS_DISCONNECTED) {
             // Try to reconnect
             reconnectAttempts++;
-            printf("Connection lost. Reconnect attempt %d...\n", reconnectAttempts);
+            printf("STATUS: NOT CONNECTED\nAttempting to reconnect...\n");
 
             connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
             status = startReceive();
 
             if (status != 0) {
-                printf("Reconnect failed. Will retry...\n");
+                printf("Reconnect failed. Total failed reconnection attempts: %d\nWill retry...\n", reconnectAttempts);
                 connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
+            }
+            else{
+                printf("Reconnection successful.\n");
+                reconnectAttempts = 0;
             }
         }
         else if (connectionStatus == UART_BRIDGE_STATUS_CONNECTED) {
+            printf("STATUS: CONNECTED\nSending data to Monitor-Belt...\n");
             // Reset reconnect counter when connected
             reconnectAttempts = 0;
 
@@ -131,8 +139,11 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     }
 }
 
-void rfDriverCallbackAntennaSwitching(RF_Handle client, RF_GlobalEvent events, void *arg)
-{
+void rfDriverCallbackAntennaSwitching(RF_Handle client, RF_GlobalEvent events, void *arg){
+    // GPIO_write(CONFIG_RF_24GHZ, 0); // Low
+    // GPIO_write(CONFIG_RF_24GHZ, 1); // High
+    // GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_RFC_GPO0);
+    // GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_GPIO);
     /* ======== PLEASE READ THIS ========
     *
     *   --- Code snippet begin ---

@@ -90,7 +90,7 @@ extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
 
-// CUSTOM INCLUSIONS
+// LOCAL INCLUSIONS
 #include "../config/config_functions.h"
 #include "../tasks/microSD_write_task/microSD_write_task.h"
 #include "../tasks/test_gpio_task/test_gpio_task.h"
