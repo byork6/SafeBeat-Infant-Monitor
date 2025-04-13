@@ -54,12 +54,6 @@ Power.policyFunction = "PowerCC26XX_doWFI";
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
-RF.rfAntennaPinSymbol0   = "CONFIG_RF_24GHZ";
-RF.rfAntennaPinSymbol1   = "CONFIG_RF_HIGH_PA";
-RF.pinSelectionAntenna   = 2;
-RF.rfAntennaPin0.$assign = "DIO_28";
-RF.rfAntennaPin1.$assign = "DIO_29";
-
 SD1.useFatFS                      = true;
 SD1.$name                         = "CONFIG_SD";
 SD1.sdCSPin.$assignAllowConflicts = "DIO_11";

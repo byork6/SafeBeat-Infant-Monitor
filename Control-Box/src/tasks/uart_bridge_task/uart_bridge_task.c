@@ -87,6 +87,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         printf("Failed to initialize RF driver. Error code: %d\n", rfStatus);
         return;
     }
+    printf("RF Driver initialized.\n");
 
     // Setup RX queue for RF
     rxQueueStatus = setupRXQueue();
@@ -94,8 +95,8 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         printf("Failed to setup RX queue. Error code: %d\n", rxQueueStatus);
         return;
     }
+    printf("RX Queue initialized.\n");
 
-    printf("UART Bridge initialized. Attempting to connect...\n");
     connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
 
     // Start receiving - this will also attempt to establish connection
@@ -104,7 +105,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         printf("Failed to start RF receive. Error code: %d\n", receiveStatus);
         connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
     }
-    printf("Recieve mode started.\n");
+    printf("Recieve mode started. Attempting to connect...\n");
 
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
@@ -114,82 +115,21 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
             // Try to reconnect
             reconnectionAttempts++;
             connectionStatus = UART_BRIDGE_STATUS_CONNECTING;
-            printf("Attempting to reconnect...\n");
 
             receiveStatus = startReceive();
             if (receiveStatus != 0) {
                 printf("Reconnect failed. Total failed reconnection attempts: %d\nWill retry...\n", reconnectionAttempts);
                 connectionStatus = UART_BRIDGE_STATUS_DISCONNECTED;
             }
-            else{
-                printf("Reconnection successful.\n");
-                reconnectionAttempts = 0;
-            }
+            printf("Recieve mode started. Attempting to connect...\n");
         }
-        else if (connectionStatus == UART_BRIDGE_STATUS_CONNECTED) {
-            printf("STATUS: CONNECTED\nSending data to Monitor-Belt...\n");
-            // Reset reconnect counter when connected
-            reconnectionAttempts = 0;
-
-            // In a real implementation, you would get heart rate and respiratory rate
-            // from sensors or other tasks and send them periodically
-            // For demonstration, we'll just use dummy values
-            static uint8_t dummyHeartRate = 70;
-            static uint8_t dummyRespRate = 16;
-
-            // Send vital signs every few seconds
-            transmissionStatus = uartBridge_sendVitalSigns(dummyHeartRate, dummyRespRate);
-
-            // Update dummy values for next iteration (in real app, these would come from sensors)
-            dummyHeartRate = (dummyHeartRate >= 100) ? 70 : dummyHeartRate + 1;
-            dummyRespRate = (dummyRespRate >= 25) ? 16 : dummyRespRate + 1;
+        else if (connectionStatus == UART_BRIDGE_STATUS_CONNECTED) {           
+            printf("Waiting to recieve data from active connection...\n");
         }
 
         // Sleep to allow other tasks to run
         Task_sleep(g_taskSleepDuration);
     }
-}
-
-void rfDriverCallbackAntennaSwitching(RF_Handle client, RF_GlobalEvent events, void *arg){
-    // GPIO_write(CONFIG_RF_24GHZ, 0); // Low
-    // GPIO_write(CONFIG_RF_24GHZ, 1); // High
-    // GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_RFC_GPO0);
-    // GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_GPIO);
-    /* ======== PLEASE READ THIS ========
-    *
-    *   --- Code snippet begin ---
-    *
-    * // > This assumes antenna switch pins have been added to GPIO via
-    * // > sysconfig with the following properties:
-    * // >     mode: Output
-    * // >     initialOutputState: Low
-    * // >     outputStrength: High
-    *
-    * // > Set pin output value manually
-    * GPIO_write(CONFIG_RF_24GHZ, 0); // Low
-    * GPIO_write(CONFIG_RF_24GHZ, 1); // High
-    *
-    * // > Mux pin to be driven/controlled by the RF Core
-    * // > (RFC GPIO0 is here only used as an example)
-    * GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_RFC_GPO0);
-    *
-    * // > Mux pin to be controlled manually (i.e. release RF Core control)
-    * GPIO_setConfigAndMux(CONFIG_RF_24GHZ,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_GPIO);
-    *
-    *   --- Code snippet end ---
-    */
-    // extern void you_must_implement_rfDriverCallbackAntennaSwitching_see_generated_ti_drivers_config_c_in_debug_folder_or_sysconfig_preview(void);
-    // you_must_implement_rfDriverCallbackAntennaSwitching_see_generated_ti_drivers_config_c_in_debug_folder_or_sysconfig_preview();
-}
-
-int uartBridge_sendVitalSigns(uint8_t heartRate, uint8_t respiratoryRate) {
-    // Prepare packet with vital signs data
-    txPacket[0] = 0x01;  // Packet type: vital signs
-    txPacket[1] = heartRate;
-    txPacket[2] = respiratoryRate;
-
-    // Send the packet
-    return sendPacket(txPacket, 3);
 }
 
 int initRF(void) {
@@ -278,6 +218,59 @@ int startReceive(void) {
     return 0;
 }
 
+void RF_eventCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e) {
+    if (e & RF_EventRxEntryDone) {
+        // Toggle LED to indicate RX (if available)
+        // GPIO_toggle(CONFIG_GPIO_RLED);
+
+        // Get current unhandled data entry
+        currentDataEntry = RFQueue_getDataEntry();
+
+        // Handle the packet data
+        packetLength = *(uint8_t*)(&currentDataEntry->data);
+        packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
+
+        // Copy the payload + the status byte to the packet variable
+        memcpy(rxPacket, packetDataPointer, (packetLength + 1));
+
+        // Process received packet
+        if (packetLength > 0) {
+            // Update connection status
+            connectionStatus = UART_BRIDGE_STATUS_CONNECTED;
+
+            // Process packet based on type
+            if (rxPacket[0] == 0x01 && packetLength >= 3) {
+                // Vital signs packet
+                vitalSigns.heartRate = rxPacket[1];
+                vitalSigns.respiratoryRate = rxPacket[2];
+
+                printf("Received vital signs - HR: %d, RR: %d\n",
+                       vitalSigns.heartRate, vitalSigns.respiratoryRate);
+                
+                logData(vitalSigns.heartRate, vitalSigns.respiratoryRate, "N/A");
+            }
+        }
+
+        // Move read entry pointer to next entry
+        RFQueue_nextEntry();
+    }
+    else if (e & RF_EventRxNOk) {
+        // RX error occurred
+        printf("RF RX error\n");
+    }
+}
+
+// FOR TX
+int uartBridge_sendVitalSigns(uint8_t heartRate, uint8_t respiratoryRate) {
+    // Prepare packet with vital signs data
+    txPacket[0] = 0x01;  // Packet type: vital signs
+    txPacket[1] = heartRate;
+    txPacket[2] = respiratoryRate;
+
+    // Send the packet
+    return sendPacket(txPacket, 3);
+}
+
 int sendPacket(uint8_t* data, uint8_t length) {
     // Ensure we're not trying to send too much data
     if (length > MAX_LENGTH) {
@@ -308,44 +301,4 @@ int sendPacket(uint8_t* data, uint8_t length) {
     startReceive();
 
     return 0;
-}
-
-void RF_eventCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e) {
-    if (e & RF_EventRxEntryDone) {
-        // Toggle LED to indicate RX (if available)
-        // GPIO_toggle(CONFIG_GPIO_RLED);
-
-        // Get current unhandled data entry
-        currentDataEntry = RFQueue_getDataEntry();
-
-        // Handle the packet data
-        packetLength = *(uint8_t*)(&currentDataEntry->data);
-        packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
-
-        // Copy the payload + the status byte to the packet variable
-        memcpy(rxPacket, packetDataPointer, (packetLength + 1));
-
-        // Process received packet
-        if (packetLength > 0) {
-            // Update connection status
-            connectionStatus = UART_BRIDGE_STATUS_CONNECTED;
-
-            // Process packet based on type
-            if (rxPacket[0] == 0x01 && packetLength >= 3) {
-                // Vital signs packet
-                vitalSigns.heartRate = rxPacket[1];
-                vitalSigns.respiratoryRate = rxPacket[2];
-
-                printf("Received vital signs - HR: %d, RR: %d\n",
-                       vitalSigns.heartRate, vitalSigns.respiratoryRate);
-            }
-        }
-
-        // Move read entry pointer to next entry
-        RFQueue_nextEntry();
-    }
-    else if (e & RF_EventRxNOk) {
-        // RX error occurred
-        printf("RF RX error\n");
-    }
 }
