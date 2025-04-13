@@ -209,32 +209,32 @@ int initRF(void) {
     rfEvent = RF_runCmd(rfHandle, (RF_Op*)&RF_cmdFs_custom2400_0, RF_PriorityNormal, NULL, 0);
 
     // NOTE: Event list shown in RFCC26X2.h on line 730
-    if (rfEvent & RF_EventLastCmdDone)          printf(" - RF_EventLastCmdDone\n");
-    if (rfEvent & RF_EventFGCmdDone)            printf(" - RF_EventFGCmdDone\n");
-    if (rfEvent & RF_EventLastFGCmdDone)        printf(" - RF_EventLastFGCmdDone\n");
-    if (rfEvent & RF_EventCmdCancelled)         printf(" - RF_EventCmdCancelled\n");
-    if (rfEvent & RF_EventCmdAborted)           printf(" - RF_EventCmdAborted\n");
-    if (rfEvent & RF_EventCmdStopped)           printf(" - RF_EventCmdStopped\n");
-    if (rfEvent & RF_EventCmdPreempted)         printf(" - RF_EventCmdPreempted\n");
-    if (rfEvent & RF_EventPowerUp)              printf(" - RF_EventPowerUp\n");
-    if (rfEvent & RF_EventRxEntryDone)          printf(" - RF_EventRxEntryDone\n");
-    if (rfEvent & RF_EventRxOk)                 printf(" - RF_EventRxOk\n");
-    if (rfEvent & RF_EventRxNOk)                printf(" - RF_EventRxNOk\n");
-    if (rfEvent & RF_EventRxBufFull)            printf(" - RF_EventRxBufFull\n");
-    if (rfEvent & RF_EventTxDone)               printf(" - RF_EventTxDone\n");
-    if (rfEvent & RF_EventTXAck)                printf(" - RF_EventTXAck\n");
-    if (rfEvent & RF_EventTxCtrl)               printf(" - RF_EventTxCtrl\n");
-    if (rfEvent & RF_EventTxCtrlAck)            printf(" - RF_EventTxCtrlAck\n");
-    if (rfEvent & RF_EventTxRetrans)            printf(" - RF_EventTxRetrans\n");
-    if (rfEvent & RF_EventTxEntryDone)          printf(" - RF_EventTxEntryDone\n");
-    if (rfEvent & RF_EventDataWritten)          printf(" - RF_EventDataWritten\n");
-    if (rfEvent & RF_EventNDataWritten)         printf(" - RF_EventNDataWritten\n");
-    if (rfEvent & RF_EventRxIgnored)            printf(" - RF_EventRxIgnored\n");
-    if (rfEvent & RF_EventRxAddressFound)       printf(" - RF_EventRxAddressFound\n");
-    if (rfEvent & RF_EventRxCollisionDetected)  printf(" - RF_EventRxCollisionDetected\n");
-    if (rfEvent & RF_EventRxSkipped)            printf(" - RF_EventRxSkipped\n");
-    if (rfEvent & RF_EventRxEmpty)              printf(" - RF_EventRxEmpty\n");
-    if (rfEvent & RF_EventError)                printf(" - RF_EventError\n");
+    printf("RF_runCmd event occurred");
+    if (rfEvent & RF_EventCmdDone)             printf(" --- RF_EventCmdDone\n");
+    if (rfEvent & RF_EventLastCmdDone)         printf(" --- RF_EventLastCmdDone\n");
+    if (rfEvent & RF_EventFGCmdDone)           printf(" --- RF_EventFGCmdDone\n");
+    if (rfEvent & RF_EventLastFGCmdDone)       printf(" --- RF_EventLastFGCmdDone\n");
+    if (rfEvent & RF_EventTxDone)              printf(" --- RF_EventTxDone\n");
+    if (rfEvent & RF_EventTXAck)               printf(" --- RF_EventTXAck\n");
+    if (rfEvent & RF_EventTxCtrl)              printf(" --- RF_EventTxCtrl\n");
+    if (rfEvent & RF_EventTxCtrlAck)           printf(" --- RF_EventTxCtrlAck\n");
+    if (rfEvent & RF_EventTxRetrans)           printf(" --- RF_EventTxRetrans\n");
+    if (rfEvent & RF_EventTxEntryDone)         printf(" --- RF_EventTxEntryDone\n");
+    if (rfEvent & RF_EventTxBufferChange)      printf(" --- RF_EventTxBufferChange\n");
+    if (rfEvent & RF_EventPaChanged)           printf(" --- RF_EventPaChanged\n");
+    if (rfEvent & RF_EventSamplesEntryDone)    printf(" --- RF_EventSamplesEntryDone\n");
+    if (rfEvent & RF_EventRxOk)                printf(" --- RF_EventRxOk\n");
+    if (rfEvent & RF_EventRxIgnored)           printf(" --- RF_EventRxIgnored\n");
+    if (rfEvent & RF_EventRxEmpty)             printf(" --- RF_EventRxEmpty\n");
+    if (rfEvent & RF_EventRxCtrl)              printf(" --- RF_EventRxCtrl\n");
+    if (rfEvent & RF_EventRxCtrlAck)           printf(" --- RF_EventRxCtrlAck\n");
+    if (rfEvent & RF_EventRxEntryDone)         printf(" --- RF_EventRxEntryDone\n");
+    if (rfEvent & RF_EventDataWritten)         printf(" --- RF_EventDataWritten\n");
+    if (rfEvent & RF_EventNDataWritten)        printf(" --- RF_EventNDataWritten\n");
+    if (rfEvent & RF_EventRxAborted)           printf(" --- RF_EventRxAborted\n");
+    if (rfEvent & RF_EventRxCollisionDetected) printf(" --- RF_EventRxCollisionDetected\n");
+    if (rfEvent & RF_EventModulesUnlocked)     printf(" --- RF_EventModulesUnlocked\n");
+    if (rfEvent & RF_EventInternalError)       printf(" --- RF_EventInternalError\n");
     return 0;
 }
 
