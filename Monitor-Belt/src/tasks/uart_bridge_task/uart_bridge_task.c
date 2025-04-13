@@ -33,11 +33,7 @@ static VitalSigns_t vitalSigns = {0, 0};
 
 // Buffer which contains all Data Entries for receiving data
 // Aligned to 4 bytes (requirement from the RF Core)
-#pragma DATA_ALIGN (rxDataEntryBuffer, 4);
-static uint8_t
-rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES,
-                                                  MAX_LENGTH,
-                                                  NUM_APPENDED_BYTES)];
+static uint8_t rxDataEntryBuffer[RF_QUEUE_DATA_ENTRY_BUFFER_SIZE(NUM_DATA_ENTRIES, MAX_LENGTH, NUM_APPENDED_BYTES)] __attribute__((aligned(4)));
 
 static const char* connectionStatusStrings[] = {
     "DISCONNECTED", // 0
