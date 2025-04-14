@@ -8,8 +8,8 @@ Task_Handle powerShutdown_constructTask(){
     g_powerShutdownSemaphoreHandle = Semaphore_handle(&g_PowerShutdownSemaphoreStruct);
 
     // Enable power button interrupts and set callback
-    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
-    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
+    GPIO_enableInt(CONFIG_PWR_BTN);
+    GPIO_setCallback(CONFIG_PWR_BTN, powerShutdownISR);
     
     // Construct task
     Task_Params TaskParams;
@@ -35,7 +35,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
         destructAllResources();
 
         // Set power button to wake device from power shutdown state
-        GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
+        GPIO_setConfig(CONFIG_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
         Power_shutdown(0, 0);
 
         printf("SHOULD NOT PASS THIS.\n");

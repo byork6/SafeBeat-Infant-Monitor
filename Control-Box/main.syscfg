@@ -8,6 +8,7 @@
 /**
  * Import the modules used in this configuration.
  */
+const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
@@ -30,21 +31,23 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 /**
  * Write custom configuration values to the imported modules.
  */
+Board.generateInitializationFunctions = false;
+
 GPIO1.$hardware = system.deviceData.board.components.LED_GREEN;
 GPIO1.$name     = "CONFIG_GPIO_GREEN_LED";
 
-GPIO2.$name            = "CONFIG_GPIO_PWR_BTN";
 GPIO2.$hardware        = system.deviceData.board.components["BTN-1"];
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
+GPIO2.$name            = "CONFIG_PWR_BTN";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
 const CCFG              = scripting.addModule("/ti/devices/CCFG", {}, false);
 CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC26XXTemplate0";
 
-SD1.$name                         = "CONFIG_SD_0";
 SD1.useFatFS                      = true;
+SD1.$name                         = "CONFIG_SD";
 SD1.sdCSPin.$assignAllowConflicts = "boosterpack.18";
 SD1.chipSelect.$name              = "CONFIG_GPIO_SD_CS";
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@,@@@.+?@@@ is connected to LaunchPad SPI Bus Chip Select on the CC2651P3 LaunchPad\\. Consider selecting it in 'use hardware' above\\. @@@.+?@@@", SD1, "sdCSPin");

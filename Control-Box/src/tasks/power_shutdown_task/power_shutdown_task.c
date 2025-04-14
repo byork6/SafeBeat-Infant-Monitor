@@ -8,8 +8,8 @@ Task_Handle powerShutdown_constructTask(){
     g_powerShutdownSemaphoreHandle = Semaphore_handle(&g_PowerShutdownSemaphoreStruct);
 
     // Enable power button interrupts and set callback
-    GPIO_enableInt(CONFIG_GPIO_PWR_BTN);
-    GPIO_setCallback(CONFIG_GPIO_PWR_BTN, powerShutdownISR);
+    GPIO_enableInt(CONFIG_PWR_BTN);
+    GPIO_setCallback(CONFIG_PWR_BTN, powerShutdownISR);
     
     // Construct task
     Task_Params TaskParams;
@@ -35,7 +35,7 @@ void powerShutdown_executeTask(UArg arg0, UArg arg1){
         destructAllResources();
 
         // Set power button to wake device from power shutdown state
-        GPIO_setConfig(CONFIG_GPIO_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
+        GPIO_setConfig(CONFIG_PWR_BTN, GPIO_CFG_IN_PU | GPIO_CFG_SHUTDOWN_WAKE_LOW);
         Power_shutdown(0, 0);
 
         printf("SHOULD NOT PASS THIS.\n");
@@ -72,13 +72,21 @@ void destructAllResources() {
         Task_destruct(g_temperatureMonitoringTaskHandle);
         printf("Temperature monitoring task destructed.\n");
     }
-    if (g_task1Handle != NULL) {
+    if (g_task1Handle != NULL){
         Task_destruct(g_task1Handle);
         printf("Task 1 destructed.\n");
     }
-    if (g_task2Handle != NULL) {
+    if (g_task2Handle != NULL){
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
+    }
+    if (g_displayDriverTaskHandle != NULL){
+        Task_destruct(g_displayDriverTaskHandle);
+        printf("Display driver task destructed.\n");
+    }
+    if (g_uartBridgeTaskHandle != NULL) {
+        Task_destruct(g_uartBridgeTaskHandle);
+        printf("UART bridge task destructed.\n");
     }
 }
 
