@@ -41,6 +41,39 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
             break;
         }
     }while(1);
+    printf("[SPI Test Loop] Starting...\n");
+    //temp spi test loop
+    while (1) {
+        uint8_t test_bytes[] = {0xAA, 0x55, 0xF0, 0x0F};
+        for (int i = 0; i < sizeof(test_bytes); i++) {
+            printf("[SPI Test] Sending 0x%02X...\n", test_bytes[i]);
+            MCU_SPIWrite8(test_bytes[i]);
+            usleep(100000);  // 100 ms delay so you can probe
+        }
+    }
+
+    /*
+    uint8_t txBuf[4] = {0xAA, 0x55, 0xF0, 0x0F};
+    uint8_t rxBuf[4] = {0};
+
+    SPI_Transaction t = {
+        .count = 4,
+        .txBuf = txBuf,
+        .rxBuf = rxBuf
+    };
+
+    GPIO_write(CONFIG_DISPLAY_CS, 0);  // CS LOW
+    bool ok = SPI_transfer(displaySpiHandle, &t);
+    GPIO_write(CONFIG_DISPLAY_CS, 1);  // CS HIGH
+
+    if (ok) {
+        for (int i = 0; i < 4; i++) {
+            printf("[SPI Test] Sent 0x%02X, got 0x%02X\n", txBuf[i], rxBuf[i]);
+        }
+    } else {
+        printf("SPI transfer failed\n");
+    }
+
 
     HAL_EVE_Init();
 
@@ -62,7 +95,7 @@ void displayDriver_executeTask(UArg arg0, UArg arg1) {
 
     // printf("[Display Task] Display setup complete. Idling now.\n");
     // ****************** MATRIX ORBITAL BULLSHIT *********************
-
+    */
     while (1) {
         Task_sleep(g_taskSleepDuration);
     }

@@ -1,5 +1,5 @@
 #include "../../../common/common.h"
-#include "display_driver.h"
+#include "../display_driver.h"
 
 void HAL_SPI_Enable(void){
     GPIO_write(11, GPIO_SET_OUT_AND_DRIVE_HIGH);

@@ -18,7 +18,10 @@ void createAllResources() {
 
     // Task 3 --- Priority = 3
     g_displayDriverTaskHandle = displayDriver_constructTask();
-    
+
+    // Task 7 — Priority = 3 (insert this above GPIO tasks)
+    g_displayUartTaskHandle = displayUart_constructTask();
+
     // Task 4 --- Priority = 4
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 

@@ -35,7 +35,7 @@
 // Be aware that Eve stores only the offset into the "FIFO" as 16 bits, so any use of the offset 
 // requires adding the base address (RAM_CMD 0x308000) to the resultant 32 bit value.
 
-#include <../../common/common.h>
+#include "../../../common/common.h"
 #include <stdio.h>
 #include <stdint.h>              // Find integer types like "uint8_t"  
 #include <stdbool.h>			 // for true/false
