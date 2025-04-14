@@ -106,6 +106,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
         printf("UART connection status: %s\n", connectionStatusStrings[connectionStatus]);
+        
         // Check connection status
         if (connectionStatus == UART_BRIDGE_STATUS_DISCONNECTED) {
             // Try to reconnect
@@ -215,6 +216,7 @@ int startReceive(void) {
 }
 
 void RF_eventCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e) {
+    printf("RF Event Callback...\n");
     if (e & RF_EventRxEntryDone) {
         // Toggle LED to indicate RX (if available)
         // GPIO_toggle(CONFIG_GPIO_RLED);

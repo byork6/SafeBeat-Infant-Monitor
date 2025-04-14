@@ -36,6 +36,9 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
     snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
             heartRate, respiratoryRate, timestamp);
 
+    // FOR DEBUGGING
+    // printf("Heart Rate: %d, Respiratory Rate: %d, Timestamp: N/A\n", heartRate, respiratoryRate);
+
     appendToSdAndDisplayQueue(logEntry);  // Append formatted string to circular queues
 }
 
