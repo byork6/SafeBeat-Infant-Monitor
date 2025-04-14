@@ -150,7 +150,7 @@ void *mainThread(void *arg0){
                                                            RF_PriorityNormal, &ReceivedOnRFcallback,
                                                            RF_EventRxEntryDone);
 
-    UART2_read(uart, &input, bytesToRead, NULL);
+    // UART2_read(uart, &input, bytesToRead, NULL);
 
     while(1)
     {
@@ -175,35 +175,32 @@ void *mainThread(void *arg0){
         }
 
         /* Check if anything has been received via UART*/
-        if (bytesReadCount != 0)
+        // --- CODE HERE IS FOR TX DATA --- //
+        static bool sent = false;
+        if (!sent)
         {
-            /*The packet length is set to the number of
-             * bytes read by UART2_read() */
-            RF_cmdPropTx_custom2400_0.pktLen = bytesReadCount;
-            int i;
-            for (i=0; i<bytesReadCount; i++)
-            {
-                uint8_t* buffer8 = (uint8_t*) input;
-                packet[i] = buffer8[i];
-            }
+            printf("Sending data over RF...\n");
+            // Example: Send two local values (e.g., HR and RR)
+            uint8_t heartRate = 75;
+            uint8_t respRate  = 18;
 
-            /*Cancel the ongoing command*/
+            packet[0] = heartRate;
+            packet[1] = respRate;
+
+            RF_cmdPropTx_custom2400_0.pktLen = 2; // 2 bytes
+
+            // Cancel RX command
             RF_cancelCmd(rfHandle, rfPostHandle, 1);
 
-            /*Send packet*/
+            // Send packet over RF
             RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx_custom2400_0, RF_PriorityNormal, NULL, 0);
 
-            /* Toggle green led to indicate TX */
-            // GPIO_toggle(CONFIG_GPIO_GLED);
-
-            /* Resume RF RX */
+            // Resume RX
             rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0,
-                                                                 RF_PriorityNormal, &ReceivedOnRFcallback,
-                                                                 RF_EventRxEntryDone);
-            bytesReadCount = 0;
+                                        RF_PriorityNormal, &ReceivedOnRFcallback,
+                                        RF_EventRxEntryDone);
 
-            /* Resume UART read */
-            status = UART2_read(uart, &input, bytesToRead, NULL);
+            sent = true;
         }
     }
 
@@ -233,6 +230,14 @@ void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 
         /* Move read entry pointer to next entry */
         RFQueue_nextEntry();
+
+        /* Print packet data (optional) */
+        printf("RF Received packet of length %d: ", packetLength);
+        for (int i = 0; i < packetLength; i++)
+        {
+            printf("0x%02X ", packet[i]);
+        }
+        printf("\n");
 
         packetRxCb = PACKET_RECEIVED;
     }
