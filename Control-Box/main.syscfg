@@ -21,6 +21,8 @@ const SD1         = SD.addInstance();
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
+const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
+const UART21      = UART2.addInstance();
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -68,6 +70,8 @@ SPI1.spi.picoPin.$assign      = "DIO_9";
 SPI1.spi.dmaRxChannel.$assign = "DMA_CH3";
 SPI1.spi.dmaTxChannel.$assign = "DMA_CH4";
 
+UART21.$name = "CONFIG_UART2_0";
+
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
 BIOS.heapEndAddr    = "__primary_heap_end__";
@@ -101,3 +105,12 @@ System.abortFxn        = "System_abortSpin";
 System.exitFxn         = "System_exitSpin";
 System.extendedFormats = "%f";
 System.supportModule   = "SysCallback";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+UART21.uart.$suggestSolution       = "UART0";
+UART21.uart.txPin.$suggestSolution = "DIO_13";
+UART21.uart.rxPin.$suggestSolution = "DIO_12";

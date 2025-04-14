@@ -7,6 +7,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <string.h>
+#include <stddef.h>
 
 /////// SDK HEADER CONTENT ///////
 // General purpose TI Drivesrs
@@ -16,7 +17,9 @@
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
-#include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
+#include <ti/drivers/UART2.H>
+#include <ti/devices/DeviceFamily.h>
+
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
