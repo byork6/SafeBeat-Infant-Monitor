@@ -126,19 +126,19 @@ void *mainThread(void *arg0){
 
     bytesReadCount = 0;
 
-    /* Initialize UART with callback read mode */
-    UART2_Params_init(&uartParams);
-    uartParams.baudRate = 115200;
-    uartParams.readMode = UART2_Mode_CALLBACK;
-    uartParams.readCallback = ReceiveonUARTcallback;
-    uartParams.readReturnMode = UART2_ReadReturnMode_PARTIAL;
+    // /* Initialize UART with callback read mode */
+    // UART2_Params_init(&uartParams);
+    // uartParams.baudRate = 115200;
+    // uartParams.readMode = UART2_Mode_CALLBACK;
+    // uartParams.readCallback = ReceiveonUARTcallback;
+    // uartParams.readReturnMode = UART2_ReadReturnMode_PARTIAL;
 
-    /* Access UART */
-    uart = UART2_open(CONFIG_UART2_0, &uartParams);
+    // /* Access UART */
+    // uart = UART2_open(CONFIG_UART2_0, &uartParams);
 
-    /* Print to the terminal that the program has started */
-    const char        startMsg[] = "\r\nRF-UART bridge started:\r\n";
-    UART2_write(uart, startMsg, sizeof(startMsg), NULL);
+    // /* Print to the terminal that the program has started */
+    // const char        startMsg[] = "\r\nRF-UART bridge started:\r\n";
+    // UART2_write(uart, startMsg, sizeof(startMsg), NULL);
 
     /* Request access to the radio */
     rfHandle = RF_open(&rfObject, &RF_prop_custom2400_0, (RF_RadioSetup*)&RF_cmdPropRadioDivSetup_custom2400_0, &rfParams);
@@ -154,6 +154,7 @@ void *mainThread(void *arg0){
 
     while(1)
     {
+        printf("In while loop\n");
         /* Check if anything has been received via RF*/
         if(packetRxCb)
         {
