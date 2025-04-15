@@ -193,9 +193,14 @@ void *mainThread(void *arg0)
         if(packetRxCb)
         {
             memcpy(input, packet, (packetLength));
+            // CODE TO PRINT TO CONSOLE
+            // Print to console (via printf) in readable hex or decimal
+            printf("Received value: %d\n", input[0]);
+
             size_t bytesWritten = 0;
             while (bytesWritten == 0)
             {
+
                 status = UART2_write(uart, &input, packetLength, &bytesWritten);
                 if (status != UART2_STATUS_SUCCESS)
                 {
