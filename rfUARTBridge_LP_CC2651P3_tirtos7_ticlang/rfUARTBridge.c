@@ -208,37 +208,46 @@ void *mainThread(void *arg0)
             packetRxCb = NO_PACKET;
         }
 
-        /* Check if anything has been received via UART*/
-        if (bytesReadCount != 0)
-        {
-            /*The packet length is set to the number of
-             * bytes read by UART2_read() */
-            RF_cmdPropTx.pktLen = bytesReadCount;
-            int i;
-            for (i=0; i<bytesReadCount; i++)
-            {
-                uint8_t* buffer8 = (uint8_t*) input;
-                packet[i] = buffer8[i];
-            }
+        // /* Check if anything has been received via UART*/
+        // if (bytesReadCount != 0)
+        // {
+        //     /*The packet length is set to the number of
+        //      * bytes read by UART2_read() */
+        //     RF_cmdPropTx.pktLen = bytesReadCount;
+        //     int i;
+        //     for (i=0; i<bytesReadCount; i++)
+        //     {
+        //         uint8_t* buffer8 = (uint8_t*) input;
+        //         packet[i] = buffer8[i];
+        //     }
 
-            /*Cancel the ongoing command*/
-            RF_cancelCmd(rfHandle, rfPostHandle, 1);
+        //     /*Cancel the ongoing command*/
+        //     RF_cancelCmd(rfHandle, rfPostHandle, 1);
 
-            /*Send packet*/
-            RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
+        //     /*Send packet*/
+        //     RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
 
-            /* Toggle green led to indicate TX */
-            GPIO_toggle(CONFIG_GPIO_GLED);
+        //     /* Toggle green led to indicate TX */
+        //     GPIO_toggle(CONFIG_GPIO_GLED);
 
-            /* Resume RF RX */
-            rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx,
-                                                                 RF_PriorityNormal, &ReceivedOnRFcallback,
-                                                                 RF_EventRxEntryDone);
-            bytesReadCount = 0;
+        //     /* Resume RF RX */
+        //     rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx,
+        //                                                          RF_PriorityNormal, &ReceivedOnRFcallback,
+        //                                                          RF_EventRxEntryDone);
+        //     bytesReadCount = 0;
 
-            /* Resume UART read */
-            status = UART2_read(uart, &input, bytesToRead, NULL);
-        }
+        //     /* Resume UART read */
+        //     status = UART2_read(uart, &input, bytesToRead, NULL);
+        // }
+        printf("Sending packet\n");
+        uint8_t hr = 78;
+        packet[0] = hr;
+        RF_cmdPropTx.pktLen = 1;
+        RF_cancelCmd(rfHandle, rfPostHandle, 1);
+        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
+        GPIO_toggle(CONFIG_GPIO_GLED);
+        rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
+        printf("Packet sent\n");
     }
 }
 
