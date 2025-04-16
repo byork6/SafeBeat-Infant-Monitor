@@ -32,15 +32,6 @@
                     }
                 }
             }
-        },
-        {
-            "name": "rfUARTBridge_LP_CC2651P3_tirtos7_ticlang",
-            "type": "ccs-debug",
-            "request": "launch",
-            "projectInfo": {
-                "name": "rfUARTBridge_LP_CC2651P3_tirtos7_ticlang",
-                "resourceId": "/rfUARTBridge_LP_CC2651P3_tirtos7_ticlang"
-            }
         }
     ]
 }
