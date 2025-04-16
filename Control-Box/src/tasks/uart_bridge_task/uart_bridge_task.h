@@ -1,5 +1,6 @@
 #pragma once
 
+// --- DEFINES --- //
 // Define task parameters
 #define UART_BRIDGE_TASK_STACK_SIZE   (UART_BRIDGE_STACK_SIZE)
 #define UART_BRIDGE_TASK_PRIORITY     (UART_BRIDGE_PRIORITY)
@@ -7,24 +8,11 @@ Task_Struct g_uartBridgeTaskStruct;
 Task_Handle g_uartBridgeTaskHandle;
 uint8_t g_uartBridgeTaskStack[UART_BRIDGE_TASK_STACK_SIZE];
 
-// MACROS
-// RF UART Bridge specific definitions
-#define MAX_LENGTH 32  // Minimalist approach - only need to send two values
-#define DATA_ENTRY_HEADER_SIZE 8  // Constant header size of a Generic Data Entry
-#define NUM_DATA_ENTRIES 2  // Only two data entries supported
-#define NUM_APPENDED_BYTES 2  // Header byte + status byte
 
-// Connection status
-#define UART_BRIDGE_STATUS_DISCONNECTED 0
-#define UART_BRIDGE_STATUS_CONNECTED 1
-#define UART_BRIDGE_STATUS_CONNECTING 2
+// --- TYPE DEFINITIONS --- //
 
-// TYPE DEFINITIONS
-typedef struct {
-    uint8_t heartRate;
-    uint8_t respiratoryRate;
-} VitalSigns_t;
 
+// --- FUNCTION PROTOTYPES --- //
 /**
  * @brief Constructs the UART Bridge task
  *
@@ -47,52 +35,3 @@ Task_Handle uartBridge_constructTask();
  * @param arg1 Task argument 1 (unused)
  */
 void uartBridge_executeTask(UArg arg0, UArg arg1);
-
-/**
- * @brief Initialize the RF driver
- *
- * @return int 0 if successful, error code otherwise
- */
-int initRF(void);
-
-/**
- * @brief Setup the RX queue for RF data
- *
- * @return int 0 if successful, error code otherwise
- */
-int setupRXQueue(void);
-
-/**
- * @brief Start RF in receive mode
- *
- * @return int 0 if successful, error code otherwise
- */
-int startReceive(void);
-
-/**
- * @brief RF event callback function
- *
- * @param h RF handle
- * @param ch Command handle
- * @param e Event mask
- */void RF_eventCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
-
- /**
- * @brief Sends vital sign data over the RF link
- *
- * This function sends heart rate and respiratory rate data to the connected device.
- *
- * @param heartRate Heart rate value to send
- * @param respiratoryRate Respiratory rate value to send
- * @return int 0 if successful, error code otherwise
- */
-int uartBridge_sendVitalSigns(uint8_t heartRate, uint8_t respiratoryRate);
-
-/**
- * @brief Send a packet over RF
- *
- * @param data Pointer to data buffer to send
- * @param length Length of data to send
- * @return int 0 if successful, error code otherwise
- */
-int sendPacket(uint8_t* data, uint8_t length);
