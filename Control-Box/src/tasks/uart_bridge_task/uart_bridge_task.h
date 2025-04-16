@@ -57,6 +57,15 @@ Task_Handle uartBridge_constructTask();
  */
 void uartBridge_executeTask(UArg arg0, UArg arg1);
 
-/* Callback function called when data is received via RF
- * Function copies the data in a variable, packet, and sets packetRxCb */
+/**
+ * @brief Callback function called when data is received via RF.
+ *
+ * This function copies the data into a variable (`packet`), stores the
+ * packet length, and sets the `packetRxCb` flag to indicate that a new
+ * packet is ready to be processed.
+ *
+ * @param h     RF command handle
+ * @param ch    RF command structure
+ * @param e     Event mask indicating RF event
+ */
 void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
