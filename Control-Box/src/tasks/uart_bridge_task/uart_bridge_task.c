@@ -152,37 +152,6 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         else{
             Task_sleep(g_taskSleepDuration);
         }
-
-        // --- CODE HERE IS FOR TX --- //
-        // static bool sent = false;
-        // if (!sent)
-        // {
-        //     printf("Sending data over RF...\n");
-        //     // Example: Send two local values (e.g., HR and RR)
-        //     uint8_t heartRate = 75;
-        //     uint8_t respRate  = 18;
-
-        //     packet[0] = heartRate;
-        //     packet[1] = respRate;
-
-        //     RF_cmdPropTx_custom2400_0.pktLen = 2; // 2 bytes
-
-        //     // Cancel RX command
-        //     RF_cancelCmd(rfHandle, rfPostHandle, 1);
-
-        //     // Send packet over RF
-        //     RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx_custom2400_0, RF_PriorityNormal, NULL, 0);
-
-        //     // Resume RX
-        //     rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0,
-        //                                 RF_PriorityNormal, &ReceivedOnRFcallback,
-        //                                 RF_EventRxEntryDone);
-
-        //     sent = true;
-        // }S
-
-        // Sleep to allow other tasks to run
-        // Task_sleep(g_taskSleepDuration);
     }
 }
 
