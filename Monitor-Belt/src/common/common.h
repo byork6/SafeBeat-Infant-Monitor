@@ -14,7 +14,6 @@
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
-#include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>
