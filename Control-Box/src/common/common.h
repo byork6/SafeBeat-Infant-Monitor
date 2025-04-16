@@ -90,6 +90,11 @@ typedef struct {
 extern int g_taskSleepDuration;
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
+<<<<<<< Updated upstream
+=======
+extern SPI_Handle g_spiDisplayHandle;
+extern int g_heartRate;
+>>>>>>> Stashed changes
 
 // LOCAL INCLUSIONS
 #include "../config/config_functions.h"
