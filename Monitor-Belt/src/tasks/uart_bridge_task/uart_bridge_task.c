@@ -142,12 +142,13 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         printf("Sending data over RF...\n");
 
         uint8_t heartRate = 75;
-        // uint8_t respRate  = 18;
+        uint8_t respRate  = 18;
 
         packet[0] = heartRate;
-        // packet[1] = respRate;
+        packet[1] = respRate;
 
-        RF_cmdPropTx_custom2400_0.pktLen = 1; // 2 bytes
+        // Packet length is in bytes
+        RF_cmdPropTx_custom2400_0.pktLen = 1;
 
         // Cancel RX command
         RF_cancelCmd(rfHandle, rfPostHandle, 1);
@@ -159,7 +160,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
         
         printf("Sent a HR of %d\n", packet[0]);
-        // printf("Sent a RR of %d\n", packet[1]);
+        printf("Sent a RR of %d\n", packet[1]);
 
         Task_sleep(g_taskSleepDuration);
     }
