@@ -26,15 +26,7 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     (void)arg1;     // suppresses warnings for unused arg
     int i  = 0;
 
-    GPIO_setConfig(CONFIG_AUDIO_PWM, GPIO_SET_OUT_AND_DRIVE_LOW);
-    GPIO_write(CONFIG_AUDIO_PWM, DRIVE_GPIO_HIGH);
-    printf("Buzzer ON (start)\n");
-
-    Task_sleep(MS_TO_TICKS(3000));  // Buzzer on for 3 seconds
-
-    GPIO_write(CONFIG_AUDIO_PWM, DRIVE_GPIO_LOW);
-    printf("Buzzer OFF (after 3 sec)\n");
-
+    GPIO_setConfig(CONFIG_AUDIO_PWM_OUT, GPIO_SET_OUT_AND_DRIVE_LOW);
 
     GPIO_setConfig(arg0, GPIO_SET_OUT_AND_DRIVE_LOW);
     
@@ -42,7 +34,18 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
     while (1){
         i++;
         printf("testGpio Count: %d\n", i);
+
+        // --- BUZZER CODE --- //
+        GPIO_write(CONFIG_AUDIO_PWM_OUT, DRIVE_GPIO_HIGH);
         GPIO_toggle(arg0);
+        printf("Buzzer ON\n");
+    
+        Task_sleep(g_taskSleepDuration);
+    
+        GPIO_write(CONFIG_AUDIO_PWM_OUT, DRIVE_GPIO_LOW);
+        GPIO_toggle(arg0);
+        printf("Buzzer OFF\n");
+
         /*if (g_heartRate < LOW_HEART_RATE_THRESHOLD_BPM || g_heartRate > HIGH_HEART_RATE_THRESHOLD_BPM) {
             printf("Heart rate out of range! Buzzer ON\n");
 
@@ -52,6 +55,7 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
             GPIO_write(CONFIG_AUDIO_PWM, DRIVE_GPIO_LOW);
             printf("Buzzer OFF\n");
         }*/
+
         Task_sleep(g_taskSleepDuration);
     }
 }

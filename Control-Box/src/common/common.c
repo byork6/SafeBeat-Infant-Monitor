@@ -20,9 +20,6 @@ void createAllResources() {
     // Task 4 --- Priority = 4
     g_task1Handle = testGpio_constructTask(6, RED_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct1, (uint8_t *)g_testGpioTaskStack1);
 
-    // Task 5 --- Priority = 4
-    g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
-
     // Task 5 --- Priority = 5
     g_uartBridgeTaskHandle = uartBridge_constructTask();
     
@@ -35,6 +32,9 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
 
     snprintf(logEntry, sizeof(logEntry), "Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n",
             heartRate, respiratoryRate, timestamp);
+
+    // FOR DEBUGGING
+    printf("PASSED TO LOG DATA --- Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n", heartRate, respiratoryRate, timestamp);
 
     appendToSdAndDisplayQueue(logEntry);  // Append formatted string to circular queues
 }

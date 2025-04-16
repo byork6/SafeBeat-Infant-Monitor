@@ -22,7 +22,6 @@ uint8_t g_uartBridgeTaskStack[UART_BRIDGE_TASK_STACK_SIZE];
 
 // --- TYPE DEFINITIONS --- //
 
-
 // --- VARIABLE DECLARATIONS --- //
 static RF_Object rfObject;
 static RF_Handle rfHandle;
@@ -56,16 +55,3 @@ Task_Handle uartBridge_constructTask();
  * @param arg1 Task argument 1 (unused)
  */
 void uartBridge_executeTask(UArg arg0, UArg arg1);
-
-/**
- * @brief Callback function called when data is received via RF.
- *
- * This function copies the data into a variable (`packet`), stores the
- * packet length, and sets the `packetRxCb` flag to indicate that a new
- * packet is ready to be processed.
- *
- * @param h     RF command handle
- * @param ch    RF command structure
- * @param e     Event mask indicating RF event
- */
-void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);

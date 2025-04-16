@@ -15,7 +15,10 @@ void createAllResources() {
     // Task 4 --- Priority = 3
     g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
-    // Task 5 --- Priority = 4
+    // Task 5--- Prioirity 5
+    g_uartBridgeTaskHandle = uartBridge_constructTask();
+
+    // Task 6 --- Priority = 6
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 

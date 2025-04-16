@@ -3,6 +3,7 @@
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 
+// --- VARIABLE DECLARATIONS --- //
 /* Buffer which contains all Data Entries for receiving data.
  * Pragmas are needed to make sure this buffer is 4 byte aligned (requirement from the RF Core) */
 #if defined(__TI_COMPILER_VERSION__)
@@ -34,6 +35,7 @@ static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
+
 
 // --- FUNCTION DEFINITIONS --- //
 Task_Handle uartBridge_constructTask() {
@@ -102,67 +104,30 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     /* Set the frequency */
     RF_postCmd(rfHandle, (RF_Op*)&RF_cmdFs_custom2400_0, RF_PriorityNormal, NULL, 0);
 
-    rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-
-    // Use green LED, DIO7, to debug if packet is received
-    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW);
-
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
 
-        // --- CODE HERE IS FOR RX --- //
-        if(packetRxCb){
-            memcpy(input, packet, (packetLength));
+        // --- CODE HERE IS FOR TX --- //
+        printf("Sending data over RF...\n");
 
-            /* Reset RF RX callback flag */
-            packetRxCb = NO_PACKET;
+        uint8_t heartRate = 75;
+        uint8_t respRate  = 18;
 
-            Task_sleep(g_taskSleepDuration);
+        packet[0] = heartRate;
+        packet[1] = respRate;
 
-            rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-        }
-        else{
-            Task_sleep(g_taskSleepDuration);
-        }
-    }
-}
+        // Packet length is in bytes
+        RF_cmdPropTx_custom2400_0.pktLen = 2;
 
-void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
-    if (e & RF_EventRxEntryDone){
-        /* Get current unhandled data entry */
-        currentDataEntry = RFQueue_getDataEntry(); //loads data from entry
+        // Cancel RX command
+        RF_cancelCmd(rfHandle, rfPostHandle, 1);
 
-        /* Handle the packet data, located at &currentDataEntry->data:
-         * - Length is the first byte with the current configuration
-         * - Data starts from the second byte */
-        packetLength      = *(uint8_t*)(&currentDataEntry->data); //gets the packet length (send over with packet)
-        packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1); //data starts from 2nd byte
+        // Send packet over RF
+        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx_custom2400_0, RF_PriorityNormal, NULL, 0);
+        
+        printf("Sent a HR of %d\n", packet[0]);
+        printf("Sent a RR of %d\n", packet[1]);
 
-        memcpy(packet, packetDataPointer, (packetLength + 1));
-
-        RFQueue_nextEntry();
-
-        printf("\nReceived packet length of %d bytes\n", packetLength);
-        if (packetLength == 0){
-            printf("No packets received.\n");
-        }
-        else if (packetLength == 2){
-            uint8_t heartRate = packet[0];
-            uint8_t respiratoryRate = packet[1];
-            printf("Heart Rate: %d bpm, Respiratory Rate: %d bpm\n", heartRate, respiratoryRate);
-            logData((int)heartRate, (int)respiratoryRate, "N/A");
-
-            // Toggle green LED, DIO7, if packet is received and logged
-            GPIO_toggle(7);
-            packetLength = 0;
-        }
-        else{
-            printf("Unexpected packet length: %d\n", packetLength);
-            for (int i = 0; i < packetLength; i++)
-                printf("Byte %d: %d\n", i, packet[i]);
-            packetLength = 0;
-        }
-
-        packetRxCb = PACKET_RECEIVED;
+        Task_sleep(g_taskSleepDuration);
     }
 }
