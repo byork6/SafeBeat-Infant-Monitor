@@ -172,9 +172,17 @@ void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
 
         RFQueue_nextEntry();
 
-        printf("\nReceived packet length of %d byte\n", packetLength);
-        for (int i = 0; i < packetLength; i++){
-            printf("Packet contents: %d\n", packet[i]);
+        printf("\nReceived packet length of %d bytes\n", packetLength);
+        if (packetLength == 2){
+            uint8_t heartRate = packet[0];
+            uint8_t respiratoryRate = packet[1];
+            printf("Heart Rate: %d bpm, Respiratory Rate: %d bpm\n", heartRate, respiratoryRate);
+            logData((int)heartRate, (int)respiratoryRate, "N/A");
+        }
+        else{
+            printf("Unexpected packet length: %d\n", packetLength);
+            for (int i = 0; i < packetLength; i++)
+                printf("Byte %d: %d\n", i, packet[i]);
         }
 
         packetRxCb = PACKET_RECEIVED;

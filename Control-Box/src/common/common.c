@@ -37,7 +37,7 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp) {
             heartRate, respiratoryRate, timestamp);
 
     // FOR DEBUGGING
-    // printf("Heart Rate: %d, Respiratory Rate: %d, Timestamp: N/A\n", heartRate, respiratoryRate);
+    printf("PASSED TO LOG DATA --- Heart Rate: %d, Respiratory Rate: %d, Timestamp: %s\n", heartRate, respiratoryRate, timestamp);
 
     appendToSdAndDisplayQueue(logEntry);  // Append formatted string to circular queues
 }
