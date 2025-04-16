@@ -9,6 +9,7 @@
  * Import the modules used in this configuration.
  */
 const custom      = scripting.addModule("/ti/devices/radioconfig/custom");
+const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
@@ -32,6 +33,8 @@ const Timestamp   = scripting.addModule("/ti/sysbios/runtime/Timestamp");
 custom.prop2                                        = ["custom2400"];
 custom.radioConfigcustom2400.$name                  = "ti_devices_radioconfig_settings_prop0";
 custom.radioConfigcustom2400.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+
+Board.generateInitializationFunctions = false;
 
 GPIO1.mode            = "Output";
 GPIO1.$name           = "CONFIG_GPIO_GREEN_LED";
