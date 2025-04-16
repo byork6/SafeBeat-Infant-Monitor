@@ -104,6 +104,9 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
 
     rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
 
+    // Use green LED, DIO7, to debug if packet is received
+    GPIO_setConfig(7, GPIO_SET_OUT_AND_DRIVE_LOW);
+
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
 
@@ -140,16 +143,24 @@ void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
         RFQueue_nextEntry();
 
         printf("\nReceived packet length of %d bytes\n", packetLength);
-        if (packetLength == 2){
+        if (packetLength == 0){
+            printf("No packets received.\n");
+        }
+        else if (packetLength == 2){
             uint8_t heartRate = packet[0];
             uint8_t respiratoryRate = packet[1];
             printf("Heart Rate: %d bpm, Respiratory Rate: %d bpm\n", heartRate, respiratoryRate);
             logData((int)heartRate, (int)respiratoryRate, "N/A");
+
+            // Toggle green LED, DIO7, if packet is received and logged
+            GPIO_toggle(7);
+            packetLength = 0;
         }
         else{
             printf("Unexpected packet length: %d\n", packetLength);
             for (int i = 0; i < packetLength; i++)
                 printf("Byte %d: %d\n", i, packet[i]);
+            packetLength = 0;
         }
 
         packetRxCb = PACKET_RECEIVED;
