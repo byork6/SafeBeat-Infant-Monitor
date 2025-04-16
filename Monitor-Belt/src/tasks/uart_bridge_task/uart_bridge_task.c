@@ -3,31 +3,7 @@
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 
-// --- DEFINES ---//
-/* Packet RX Configuration */
-#define DATA_ENTRY_HEADER_SIZE 8  /* Constant header size of a Generic Data Entry */
-#define MAX_LENGTH             64 /* Max length byte the radio will accept */
-#define NUM_DATA_ENTRIES       2  /* NOTE: Only two data entries supported at the moment */
-#define NUM_APPENDED_BYTES     2  /* The Data Entries data field will contain:
-                                   * 1 Header byte (RF_cmdPropRx_custom2400_0.rxConf.bIncludeHdr = 0x1)
-                                   * Max 30 payload bytes
-                                   * 1 status byte (RF_cmdPropRx_custom2400_0.rxConf.bAppendStatus = 0x1) */
-#define NO_PACKET              0
-#define PACKET_RECEIVED        1
-
-
-// --- TYPE DEFINITIONS --- //
-
-
 // --- VARIABLE DECLARATIONS --- //
-static RF_Object rfObject;
-static RF_Handle rfHandle;
-RF_CmdHandle rfPostHandle;
-
-static char         input[MAX_LENGTH];
-volatile uint8_t packetRxCb;
-volatile size_t bytesReadCount;
-
 /* Buffer which contains all Data Entries for receiving data.
  * Pragmas are needed to make sure this buffer is 4 byte aligned (requirement from the RF Core) */
 #if defined(__TI_COMPILER_VERSION__)
@@ -59,11 +35,6 @@ static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-
-
-// --- FUNCTION PROTOTYPES --- //
-static void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
-// static void ReceiveonUARTcallback(UART2_Handle handle, void *buffer, size_t count, void *userArg, int_fast16_t status);
 
 
 // --- FUNCTION DEFINITIONS --- //
@@ -133,8 +104,6 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     /* Set the frequency */
     RF_postCmd(rfHandle, (RF_Op*)&RF_cmdFs_custom2400_0, RF_PriorityNormal, NULL, 0);
 
-    rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
 
@@ -155,39 +124,10 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
 
         // Send packet over RF
         RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx_custom2400_0, RF_PriorityNormal, NULL, 0);
-
-        // Resume RX
-        rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
         
         printf("Sent a HR of %d\n", packet[0]);
         printf("Sent a RR of %d\n", packet[1]);
 
         Task_sleep(g_taskSleepDuration);
-    }
-}
-
-/* Callback function called when data is received via RF
- * Function copies the data in a variable, packet, and sets packetRxCb */
-void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
-    if (e & RF_EventRxEntryDone){
-        /* Get current unhandled data entry */
-        currentDataEntry = RFQueue_getDataEntry(); //loads data from entry
-
-        /* Handle the packet data, located at &currentDataEntry->data:
-         * - Length is the first byte with the current configuration
-         * - Data starts from the second byte */
-        packetLength      = *(uint8_t*)(&currentDataEntry->data); //gets the packet length (send over with packet)
-        packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1); //data starts from 2nd byte
-
-        memcpy(packet, packetDataPointer, (packetLength + 1));
-
-        RFQueue_nextEntry();
-
-        printf("\nReceived packet length of %d byte\n", packetLength);
-        for (int i = 0; i < packetLength; i++){
-            printf("Packet contents: %d\n", packet[i]);
-        }
-
-        packetRxCb = PACKET_RECEIVED;
     }
 }
