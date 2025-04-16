@@ -138,21 +138,6 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
 
-        // --- CODE HERE IS FOR RX --- //
-        if(packetRxCb){
-            memcpy(input, packet, (packetLength));
-
-            /* Reset RF RX callback flag */
-            packetRxCb = NO_PACKET;
-
-            Task_sleep(g_taskSleepDuration);
-
-            rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-        }
-        else{
-            Task_sleep(g_taskSleepDuration);
-        }
-
         // --- CODE HERE IS FOR TX --- //
         printf("Sending data over RF...\n");
 
@@ -173,9 +158,10 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         // Resume RX
         rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx_custom2400_0, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
         
-        printf("Sent %d\n", packet[0]);
-        Task_sleep(g_taskSleepDuration);
+        printf("Sent a HR of %d\n", packet[0]);
+        // printf("Sent a RR of %d\n", packet[1]);
 
+        Task_sleep(g_taskSleepDuration);
     }
 }
 
