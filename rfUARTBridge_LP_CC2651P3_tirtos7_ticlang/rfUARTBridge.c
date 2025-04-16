@@ -190,7 +190,7 @@ void *mainThread(void *arg0)
 
     while(1)
     {
-        /* Check if anything has been received via RF*/
+        // --- FOR RECEIVING PACKETS --- // 
         if(packetRxCb)
         {
             memcpy(input, packet, (packetLength));
@@ -214,7 +214,7 @@ void *mainThread(void *arg0)
             packetRxCb = NO_PACKET;
         }
 
-        // /* Check if anything has been received via UART*/
+        // -- FOR SENDING PACKETS TYPED IN UART TERMINAL ONLY --- //
         // if (bytesReadCount != 0)
         // {
         //     /*The packet length is set to the number of
@@ -245,6 +245,8 @@ void *mainThread(void *arg0)
         //     /* Resume UART read */
         //     status = UART2_read(uart, &input, bytesToRead, NULL);
         // }
+
+        // --- FOR SENDING PACKETS --- ///
         printf("Sending packet\n");
         uint8_t hr = 78;
         packet[0] = hr;
@@ -253,7 +255,7 @@ void *mainThread(void *arg0)
         RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
         GPIO_toggle(CONFIG_GPIO_GLED);
         rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-        printf("Packet sent\n");
+        printf("Packet contents: %d\nTX completed.\n", packet[0]);
     }
 }
 
