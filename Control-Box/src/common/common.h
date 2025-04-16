@@ -17,7 +17,6 @@
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
-// #include <ti/drivers/UART2.H>
 #include <ti/devices/DeviceFamily.h>
 
 

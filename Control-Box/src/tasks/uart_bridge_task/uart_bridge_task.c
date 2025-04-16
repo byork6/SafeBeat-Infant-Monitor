@@ -3,31 +3,6 @@
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
 
-// --- DEFINES ---//
-/* Packet RX Configuration */
-#define DATA_ENTRY_HEADER_SIZE 8  /* Constant header size of a Generic Data Entry */
-#define MAX_LENGTH             64 /* Max length byte the radio will accept */
-#define NUM_DATA_ENTRIES       2  /* NOTE: Only two data entries supported at the moment */
-#define NUM_APPENDED_BYTES     2  /* The Data Entries data field will contain:
-                                   * 1 Header byte (RF_cmdPropRx_custom2400_0.rxConf.bIncludeHdr = 0x1)
-                                   * Max 30 payload bytes
-                                   * 1 status byte (RF_cmdPropRx_custom2400_0.rxConf.bAppendStatus = 0x1) */
-#define NO_PACKET              0
-#define PACKET_RECEIVED        1
-
-
-// --- TYPE DEFINITIONS --- //
-
-
-// --- VARIABLE DECLARATIONS --- //
-static RF_Object rfObject;
-static RF_Handle rfHandle;
-RF_CmdHandle rfPostHandle;
-
-static char         input[MAX_LENGTH];
-volatile uint8_t packetRxCb;
-volatile size_t bytesReadCount;
-
 /* Buffer which contains all Data Entries for receiving data.
  * Pragmas are needed to make sure this buffer is 4 byte aligned (requirement from the RF Core) */
 #if defined(__TI_COMPILER_VERSION__)
@@ -59,12 +34,6 @@ static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-
-
-// --- FUNCTION PROTOTYPES --- //
-static void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
-// static void ReceiveonUARTcallback(UART2_Handle handle, void *buffer, size_t count, void *userArg, int_fast16_t status);
-
 
 // --- FUNCTION DEFINITIONS --- //
 Task_Handle uartBridge_constructTask() {
@@ -155,8 +124,6 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     }
 }
 
-/* Callback function called when data is received via RF
- * Function copies the data in a variable, packet, and sets packetRxCb */
 void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
     if (e & RF_EventRxEntryDone){
         /* Get current unhandled data entry */
