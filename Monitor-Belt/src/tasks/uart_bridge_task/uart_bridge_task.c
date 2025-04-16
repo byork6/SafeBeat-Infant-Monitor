@@ -148,7 +148,7 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
         packet[1] = respRate;
 
         // Packet length is in bytes
-        RF_cmdPropTx_custom2400_0.pktLen = 1;
+        RF_cmdPropTx_custom2400_0.pktLen = 2;
 
         // Cancel RX command
         RF_cancelCmd(rfHandle, rfPostHandle, 1);
