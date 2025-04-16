@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 
 /* TI Drivers */
