@@ -190,6 +190,7 @@ void *mainThread(void *arg0)
 
     while(1)
     {
+        printf("Waiting to receive a transmitted packet...\n");
         // --- FOR RECEIVING PACKETS --- // 
         if(packetRxCb)
         {
@@ -247,15 +248,15 @@ void *mainThread(void *arg0)
         // }
 
         // --- FOR SENDING PACKETS --- ///
-        printf("Sending packet\n");
-        uint8_t hr = 78;
-        packet[0] = hr;
-        RF_cmdPropTx.pktLen = 1;
-        RF_cancelCmd(rfHandle, rfPostHandle, 1);
-        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
-        GPIO_toggle(CONFIG_GPIO_GLED);
-        rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
-        printf("Packet contents: %d\nTX completed.\n", packet[0]);
+        // printf("Sending packet\n");
+        // uint8_t hr = 78;
+        // packet[0] = hr;
+        // RF_cmdPropTx.pktLen = 1;
+        // RF_cancelCmd(rfHandle, rfPostHandle, 1);
+        // RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
+        // GPIO_toggle(CONFIG_GPIO_GLED);
+        // rfPostHandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdPropRx, RF_PriorityNormal, &ReceivedOnRFcallback, RF_EventRxEntryDone);
+        // printf("Packet contents: %d\nTX completed.\n", packet[0]);
     }
 }
 
