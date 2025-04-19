@@ -160,13 +160,49 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp);
  */
 void appendToSdAndDisplayQueue(const char *data);
 
-
+/**
+ * @brief Initializes the I2C parameters for the RTC.
+ *
+ * Configures the I2C bus using default settings. This must be called
+ * before performing any I2C operations such as reading or setting the RTC.
+ */
 void realTimeClockI2C_init ();
 
+/**
+ * @brief Converts a Binary-Coded Decimal (BCD) value to a regular decimal.
+ *
+ * @param val The BCD value to convert.
+ * @return The equivalent decimal value.
+ */
 uint8_t bcdToDec(uint8_t val);
 
+/**
+ * @brief Reads the current date and time from the RTC.
+ *
+ * Communicates with the DS1307 RTC over I2C and reads 7 bytes starting
+ * at register 0x00. Converts the BCD values to decimal and formats them
+ * into a readable timestamp string.
+ *
+ * @return A pointer to a static character buffer containing the formatted 
+ *         date and time string (e.g., "Time: 12:34:56 Date: 04/18/2025").
+ *         Returns an error message if I2C communication fails.
+ */
 char* readRTC();
 
+/**
+ * @brief Sets the date and time on the RTC.
+ *
+ * Encodes the input date and time parameters into BCD format and writes 
+ * them to the DS1307 RTC registers over I2C.
+ *
+ * @param hour   The hour to set (0-23).
+ * @param min    The minute to set (0-59).
+ * @param sec    The second to set (0-59).
+ * @param day    The day of the week (1-7).
+ * @param month  The month to set (1-12).
+ * @param date   The day of the month to set (1-31).
+ * @param year   The year to set (last two digits, e.g., 25 for 2025).
+ */
 void setRTC(uint8_t hour,  uint8_t min, uint8_t sec, uint8_t day, uint8_t month, uint8_t date,  uint8_t year);
 
 
