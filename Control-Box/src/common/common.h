@@ -14,6 +14,8 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
+#include <ti/drivers/I2C.h>
+#include <ti/drivers/i2c/I2CCC26XX.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
