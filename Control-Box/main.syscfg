@@ -14,6 +14,8 @@ const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
+const I2C         = scripting.addModule("/ti/drivers/I2C", {}, false);
+const I2C1        = I2C.addInstance();
 const PWM         = scripting.addModule("/ti/drivers/PWM", {}, false);
 const PWM1        = PWM.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
@@ -52,6 +54,10 @@ GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
 GPIO2.$name            = "CONFIG_PWR_BTN";
 GPIO2.gpioPin.$assign  = "DIO_15";
+
+I2C1.$name              = "CONFIG_RTC_I2C";
+I2C1.i2c.sdaPin.$assign = "DIO_19";
+I2C1.i2c.sclPin.$assign = "DIO_20";
 
 PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
 PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
@@ -117,6 +123,7 @@ System.supportModule   = "SysCallback";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
+I2C1.i2c.$suggestSolution               = "I2C0";
 PWM1.timerObject.timer.$suggestSolution = "GPTM0";
 UART21.uart.$suggestSolution            = "UART0";
 UART21.uart.txPin.$suggestSolution      = "DIO_13";
