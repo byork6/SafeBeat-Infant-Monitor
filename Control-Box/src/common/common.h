@@ -165,7 +165,7 @@ void realTimeClockI2C_init ();
 
 uint8_t bcdToDec(uint8_t val);
 
-void readRTCAndPrintTime();
+char* readRTC();
 
 void setRTC(uint8_t hour,  uint8_t min, uint8_t sec, uint8_t day, uint8_t month, uint8_t date,  uint8_t year);
 

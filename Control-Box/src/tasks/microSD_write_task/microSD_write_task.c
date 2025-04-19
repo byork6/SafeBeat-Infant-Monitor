@@ -98,6 +98,7 @@ OutputFileStatus openOutputFile(){
 
 void writeToOutputFile(){
         int internalBuffHandle;
+        char* currentDateAndTime;
 
         // Disable internal buffering
         internalBuffHandle = setvbuf(g_outputFileStatus, NULL, _IONBF, 0);
@@ -105,22 +106,13 @@ void writeToOutputFile(){
             printf("Call to setvbuf failed!\n");
         }
 
-                // Ideally called from within a task
-        while (1){
-            readRTCAndPrintTime();
-            volatile uint32_t i, j;
-            for (i = 0; i < 100; i++) {
-                for (j = 0; j < 4000; j++) {
-                    __asm(" nop");
-                }    
-            }
-        }
+        currentDateAndTime = readRTC();
 
         // TESTING: Append line of data to circular queue ///
-        logData(120, 20, "12:30:00 02/10/2025");
-        logData(121, 20, "12:30:01 02/10/2025");
-        logData(122, 20, "12:30:02 02/10/2025");
-        logData(123, 20, "12:30:03 02/10/2025");
+        logData(120, 20, currentDateAndTime);
+        logData(121, 20, currentDateAndTime);
+        logData(122, 20, currentDateAndTime);
+        logData(123, 20, currentDateAndTime);
         ////////////////////////////////////////////////////
 
         // Write contents from circular queue to the output file

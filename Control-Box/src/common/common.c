@@ -103,12 +103,13 @@ uint8_t bcdToDec(uint8_t val) {
     return ((val >> 4) * 10) + (val & 0x0F);
 }
 
-void readRTCAndPrintTime() {
+char* readRTC() {
+    static char rtcString[64];
 
     i2c = I2C_open(CONFIG_RTC_I2C, &i2cParams);
     if (i2c == NULL) {
-        printf("I2C open failed!\n");
-        return;
+        snprintf(rtcString, sizeof(rtcString), "I2C open failed!");
+        return rtcString;
     }
 
     // Step 1: Point to register 0x00
@@ -126,13 +127,15 @@ void readRTCAndPrintTime() {
         uint8_t day  = bcdToDec(rxBuffer[4]);
         uint8_t month= bcdToDec(rxBuffer[5]);
         uint8_t year = bcdToDec(rxBuffer[6]);
-
-        printf("Time: %02d:%02d:%02d Date: %02d/%02d/20%02d\n", hour, min, sec, month, day, year);
+        snprintf(rtcString, sizeof(rtcString),
+                 "Time: %02d:%02d:%02d Date: %02d/%02d/20%02d",
+                 hour, min, sec, month, day, year);
     } else {
-        printf("I2C read failed!\n");
+        snprintf(rtcString, sizeof(rtcString), "RTC read failed!");
     }
 
     I2C_close(i2c);
+    return rtcString;
 }
 
 void setRTC(uint8_t hour,  uint8_t min, uint8_t sec, uint8_t day,
