@@ -7,11 +7,6 @@ Task_Handle g_afeReadTaskHandle;
 Task_Struct g_AfeReadTaskStruct;
 uint8_t g_afeReadTaskStack[AFE_READ_TASK_STACK_SIZE];
 
-Semaphore_Handle g_afeDataReadyHandle;
-Semaphore_Struct g_afeDataReadyStruct;
-
-SPI_Handle g_afeSpiHandle;
-
 #define ECG_FRAME_DATA_LEN 16
 #define ECG_QUEUE_SIZE 10
 
@@ -28,7 +23,16 @@ typedef struct {
     uint8_t count;
 } ECGQueue;
 
-ECGQueue ecgQueue;
+
+// --- VARIABLE DECLARATIONS --- //
+extern ECGQueue g_ecgQueue;
+
+extern Semaphore_Handle g_afeDataReadyHandle;
+extern Semaphore_Struct g_afeDataReadyStruct;
+
+extern SPI_Handle g_afeSpiHandle;
+extern SPI_Transaction g_afeSpiTransaction;
+extern SPI_Params g_afeSpiParams;
 
 // --- AFE FUNCTION PROTOTYPES --- //
 

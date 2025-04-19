@@ -1,5 +1,16 @@
 #include "../../common/common.h"
 
+// --- VARIABLE DEFINITIONS --- //
+ECGQueue g_ecgQueue;
+
+Semaphore_Handle g_afeDataReadyHandle;
+Semaphore_Struct g_afeDataReadyStruct;
+
+SPI_Handle g_afeSpiHandle;
+SPI_Transaction g_afeSpiTransaction;
+SPI_Params g_afeSpiParams;
+
+// --- FUNCTION DEFINITIONS --- //
 Task_Handle afeRead_constructTask(void){
     Task_Params TaskParams;
 
@@ -31,7 +42,8 @@ void afeRead_executeTask(UArg arg0, UArg arg1){
     (void)arg1;
     int i = 0;
 
-    SPI_Transaction spiTransaction;
+    // Init AFE SPI
+    afe_spiInit();
 
     // Extended frame will be longer than 6 words — we use 16 to be safe
     uint16_t txBuf[16] = {0};  // Dummy TX buffer (ADAS doesn’t require data here)
@@ -46,10 +58,12 @@ void afeRead_executeTask(UArg arg0, UArg arg1){
         Semaphore_pend(g_afeDataReadyHandle, BIOS_WAIT_FOREVER);
         printf("DRDY Triggered\n");
 
-        spiTransaction.count = sizeof(rxBuf);     // Full buffer size in bytes
-        spiTransaction.txBuf = txBuf;             // Dummy TX (ADAS just clocks out data)
-        spiTransaction.rxBuf = rxBuf;             // Fill with incoming data
-        SPI_transfer(g_afeSpiHandle, &spiTransaction);
+        g_afeSpiHandle = SPI_open(CONFIG_AFE_SPI, &g_afeSpiParams);
+        g_afeSpiTransaction.count = sizeof(rxBuf);     // Full buffer size in bytes
+        g_afeSpiTransaction.txBuf = txBuf;             // Dummy TX (ADAS just clocks out data)
+        g_afeSpiTransaction.rxBuf = rxBuf;             // Fill with incoming data
+        SPI_transfer(g_afeSpiHandle, &g_afeSpiTransaction);
+        SPI_close(g_afeSpiHandle);
 
         // Create and enqueue the full ECG frame (for future processing)
         ECGFrame frame;
@@ -82,34 +96,35 @@ void afeRead_executeTask(UArg arg0, UArg arg1){
         // =============================================
 
         // (Optional) Print raw SPI frame for inspection — helps confirm location of data
-        printf("Extended Frame: ");
-        for (int i = 0; i < 8; i++) {
-            printf("%04X ", rxBuf[i]);
+        char spiMsg[128];
+        int offset = snprintf(spiMsg, sizeof(spiMsg), "Extended Frame: ");
+        
+        for (int i = 0; i < 8 && offset < sizeof(spiMsg) - 6; i++) {
+            offset += snprintf(&spiMsg[offset], sizeof(spiMsg) - offset, "%04X ", rxBuf[i]);
         }
-        printf("\n");
+        
+        snprintf(&spiMsg[offset], sizeof(spiMsg) - offset, "\r\n"); // Clean line ending
+        printf("%s", spiMsg);
 
         Task_sleep(g_taskSleepDuration);
     }
 }
 
 void afe_spiInit(void){
-    SPI_Params spiParams;
-    SPI_Params_init(&spiParams);
-    spiParams.frameFormat = SPI_POL1_PHA1; // Mode 3 (CPOL=1, CPHA=1)
-    spiParams.dataSize = 16;
-    spiParams.bitRate = 1000000; // 1 MHz safe default
-
-    g_afeSpiHandle = SPI_open(CONFIG_AFE_SPI, &spiParams);
+    SPI_Params_init(&g_afeSpiParams);
+    g_afeSpiParams.frameFormat = SPI_POL1_PHA1; // Mode 3 (CPOL=1, CPHA=1)
+    g_afeSpiParams.dataSize = 16;
+    g_afeSpiParams.bitRate = 1000000; // 1 MHz safe default
 }
 
 void afe_writeRegister(uint8_t regAddr, uint16_t data){
     uint16_t command = ((regAddr & 0x1F) << 11) | (0 << 10) | (data & 0x3FF); // write op
-    SPI_Transaction spiTransaction;
-    spiTransaction.count = 2;
-    spiTransaction.txBuf = &command;
-    spiTransaction.rxBuf = NULL;
+    SPI_Transaction g_afeSpiTransaction;
+    g_afeSpiTransaction.count = 2;
+    g_afeSpiTransaction.txBuf = &command;
+    g_afeSpiTransaction.rxBuf = NULL;
 
-    SPI_transfer(g_afeSpiHandle, &spiTransaction);
+    SPI_transfer(g_afeSpiHandle, &g_afeSpiTransaction);
 }
 
 void afe_configureADAS(void){
@@ -139,35 +154,35 @@ void afe_handleDRDY(uint_least8_t index){
 
 // --- ECG FUNCTION DEFINITIONS --- //
 void ecg_queue_init(void){
-    ecgQueue.head = 0;
-    ecgQueue.tail = 0;
-    ecgQueue.count = 0;
+    g_ecgQueue.head = 0;
+    g_ecgQueue.tail = 0;
+    g_ecgQueue.count = 0;
 }
 
 bool ecg_enqueue(const ECGFrame* frame){
-    if (ecgQueue.count >= ECG_QUEUE_SIZE) {
+    if (g_ecgQueue.count >= ECG_QUEUE_SIZE) {
         return false;
     }
 
-    ecgQueue.buffer[ecgQueue.tail] = *frame;
-    ecgQueue.tail = (ecgQueue.tail + 1) % ECG_QUEUE_SIZE;
-    ecgQueue.count++;
+    g_ecgQueue.buffer[g_ecgQueue.tail] = *frame;
+    g_ecgQueue.tail = (g_ecgQueue.tail + 1) % ECG_QUEUE_SIZE;
+    g_ecgQueue.count++;
     return true;
 }
 
 bool ecg_dequeue(ECGFrame* out_frame){
-    if (ecgQueue.count == 0) return false;
+    if (g_ecgQueue.count == 0) return false;
 
-    memcpy(out_frame, &ecgQueue.buffer[ecgQueue.head], sizeof(ECGFrame));
-    ecgQueue.head = (ecgQueue.head + 1) % ECG_QUEUE_SIZE;
-    ecgQueue.count--;
+    memcpy(out_frame, &g_ecgQueue.buffer[g_ecgQueue.head], sizeof(ECGFrame));
+    g_ecgQueue.head = (g_ecgQueue.head + 1) % ECG_QUEUE_SIZE;
+    g_ecgQueue.count--;
     return true;
 }
 
 bool ecg_queue_is_full(void){
-    return (ecgQueue.count >= ECG_QUEUE_SIZE);
+    return (g_ecgQueue.count >= ECG_QUEUE_SIZE);
 }
 
 bool ecg_queue_is_empty(void){
-    return (ecgQueue.count == 0);
+    return (g_ecgQueue.count == 0);
 }

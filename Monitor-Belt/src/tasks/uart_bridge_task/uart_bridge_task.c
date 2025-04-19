@@ -67,6 +67,8 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     
     printf("Entering uartBridge_executeTask()...\n");
 
+    Semaphore_post(g_afeDataReadyHandle);
+
     packetRxCb = NO_PACKET;
 
     RF_Params rfParams;
