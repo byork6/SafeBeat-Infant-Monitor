@@ -1,11 +1,13 @@
 #include "../../common/common.h"
 
+// --- SD CARD DEFINITIONS --- //
 // Global variables
 const char g_outputFile[] = "fat:" STR(SD_DRIVE_NUM) ":output.txt";
 char g_fatfsPrefix[] = "fat";
 SDFatFS_Handle g_sdfatfsHandle;
 FILE *g_outputFileStatus;
 
+// --- SD CARD FUNCTION DEFINITIONS --- //
 Task_Handle microSdWrite_constructTask(){
     // Declare TaskParams struct name
     Task_Params TaskParams;
@@ -53,6 +55,7 @@ void microSdWrite_executeTask(UArg arg0, UArg arg1){
         }
 
         writeToOutputFile();
+    
         Task_sleep(g_taskSleepDuration);
     }
 }
@@ -100,6 +103,17 @@ void writeToOutputFile(){
         internalBuffHandle = setvbuf(g_outputFileStatus, NULL, _IONBF, 0);
         if (internalBuffHandle != 0){
             printf("Call to setvbuf failed!\n");
+        }
+
+                // Ideally called from within a task
+        while (1){
+            readRTCAndPrintTime();
+            volatile uint32_t i, j;
+            for (i = 0; i < 100; i++) {
+                for (j = 0; j < 4000; j++) {
+                    __asm(" nop");
+                }    
+            }
         }
 
         // TESTING: Append line of data to circular queue ///
