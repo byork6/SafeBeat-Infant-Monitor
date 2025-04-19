@@ -79,6 +79,10 @@
 #define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
 // Circular queue --- Used to buffer recieved data before output to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
+// RTC defines
+// DS1307 I2C address
+#define DS1307_ADDR         0x68
+
 
 // TYPE DEFINITIONS
 typedef struct {
@@ -88,10 +92,18 @@ typedef struct {
     int size;  // Current size of valid data
 } CircularQueue;
 
-// GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
+// VARIABLE DECLARATIONS --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
+// RTOS
 extern int g_taskSleepDuration;
+// Memory Queues
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
+// RTC
+I2C_Handle i2c;
+I2C_Params i2cParams;
+I2C_Transaction i2cTransaction;
+uint8_t txBuffer[1];
+uint8_t rxBuffer[7];
 
 // LOCAL INCLUSIONS
 #include "../tasks/microSD_write_task/microSD_write_task.h"
@@ -204,7 +216,6 @@ char* readRTC();
  * @param year   The year to set (last two digits, e.g., 25 for 2025).
  */
 void setRTC(uint8_t hour,  uint8_t min, uint8_t sec, uint8_t day, uint8_t month, uint8_t date,  uint8_t year);
-
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.

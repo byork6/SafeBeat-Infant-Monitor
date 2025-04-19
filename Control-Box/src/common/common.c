@@ -6,14 +6,6 @@ int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
 
-// DS1307 I2C address
-#define DS1307_ADDR         0x68
-I2C_Handle i2c;
-I2C_Params i2cParams;
-I2C_Transaction i2cTransaction;
-uint8_t txBuffer[1];
-uint8_t rxBuffer[7];
-
 // --- BOARD INIT --- //
 void initBOARD(void){
     Power_init();
@@ -96,6 +88,48 @@ void appendToSdAndDisplayQueue(const char *data) {
 void realTimeClockI2C_init (){
     I2C_Params_init(&i2cParams);
     i2cParams.bitRate = I2C_400kHz;
+
+    // TODO: This block makes RTOS freeze  --- Maybe rework how handles are declared for i2C
+    // i2c = I2C_open(CONFIG_RTC_I2C, &i2cParams);
+    // if (i2c == NULL) {
+    //     printf("I2C open failed!\n");
+    //     return;
+    // }
+
+    // uint8_t regAddr = 0x00;
+    // uint8_t secValue;
+    // i2cTransaction.targetAddress = DS1307_ADDR;
+    // i2cTransaction.writeBuf = &regAddr;
+    // i2cTransaction.writeCount = 1;
+    // i2cTransaction.readBuf = &secValue;
+    // i2cTransaction.readCount = 1;
+
+    // if (I2C_transfer(i2c, &i2cTransaction)) {
+    //     if (secValue & 0x80) {
+    //         printf("CH bit is set. Starting oscillator...\n");
+
+    //         // Clear CH bit (bit 7)
+    //         uint8_t txBuffer[2];
+    //         txBuffer[0] = 0x00;               // Address of seconds register
+    //         txBuffer[1] = secValue & 0x7F;    // Clear bit 7
+
+    //         i2cTransaction.writeBuf = txBuffer;
+    //         i2cTransaction.writeCount = 2;
+    //         i2cTransaction.readCount = 0;
+
+    //         if (I2C_transfer(i2c, &i2cTransaction)) {
+    //             printf("RTC oscillator started.\n");
+    //         } else {
+    //             printf("Failed to write to seconds register.\n");
+    //         }
+    //     } else {
+    //         printf("RTC clock is already running.\n");
+    //     }
+    // } else {
+    //     printf("Failed to read seconds register.\n");
+    // }
+
+    // I2C_close(i2c);
 }
 
 // Convert from BCD to decimal
