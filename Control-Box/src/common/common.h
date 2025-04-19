@@ -89,6 +89,12 @@ extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
 extern SPI_Handle g_spiDisplayHandle;
 
+
+// Display UART
+extern Task_Struct g_DisplayUartTaskStruct;
+extern Task_Handle g_displayUartTaskHandle;
+extern uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
+
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
 #include "../tasks/microSD_write_task/microSD_write_task.h"

@@ -33,6 +33,7 @@ const SPI2        = SPI.addInstance();
 const Temperature = scripting.addModule("/ti/drivers/Temperature");
 const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
 const UART21      = UART2.addInstance();
+const UART22      = UART2.addInstance();
 const Settings    = scripting.addModule("/ti/posix/tirtos/Settings");
 const BIOS        = scripting.addModule("/ti/sysbios/BIOS");
 const Event       = scripting.addModule("/ti/sysbios/knl/Event");
@@ -144,9 +145,15 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
-UART21.$name              = "BOOTLOADER_UART";
-UART21.uart.txPin.$assign = "DIO_17";
-UART21.uart.rxPin.$assign = "DIO_16";
+UART21.$name                            = "BOOTLOADER_UART";
+UART21.uart.txPin.$assignAllowConflicts = "DIO_17";
+UART21.uart.rxPin.$assign               = "DIO_16";
+
+UART22.$name              = "CONFIG_DISPLAY_UART";
+UART22.interruptPriority  = "6";
+UART22.uart.$assign       = "UART0";
+UART22.uart.txPin.$assign = "DIO_18";
+UART22.uart.rxPin.$assign = "DIO_19";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
@@ -188,3 +195,4 @@ System.supportModule   = "SysCallback";
  * re-solve from scratch.
  */
 UART21.uart.$suggestSolution = "UART0";
+UART22.uart.$suggestSolution = "<error>";
