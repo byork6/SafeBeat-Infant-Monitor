@@ -142,9 +142,9 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaRxChannel");
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
-UART21.$name              = "BOOTLOADER_UART";
-UART21.uart.txPin.$assign = "DIO_17";
-UART21.uart.rxPin.$assign = "DIO_16";
+UART21.$name                            = "CONFIG_UART_0";
+UART21.uart.txPin.$assignAllowConflicts = "DIO_17";
+UART21.uart.rxPin.$assignAllowConflicts = "DIO_16";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
