@@ -27,69 +27,66 @@ Task_Handle afeRead_constructTask(void){
 }
 
 void afeRead_executeTask(UArg arg0, UArg arg1){
+    (void)arg0;
+    (void)arg1;
+    int i = 0;
+
     SPI_Transaction spiTransaction;
 
     // Extended frame will be longer than 6 words — we use 16 to be safe
     uint16_t txBuf[16] = {0};  // Dummy TX buffer (ADAS doesn’t require data here)
     uint16_t rxBuf[16] = {0};  // Buffer for incoming extended frame
 
+    printf("Entering afeRead_executeTask()...\n");
     while (1){
-        printf("in while loop\n");
-        // // Wait for DRDY interrupt to signal new ECG+RESP data is ready
-        // Semaphore_pend(g_afeDataReadyHandle, BIOS_WAIT_FOREVER);
+        printf("afeRead Count: %d\n", ++i);
+        // Wait for DRDY interrupt to signal new ECG+RESP data is ready
+        printf("Waiting for DRDY...\n");
+        Task_sleep(g_taskSleepDuration);
+        Semaphore_pend(g_afeDataReadyHandle, BIOS_WAIT_FOREVER);
+        printf("DRDY Triggered\n");
 
-        // // Begin SPI transaction
-        // GPIO_write(CONFIG_GPIO_ADAS_CS, 0);
+        spiTransaction.count = sizeof(rxBuf);     // Full buffer size in bytes
+        spiTransaction.txBuf = txBuf;             // Dummy TX (ADAS just clocks out data)
+        spiTransaction.rxBuf = rxBuf;             // Fill with incoming data
+        SPI_transfer(g_afeSpiHandle, &spiTransaction);
 
-        // spiTransaction.count = sizeof(rxBuf);     // Full buffer size in bytes
-        // spiTransaction.txBuf = txBuf;             // Dummy TX (ADAS just clocks out data)
-        // spiTransaction.rxBuf = rxBuf;             // Fill with incoming data
-        // SPI_transfer(afeSpiHandle, &spiTransaction);
+        // Create and enqueue the full ECG frame (for future processing)
+        ECGFrame frame;
+        memcpy(frame.data, rxBuf, sizeof(frame.data));
+        if (!ecg_enqueue(&frame)) {
+            printf("ECG queue full, frame dropped!\n");
+        }
 
-        // // End SPI transaction
-        // GPIO_write(CONFIG_GPIO_ADAS_CS, 1);
+        // =============================================
+        // BEGIN: Extract and log Lead II and RESP
+        // =============================================
 
-        // // Create and enqueue the full ECG frame (for future processing)
-        // ECGFrame frame;
-        // memcpy(frame.data, rxBuf, sizeof(frame.data));
-        // if (!ecg_enqueue(&frame)) {
-        //     printf("ECG queue full, frame dropped!\n");
-        // }
+        /**
+         * According to ADAS1000 datasheet (Table 55, 56):
+         * Lead II = LL – RA → typically shows up in word 2
+         * RESP output (impedance signal) often appears around word 4–6
+         * Since we’re using 16-bit words, index them directly
+         * You can adjust the index after confirming from actual data logs
+         */
 
-        // // =============================================
-        // // BEGIN: Extract and log Lead II and RESP
-        // // =============================================
+        int16_t leadII_raw = rxBuf[2];  // Lead II (LL - RA)
+        int16_t resp_raw   = rxBuf[4];  // RESP signal
 
-        // /**
-        //  * According to ADAS1000 datasheet (Table 55, 56):
-        //  * Lead II = LL – RA → typically shows up in word 2
-        //  * RESP output (impedance signal) often appears around word 4–6
-        //  * Since we’re using 16-bit words, index them directly
-        //  * You can adjust the index after confirming from actual data logs
-        //  */
+        // Optionally sign-extend to 32-bit if needed
+        int32_t leadII = (int32_t)((int16_t)leadII_raw);
+        int32_t resp   = (int32_t)((int16_t)resp_raw);
 
-        // int16_t leadII_raw = rxBuf[2];  // Lead II (LL - RA)
-        // int16_t resp_raw   = rxBuf[4];  // RESP signal
+        // =============================================
+        // END: Lead II + RESP debug
+        // =============================================
 
-        // // Optionally sign-extend to 32-bit if needed
-        // int32_t leadII = (int32_t)((int16_t)leadII_raw);
-        // int32_t resp   = (int32_t)((int16_t)resp_raw);
-
-        // // Format a debug UART message
-        // char uartMsg[64];
-        // snprintf(uartMsg, sizeof(uartMsg), "LeadII: %" PRId32 "\tRESP: %" PRId32 "\r\n", leadII, resp);
-        // logOverUART(uartMsg);
-
-        // // =============================================
-        // // END: Lead II + RESP debug
-        // // =============================================
-
-        // // (Optional) Print raw SPI frame for inspection — helps confirm location of data
-        // printf("Extended Frame: ");
-        // for (int i = 0; i < 8; i++) {
-        //     printf("%04X ", rxBuf[i]);
-        // }
-        // printf("\n");
+        // (Optional) Print raw SPI frame for inspection — helps confirm location of data
+        printf("Extended Frame: ");
+        for (int i = 0; i < 8; i++) {
+            printf("%04X ", rxBuf[i]);
+        }
+        printf("\n");
 
         Task_sleep(g_taskSleepDuration);
     }
@@ -137,4 +134,40 @@ void afe_handleDRDY(uint_least8_t index){
     if (index == CONFIG_GPIO_ADAS_DRDY){
         Semaphore_post(g_afeDataReadyHandle);
     }
+}
+
+
+// --- ECG FUNCTION DEFINITIONS --- //
+void ecg_queue_init(void){
+    ecgQueue.head = 0;
+    ecgQueue.tail = 0;
+    ecgQueue.count = 0;
+}
+
+bool ecg_enqueue(const ECGFrame* frame){
+    if (ecgQueue.count >= ECG_QUEUE_SIZE) {
+        return false;
+    }
+
+    ecgQueue.buffer[ecgQueue.tail] = *frame;
+    ecgQueue.tail = (ecgQueue.tail + 1) % ECG_QUEUE_SIZE;
+    ecgQueue.count++;
+    return true;
+}
+
+bool ecg_dequeue(ECGFrame* out_frame){
+    if (ecgQueue.count == 0) return false;
+
+    memcpy(out_frame, &ecgQueue.buffer[ecgQueue.head], sizeof(ECGFrame));
+    ecgQueue.head = (ecgQueue.head + 1) % ECG_QUEUE_SIZE;
+    ecgQueue.count--;
+    return true;
+}
+
+bool ecg_queue_is_full(void){
+    return (ecgQueue.count >= ECG_QUEUE_SIZE);
+}
+
+bool ecg_queue_is_empty(void){
+    return (ecgQueue.count == 0);
 }
