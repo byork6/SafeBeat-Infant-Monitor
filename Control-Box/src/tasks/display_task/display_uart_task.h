@@ -1,13 +1,15 @@
 #pragma once
 
-// Display UART task config
-#define DISPLAY_UART_TASK_PRIORITY     (3)
-#define DISPLAY_UART_TASK_STACK_SIZE   (1024)
+#include <ti/drivers/UART2.h>
+#include <ti/sysbios/knl/Task.h>
 
-// External task and handle declarations
-extern Task_Struct g_DisplayUartTaskStruct;
-extern Task_Handle g_displayUartTaskHandle;
-extern uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
+#define DISPLAY_UART_TASK_STACK_SIZE  (DISPLAY_DRIVER_STACK_SIZE)
+#define DISPLAY_UART_TASK_PRIORITY    (DISPLAY_DRIVER_PRIORITY)
+
+// Global handles
+Task_Struct g_DisplayUartTaskStruct;
+Task_Handle g_displayUartTaskHandle;
+uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
 
 /**
  * @brief Constructs and starts the display UART task.
@@ -39,3 +41,38 @@ void displayUart_executeTask(UArg arg0, UArg arg1);
  * @param msg The null-terminated string to display.
  */
 void displayUart_updateText(const char *msg);
+
+/**
+ * @brief Sends a complete Nextion command over UART.
+ *
+ * All Nextion commands must be terminated with three 0xFF bytes, as described
+ * in the Nextion Instruction Set (section 1.1).
+ *
+ * @param cmd Null-terminated string containing the command to send.
+ */
+void sendCmd(const char* cmd);
+
+/**
+ * @brief Sends an integer value to a Nextion text component by name.
+ *
+ * This is typically used to update a label or numeric field in the display
+ * (e.g., sending `75` to `heartrateText.txt`).
+ *
+ * @param objName The name of the Nextion object (must match editor object).
+ * @param val The integer value to send.
+ */
+void sendIntToText(const char* objName, int val);
+
+/**
+ * @brief Sends a "get vaX" command to read a threshold variable from Nextion.
+ *
+ * This function sends a "get" command to query a variable such as "va0"
+ * and stores the returned 4-byte integer result into the provided target pointer.
+ *
+ * The Nextion response format is: 0x71 + 4-byte value + 3x 0xFF terminators.
+ *
+ * @param varName The name of the Nextion variable (e.g., "va0").
+ * @param target Pointer to the integer where the result should be stored.
+ * @param label Label to identify the readout in the debug message.
+ */
+void queryThreshold(const char* varName, volatile int* target, const char* label);
