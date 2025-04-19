@@ -9,9 +9,11 @@
  * Import the modules used in this configuration.
  */
 const custom      = scripting.addModule("/ti/devices/radioconfig/custom");
+const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
+const GPIO6       = GPIO.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
 const SPI         = scripting.addModule("/ti/drivers/SPI", {}, false);
 const SPI1        = SPI.addInstance();
@@ -33,6 +35,8 @@ custom.prop2                                        = ["custom2400"];
 custom.radioConfigcustom2400.$name                  = "ti_devices_radioconfig_settings_prop0";
 custom.radioConfigcustom2400.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
 
+Board.generateInitializationFunctions = false;
+
 GPIO1.mode            = "Output";
 GPIO1.$name           = "CONFIG_GPIO_GREEN_LED";
 GPIO1.gpioPin.$assign = "DIO_7";
@@ -41,6 +45,10 @@ GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
 GPIO2.$name            = "CONFIG_PWR_BTN";
 GPIO2.gpioPin.$assign  = "DIO_15";
+
+GPIO6.$name            = "CONFIG_GPIO_ADAS_DRDY";
+GPIO6.interruptTrigger = "Falling Edge";
+GPIO6.gpioPin.$assign  = "DIO_14";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 

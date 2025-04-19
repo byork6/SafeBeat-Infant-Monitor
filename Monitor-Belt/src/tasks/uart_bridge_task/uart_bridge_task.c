@@ -107,14 +107,37 @@ void uartBridge_executeTask(UArg arg0, UArg arg1) {
     while (1) {
         printf("UART Bridge Count: %d\n", i++);
 
+        // TODO; Remove post when done testing
+        Semaphore_post(g_afeDataReadyHandle);
+
         // --- CODE HERE IS FOR TX --- //
         printf("Sending data over RF...\n");
 
-        uint8_t heartRate = 75;
-        uint8_t respRate  = 18;
+        
+        // ------ DEFINITIONS HERE ARE FOR TESTING RF PACKETS ------ //
+        // uint8_t heartRate = 75;
+        // uint8_t respRate  = 18;
 
-        packet[0] = heartRate;
-        packet[1] = respRate;
+        // packet[0] = heartRate;
+        // packet[1] = respRate;
+        // -------------------------------------------------------- //
+
+
+        // ------ DEFINITIONS HERE ARE FOR ACTUAL RF PACKETS ------ //
+        Task_sleep(g_taskSleepDuration);
+        VitalPacket pkt;
+        if (Mailbox_pend(g_vitalMailboxHandle, &pkt, BIOS_WAIT_FOREVER)) {
+            packet[0] = pkt.heartRate;
+            packet[1] = pkt.respRate;
+            RF_cmdPropTx_custom2400_0.pktLen = 2;
+            RF_cmdPropTx_custom2400_0.pPkt = packet;
+
+            RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx_custom2400_0, RF_PriorityNormal, NULL, 0);
+
+            printf("Heart Rate: %d  Respiratory Rate: %d\n", packet[0], packet[1]);
+        }
+        // ------------------------------------------------------- //
+
 
         // Packet length is in bytes
         RF_cmdPropTx_custom2400_0.pktLen = 2;
