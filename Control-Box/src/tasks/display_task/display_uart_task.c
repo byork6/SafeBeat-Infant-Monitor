@@ -6,15 +6,18 @@ uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
 
 static UART2_Handle uartHandle;
 
-void displayUart_updateText(const char *msg)
-{
-    char buffer[64];
-    snprintf(buffer, sizeof(buffer), "ecgText.txt=\"%s\"\xFF\xFF\xFF", msg);
-    UART_write(uartHandle, buffer, strlen(buffer));
+Task_Handle displayUart_constructTask(void){
+    Task_Params taskParams;
+    Task_Params_init(&taskParams);
+    taskParams.stack = g_displayUartTaskStack;
+    taskParams.stackSize = DISPLAY_UART_TASK_STACK_SIZE;
+    taskParams.priority = DISPLAY_UART_TASK_PRIORITY;
+
+    Task_construct(&g_DisplayUartTaskStruct, displayUart_executeTask, &taskParams, NULL);
+    return (Task_Handle)&g_DisplayUartTaskStruct;
 }
 
-void displayUart_executeTask(UArg a0, UArg a1)
-{
+void displayUart_executeTask(UArg arg0, UArg arg1){
     UART2_Params uartParams;
     UART2_Params_init(&uartParams);
     uartParams.baudRate = 9600;
@@ -23,7 +26,7 @@ void displayUart_executeTask(UArg a0, UArg a1)
 
     uartHandle = UART2_open(CONFIG_UART_0, &uartParams);
     if (uartHandle == NULL) {
-        System_abort("UART_open failed");
+        printf("UAR2T_open failed");
     }
 
     while (1)
@@ -33,14 +36,10 @@ void displayUart_executeTask(UArg a0, UArg a1)
     }
 }
 
-Task_Handle displayUart_constructTask(void)
-{
-    Task_Params taskParams;
-    Task_Params_init(&taskParams);
-    taskParams.stack = g_displayUartTaskStack;
-    taskParams.stackSize = DISPLAY_UART_TASK_STACK_SIZE;
-    taskParams.priority = DISPLAY_UART_TASK_PRIORITY;
+void displayUart_updateText(const char *msg){
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "ecgText.txt:\"%s\"\xFF\xFF\xFF", msg);
 
-    Task_construct(&g_DisplayUartTaskStruct, displayUart_executeTask, &taskParams, NULL);
-    return (Task_Handle)&g_DisplayUartTaskStruct;
+    size_t bytesWritten;
+    UART2_write(uartHandle, buffer, strlen(buffer), &bytesWritten);
 }
