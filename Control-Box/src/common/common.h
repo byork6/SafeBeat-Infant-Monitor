@@ -14,6 +14,7 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
+#include <ti/drivers/UART2.h>
 
 // TI-RTOS7 BIOS execution
 #include <ti/sysbios/knl/Task.h>

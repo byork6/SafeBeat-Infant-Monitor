@@ -1,9 +1,8 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "CC2651P3RGZ" --part "Default" --package "RGZ" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
- * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
- * @versions {"tool":"1.21.1+3772"}
+ * @cliArgs --device "CC2651P3RGZ" --package "RGZ" --part "Default" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
+ * @versions {"tool":"1.18.1+3343"}
  */
 
 /**
@@ -105,11 +104,10 @@ PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
-SD1.useFatFS             = true;
-SD1.$name                = "CONFIG_SD";
-SD1.sdCSPin.$assign      = "DIO_11";
-SD1.chipSelect.$hardware = null;
-SD1.chipSelect.$name     = "CONFIG_SD_SPI_CS";
+SD1.useFatFS         = true;
+SD1.$name            = "CONFIG_SD";
+SD1.sdCSPin.$assign  = "DIO_11";
+SD1.chipSelect.$name = "CONFIG_SD_SPI_CS";
 
 SD1.spiInstance                             = SPI1;
 SPI1.$name                                  = "CONFIG_SD_SPI";

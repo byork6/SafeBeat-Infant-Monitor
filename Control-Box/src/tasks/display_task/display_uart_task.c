@@ -4,7 +4,7 @@ Task_Struct g_DisplayUartTaskStruct;
 Task_Handle g_displayUartTaskHandle;
 uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
 
-static UART_Handle uartHandle;
+static UART2_Handle uartHandle;
 
 void displayUart_updateText(const char *msg)
 {
@@ -15,13 +15,13 @@ void displayUart_updateText(const char *msg)
 
 void displayUart_executeTask(UArg a0, UArg a1)
 {
-    UART_Params uartParams;
-    UART_Params_init(&uartParams);
+    UART2_Params uartParams;
+    UART2_Params_init(&uartParams);
     uartParams.baudRate = 9600;
-    uartParams.writeMode = UART_MODE_BLOCKING;
-    uartParams.readMode = UART_MODE_BLOCKING;
+    uartParams.writeMode = UART2_Mode_BLOCKING;
+    uartParams.readMode = UART2_Mode_BLOCKING;
 
-    uartHandle = UART_open(CONFIG_UART_0, &uartParams);
+    uartHandle = UART2_open(CONFIG_UART_0, &uartParams);
     if (uartHandle == NULL) {
         System_abort("UART_open failed");
     }

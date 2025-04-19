@@ -16,10 +16,7 @@ void createAllResources() {
     // Task 2 --- Priority = 2
     // g_microSdWriteTaskHandle = microSdWrite_constructTask();
 
-    // Task 3 --- Priority = 3
-    g_displayDriverTaskHandle = displayDriver_constructTask();
-
-    // Task 7 — Priority = 3 (insert this above GPIO tasks)
+    // Task 3 --- Priority = 3 (insert this above GPIO tasks)
     g_displayUartTaskHandle = displayUart_constructTask();
 
     // Task 4 --- Priority = 4

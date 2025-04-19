@@ -80,8 +80,8 @@ void destructAllResources() {
         Task_destruct(g_task2Handle);
         printf("Task 2 destructed.\n");
     }
-    if (g_displayDriverTaskHandle != NULL){
-        Task_destruct(g_displayDriverTaskHandle);
+    if (g_displayUartTaskHandle != NULL){
+        Task_destruct(g_displayUartTaskHandle);
         printf("Display driver task destructed.\n");
     }
 }
