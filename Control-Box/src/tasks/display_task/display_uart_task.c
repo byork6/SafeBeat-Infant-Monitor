@@ -25,20 +25,16 @@ void displayUart_executeTask(UArg arg0, UArg arg1){
     uartParams.baudRate = 115200; // Required by Nextion Intelligent model
     uartParams.readMode = UART2_Mode_BLOCKING;
     uartParams.writeMode = UART2_Mode_BLOCKING;
-    uartParams.readTimeout = 100;
-    uartParams.writeTimeout = 100;
 
     uart = UART2_open(CONFIG_DISPLAY_UART, &uartParams);
     if (uart == NULL)
     {
-        System_abort("[Display UART] Failed to open UART\n");
+        printf("[Display UART] Failed to open UART\n");
     }
 
-    System_printf("[Display UART] Initialized and running\n");
-    System_flush();
+    printf("[Display UART] Initialized and running\n");
 
-    while (1)
-    {
+    while (1){
         // These object names were renamed in Nextion Editor
         sendIntToText("heartRateText", g_currentHeartRate);
         sendIntToText("respRateText", g_currentRespiratoryRate);
@@ -64,9 +60,11 @@ void displayUart_updateText(const char *msg){
 
 
 void sendCmd(const char* cmd){
-    UART2_write(uart, cmd, strlen(cmd));
+    size_t bytesWritten;
+    UART2_write(uartHandle, cmd, strlen(cmd), &bytesWritten);
+
     uint8_t end[3] = {0xFF, 0xFF, 0xFF};
-    UART2_write(uart, end, 3);
+    UART2_write(uartHandle, end, 3, &bytesWritten);
 }
 
 void sendIntToText(const char* objName, int val){
@@ -75,8 +73,7 @@ void sendIntToText(const char* objName, int val){
     sendCmd(buf);
 
     // Confirm what was sent
-    System_printf("[Display UART] Sent %s → %d\n", objName, val);
-    System_flush();
+    printf("[Display UART] Sent %s → %d\n", objName, val);
 }
 
 void queryThreshold(const char* varName, volatile int* target, const char* label){
@@ -85,19 +82,20 @@ void queryThreshold(const char* varName, volatile int* target, const char* label
     sendCmd(cmd);
 
     uint8_t response[8];
-    int bytesRead = UART2_readTimeout(uart, response, sizeof(response), &(struct timespec){.tv_sec = 0, .tv_nsec = 5000000});
+    int_fast16_t status;
+    size_t bytesRead;
+    status = UART2_readTimeout(uart, response, sizeof(response), &bytesRead, 10000);
 
     if (bytesRead >= 7 && response[0] == 0x71)
     {
         // Extract 4-byte integer value (little endian)
         *target = response[1] | (response[2] << 8) | (response[3] << 16) | (response[4] << 24);
-        System_printf("[Display UART] Read %s = %d\n", label, *target);
+        printf("[Display UART] Read %s = %d\n", label, *target);
     }
     else
     {
-        System_printf("[Display UART] Failed to read %s (bytesRead = %d, header = 0x%02X)\n",
+        printf("[Display UART] Failed to read %s (bytesRead = %d, header = 0x%02X)\n",
                       varName, bytesRead, response[0]);
     }
-    System_flush();
 }
 

@@ -6,6 +6,15 @@ int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
 CircularQueue sdMemQueue = { .head = 0, .tail = 0, .size = 0 };
 CircularQueue displayMemQueue = { .head = 0, .tail = 0, .size = 0 };
 SPI_Handle spiHandle = NULL;
+// Heart rate and respiratory rate values (dynamically updated)
+volatile int g_currentHeartRate = 0;
+volatile int g_currentRespiratoryRate = 0;
+
+// Thresholds read from the Nextion display (initialized to default)
+volatile int g_hrThresholdLow = 50;
+volatile int g_hrThresholdHigh = 120;
+volatile int g_rrThresholdLow = 10;
+volatile int g_rrThresholdHigh = 25;
 //Mutex_Handle spiMutex = NULL;
 
 void createAllResources() {

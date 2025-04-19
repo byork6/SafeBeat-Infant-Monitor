@@ -31,19 +31,19 @@
 // The max priority that can be used is currently 6 --- A priority of 0 is reserved for the idleLoop() and should not be used here.
 // This can be changed in main.sysconfig -> POSIX Settings -> Other Dependencies -> Task -> # of task priorities.
 // The number of task priorities setting in the .sysconfig includes 0, therefore if the set value is 7, then the range of usable priorities is 0 to 6.
-#define POWER_SHUTDOWN_PRIORITY     1
-#define MICROSD_WRITE_PRIORITY      2
-#define DISPLAY_DRIVER_PRIORITY     3
-#define TEST_GPIO_PRIORITY          4
-#define RED_LIGHT_BLINK_PRIORITY    4       // Used for debugging
-#define GREEN_LIGHT_BLINK_PRIORITY  4       // Used for debugging
-#define TEMP_MONITORING_PRIORITY    6
+#define POWER_SHUTDOWN_PRIORITY         1
+#define MICROSD_WRITE_PRIORITY          2
+#define DISPLAY_DRIVER_PRIORITY         3
+#define TEST_GPIO_PRIORITY              4
+#define RED_LIGHT_BLINK_PRIORITY        4       // Used for debugging
+#define GREEN_LIGHT_BLINK_PRIORITY      4       // Used for debugging
+#define TEMP_MONITORING_PRIORITY        6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
-#define POWER_SHUTDOWN_STACK_SIZE   512
-#define MICROSD_WRITE_STACK_SIZE    1024
-#define DISPLAY_DRIVER_STACK_SIZE   1024
-#define TEST_GPIO_STACK_SIZE        1024
-#define TEMP_MONITORING_STACK_SIZE  1024
+#define POWER_SHUTDOWN_STACK_SIZE       512
+#define MICROSD_WRITE_STACK_SIZE        1024
+#define DISPLAY_DRIVER_STACK_SIZE    1024
+#define TEST_GPIO_STACK_SIZE            1024
+#define TEMP_MONITORING_STACK_SIZE      1024
 // GPIO
 #define DRIVE_GPIO_HIGH             1
 #define DRIVE_GPIO_LOW              0
@@ -92,7 +92,16 @@ extern SPI_Handle g_spiDisplayHandle;
 // Display UART
 extern Task_Struct g_DisplayUartTaskStruct;
 extern Task_Handle g_displayUartTaskHandle;
-extern uint8_t g_displayUartTaskStack[DISPLAY_UART_TASK_STACK_SIZE];
+extern uint8_t g_displayUartTaskStack[DISPLAY_DRIVER_STACK_SIZE];
+// VITALS
+// Heart rate and respiratory rate readings
+extern volatile int g_currentHeartRate;
+extern volatile int g_currentRespiratoryRate;
+// Thresholds from Nextion display
+extern volatile int g_hrThresholdLow;
+extern volatile int g_hrThresholdHigh;
+extern volatile int g_rrThresholdLow;
+extern volatile int g_rrThresholdHigh;
 
 // CUSTOM INCLUSIONS
 #include "../config/config_functions.h"
