@@ -95,14 +95,30 @@ void afeRead_executeTask(UArg arg0, UArg arg1){
         // END: Lead II + RESP debug
         // =============================================
 
+        // --- POSTS PACKETS TO MAILBOX FOR RF TO TRANSMIT --- //
+        VitalPacket pkt;
+
+        // --- PACKETS HERE USED FOR TESTING ONLY --- //
+        pkt.heartRate = 88;
+        pkt.respRate = 33;
+        // ------------------------------------------ //
+
+        // --- PACKETS HERE FOR ACTUAL MEASUREMENTS --- //
+        // pkt.heartRate = (uint8_t)leadII;
+        // pkt.respRate = (uint8_t)resp;
+        // -------------------------------------------- //
+
+        printf("Posting...\n");
+        Mailbox_post(g_vitalMailboxHandle, &pkt, BIOS_NO_WAIT);
+
         // (Optional) Print raw SPI frame for inspection — helps confirm location of data
         char spiMsg[128];
         int offset = snprintf(spiMsg, sizeof(spiMsg), "Extended Frame: ");
-        
+
         for (int i = 0; i < 8 && offset < sizeof(spiMsg) - 6; i++) {
             offset += snprintf(&spiMsg[offset], sizeof(spiMsg) - offset, "%04X ", rxBuf[i]);
         }
-        
+
         snprintf(&spiMsg[offset], sizeof(spiMsg) - offset, "\r\n"); // Clean line ending
         printf("%s", spiMsg);
 

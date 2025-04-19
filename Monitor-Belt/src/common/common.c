@@ -3,6 +3,9 @@
 // Declare global vars
 // Global task sleep duration in ticks -- Global variable used to change task delay dynamically for temperature_monitoring_task.
 int g_taskSleepDuration = DEFAULT_TASK_SLEEP_DURATION;
+Mailbox_Struct g_vitalMailboxStruct;
+Mailbox_Handle g_vitalMailboxHandle;
+uint8_t g_vitalMailboxBuffer[sizeof(VitalPacket) * 4];
 
 void createAllResources() {
     // Create tasks for TI-RTOS7 --- Order them from lowest to highest priority.
@@ -23,6 +26,21 @@ void createAllResources() {
 
     // Task 7 --- Priority = 6
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
+
+    // --- CONSTRUCT MAILBOX --- //
+    createVitalMailbox();
+
+}
+
+void createVitalMailbox(void) {
+    Mailbox_Params mbxParams;
+    Mailbox_Params_init(&mbxParams);
+
+    g_vitalMailboxHandle = Mailbox_construct(&g_vitalMailboxStruct,
+                                             sizeof(VitalPacket),
+                                             4, // mailbox depth
+                                             &mbxParams,
+                                             NULL);
 }
 
 void testGpio(uint32_t pin_config_index){   
