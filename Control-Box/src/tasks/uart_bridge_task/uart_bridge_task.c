@@ -149,8 +149,7 @@ void ReceivedOnRFcallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e){
         else if (packetLength == 2){
             uint8_t heartRate = packet[0];
             uint8_t respiratoryRate = packet[1];
-            printf("Heart Rate: %d bpm, Respiratory Rate: %d bpm\n", heartRate, respiratoryRate);
-            logData((int)heartRate, (int)respiratoryRate, "N/A");
+            logData((int)heartRate, (int)respiratoryRate, readRTC());
 
             // Toggle green LED, DIO7, if packet is received and logged
             GPIO_toggle(7);
