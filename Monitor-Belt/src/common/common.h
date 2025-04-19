@@ -35,12 +35,14 @@
 #define TEST_GPIO_PRIORITY          3
 #define RED_LIGHT_BLINK_PRIORITY    3       // Used for debugging
 #define GREEN_LIGHT_BLINK_PRIORITY  3       // Used for debugging
+#define AFE_READ_PRIORITY           4
 #define UART_BRIDGE_PRIORITY        5
 #define TEMP_MONITORING_PRIORITY    6
 // Task stack sizes in bytes --- NOTE: Must be a multiple of 8 bytes to maintain stack pointer alignment
 #define POWER_SHUTDOWN_STACK_SIZE   512
 #define MICROSD_WRITE_STACK_SIZE    1024
 #define TEST_GPIO_STACK_SIZE        1024
+#define AFE_READ_STACK_SIZE         1024
 #define UART_BRIDGE_STACK_SIZE      1024
 #define TEMP_MONITORING_STACK_SIZE  1024
 // GPIO
@@ -71,6 +73,8 @@ extern int g_taskSleepDuration;
 #include "../tasks/temperature_monitoring_task/temperature_monitoring_task.h"
 #include "../tasks/uart_bridge_task/uart_bridge_task.h"
 #include "../tasks/uart_bridge_task/RFQueue.h"
+#include "../tasks/afe_read_task/afe_read_task.h"
+
 
 // CUSTOM FUNCTION PROTOTYPES
 ////////// DOC STRING TEMPLATE //////////

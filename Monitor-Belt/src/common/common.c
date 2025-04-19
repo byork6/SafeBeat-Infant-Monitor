@@ -15,10 +15,13 @@ void createAllResources() {
     // Task 4 --- Priority = 3
     g_task2Handle = testGpio_constructTask(7, GREEN_LIGHT_BLINK_PRIORITY, &g_TestGpioTaskStruct2, (uint8_t *)g_testGpioTaskStack2);
 
-    // Task 5--- Prioirity 5
+    // Task 5 --- Priority 4
+    g_afeReadTaskHandle = afeRead_constructTask();
+
+    // Task 6--- Prioirity 5
     g_uartBridgeTaskHandle = uartBridge_constructTask();
 
-    // Task 6 --- Priority = 6
+    // Task 7 --- Priority = 6
     g_temperatureMonitoringTaskHandle = temperatureMonitoring_constructTask();
 }
 
@@ -37,8 +40,7 @@ void testGpio(uint32_t pin_config_index){
     // Initialize GPIO pins
     GPIO_setConfig(pin_config_index, GPIO_SET_OUT_AND_DRIVE_LOW);
 
-    while (1)
-    {
+    while (1){
         sleep(time);
         GPIO_toggle(pin_config_index);
     }
