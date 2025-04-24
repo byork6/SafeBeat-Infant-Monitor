@@ -21,7 +21,7 @@ void *mainThread(void *arg0){
     createAllResources();
 
     // --- OPTIONAL CALL TO SET RTC --- //
-    // setRTC(22, 03, 45, 6, 4, 18, 25);
+    // setRTC(17, 51, 00, 5, 4, 24, 25);
     // Print current date and time at startup to verify RTC operation
     char* currentDateAndTime;
     currentDateAndTime = readRTC();
