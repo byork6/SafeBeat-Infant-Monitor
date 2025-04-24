@@ -40,6 +40,9 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
         GPIO_toggle(arg0);
         printf("Buzzer ON\n");
     
+        Task_sleep(g_taskSleepDuration);        
+        Task_sleep(g_taskSleepDuration);
+        Task_sleep(g_taskSleepDuration);
         Task_sleep(g_taskSleepDuration);
     
         GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_LOW);
