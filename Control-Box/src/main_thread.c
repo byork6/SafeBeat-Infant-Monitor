@@ -20,5 +20,12 @@ void *mainThread(void *arg0){
     
     createAllResources();
 
+    // --- OPTIONAL CALL TO SET RTC --- //
+    // setRTC(22, 03, 45, 6, 4, 18, 25);
+    // Print current date and time at startup to verify RTC operation
+    char* currentDateAndTime;
+    currentDateAndTime = readRTC();
+    printf("%s\n", currentDateAndTime);
+
     return NULL;
 }

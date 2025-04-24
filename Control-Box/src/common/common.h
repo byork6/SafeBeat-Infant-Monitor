@@ -14,6 +14,8 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/SPI.h>
+#include <ti/drivers/I2C.h>
+#include <ti/drivers/i2c/I2CCC26XX.h>
 #include <ti/drivers/SDFatFS.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
@@ -77,6 +79,10 @@
 #define HIGH_RESPIRATORY_RATE_THRESHOLD_BRPM    60
 // Circular queue --- Used to buffer recieved data before output to Display & SD card
 #define CIRCULAR_QUEUE_SIZE 1024
+// RTC defines
+// DS1307 I2C address
+#define DS1307_ADDR         0x68
+
 
 // TYPE DEFINITIONS
 typedef struct {
@@ -86,13 +92,20 @@ typedef struct {
     int size;  // Current size of valid data
 } CircularQueue;
 
-// GLOBAL VARIABLES --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
+// VARIABLE DECLARATIONS --- exetern is used here to declare variables globably, however, they are defined in "common.c". This allows them to be accessible anywhere in project.
+// RTOS
 extern int g_taskSleepDuration;
+// Memory Queues
 extern CircularQueue sdMemQueue;
 extern CircularQueue displayMemQueue;
+// RTC
+I2C_Handle i2c;
+I2C_Params i2cParams;
+I2C_Transaction i2cTransaction;
+uint8_t txBuffer[1];
+uint8_t rxBuffer[7];
 
 // LOCAL INCLUSIONS
-#include "../config/config_functions.h"
 #include "../tasks/microSD_write_task/microSD_write_task.h"
 #include "../tasks/test_gpio_task/test_gpio_task.h"
 #include "../tasks/power_shutdown_task/power_shutdown_task.h"
@@ -113,6 +126,15 @@ extern CircularQueue displayMemQueue;
 * @return  - What is returned goes here (optional).
 */
 /////////////////////////////////////////
+
+/**
+* @brief contains all TI initialization call. Must be called before configBOARD().
+*
+* Any TI drivers called inside initBOARD() must have the corresponding inclusion under "TI Driver Header Files" in common.h
+* and must be selected in the main.syscfg GUI. For example, if GPIO_init() is called from the TI driver library then 
+* "GPIO" must have a green check by it in the .syscfg GUI and "#include <ti/drivers/GPIO.h>"" must be in common.h
+*/
+void initBOARD(void);
 
 /**
 * @brief Creates and initializes all tasks and other RTOS resources required for the application.
@@ -149,6 +171,51 @@ void logData(int heartRate, int respiratoryRate, const char* timestamp);
  * @param data Pointer to the null-terminated string to be added to the queue.
  */
 void appendToSdAndDisplayQueue(const char *data);
+
+/**
+ * @brief Initializes the I2C parameters for the RTC.
+ *
+ * Configures the I2C bus using default settings. This must be called
+ * before performing any I2C operations such as reading or setting the RTC.
+ */
+void realTimeClockI2C_init ();
+
+/**
+ * @brief Converts a Binary-Coded Decimal (BCD) value to a regular decimal.
+ *
+ * @param val The BCD value to convert.
+ * @return The equivalent decimal value.
+ */
+uint8_t bcdToDec(uint8_t val);
+
+/**
+ * @brief Reads the current date and time from the RTC.
+ *
+ * Communicates with the DS1307 RTC over I2C and reads 7 bytes starting
+ * at register 0x00. Converts the BCD values to decimal and formats them
+ * into a readable timestamp string.
+ *
+ * @return A pointer to a static character buffer containing the formatted 
+ *         date and time string (e.g., "Time: 12:34:56 Date: 04/18/2025").
+ *         Returns an error message if I2C communication fails.
+ */
+char* readRTC();
+
+/**
+ * @brief Sets the date and time on the RTC.
+ *
+ * Encodes the input date and time parameters into BCD format and writes 
+ * them to the DS1307 RTC registers over I2C.
+ *
+ * @param hour   The hour to set (0-23).
+ * @param min    The minute to set (0-59).
+ * @param sec    The second to set (0-59).
+ * @param day    The day of the week (1-7).
+ * @param month  The month to set (1-12).
+ * @param date   The day of the month to set (1-31).
+ * @param year   The year to set (last two digits, e.g., 25 for 2025).
+ */
+void setRTC(uint8_t hour,  uint8_t min, uint8_t sec, uint8_t day, uint8_t month, uint8_t date,  uint8_t year);
 
 /**
 * @brief - Test code that toggles a GPIO pin every 1 second.
