@@ -19,6 +19,8 @@ void *mainThread(void *arg0){
     Power_enablePolicy();
     
     createAllResources();
+
+    while(1);
     
     return NULL;
 }

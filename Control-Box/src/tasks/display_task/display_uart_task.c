@@ -25,8 +25,10 @@ Task_Handle displayUart_constructTask(void) {
 void sendCmd(const char* cmd) {
     size_t bytesWritten;
     UART2_write(uart, cmd, strlen(cmd), &bytesWritten);
-    uint8_t end[3] = {0xFF, 0xFF, 0xFF};
-    UART2_write(uart, end, 3, &bytesWritten);
+    const char* end = "/xFF/xFF/xFF";
+    // uint8_t end[3] = {0xFF, 0xFF, 0xFF};
+    UART2_write(uart, end, strlen(end), &bytesWritten);
+    printf("Sending: %s%s\n", cmd, end);
 }
 
 // Helper to write an int to a text component
@@ -65,6 +67,11 @@ int queryNumericVar(const char* varName) {
     }
 }
 
+void writeHex(uint8_t hexVal){
+        size_t bytesWritten;
+        UART2_write(uart, &hexVal, 1, &bytesWritten);
+}
+
 void displayUart_executeTask(UArg a0, UArg a1) {
     UART2_Params_init(&uartParams);
     uartParams.baudRate = 115200;
@@ -82,33 +89,70 @@ void displayUart_executeTask(UArg a0, UArg a1) {
     GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_LOW);
 
     // Force startup to main page
-    sendCmd("page main");
+    // sendCmd("page startup");
     Task_sleep(MS_TO_TICKS(500));
 
     int loopCount = 0;
     while (1) {
+        printf("In display task\n");
         // Simulate values from AFE driver
         int hr = 80 + (loopCount % 10);  // e.g., 80 to 89
         int rr = 20 + (loopCount % 5);   // e.g., 20 to 24
 
-        sendIntToNumber("n0", hr); // Send HR to a numeric component like n4
-        sendIntToNumber("n1", rr); // Send RR to a numeric component like n5
+        // sendIntToNumber("n0", hr); // Send HR to a numeric component like n4
+        // sendIntToNumber("n1", rr); // Send RR to a numeric component like n5
 
+        // uint8_t data = 0xFF;
+        writeHex(0x74);
+        writeHex(0x35);
+        writeHex(0x2E);
+        writeHex(0x74);
+        writeHex(0x78);
+        writeHex(0x74);
+        writeHex(0x3D);
+        writeHex(0x22);
+        writeHex(0x34);
+        writeHex(0x30);
+        writeHex(0x22);
+        writeHex(0xFF);
+        writeHex(0xFF);
+        writeHex(0xFF);
+
+
+        // sendCmd("n0.val=100");
+        // const char* cmd = "t5.txt";
+        // printf("Wrote cmd: %s\n", cmd);
+        // Task_sleep(g_taskSleepDuration);
+        // cmd = "=\"";
+        // UART2_write(uart, cmd, strlen(cmd), &bytesWritten);
+        // printf("Wrote cmd: %s\n", cmd);
+        // Task_sleep(g_taskSleepDuration);
+        // cmd = "100";
+        // UART2_write(uart, cmd, strlen(cmd), &bytesWritten);
+        // printf("Wrote cmd: %s\n", cmd);
+        // Task_sleep(g_taskSleepDuration);
+        // cmd = "\"";
+        // UART2_write(uart, cmd, strlen(cmd), &bytesWritten);
+        // printf("Wrote cmd: %s\n", cmd);
+        // // Task_sleep(g_taskSleepDuration);
+        // cmd = "/xFF/xFF/xFF";
+        // UART2_write(uart, cmd, strlen(cmd), &bytesWritten);
+        // printf("Wrote cmd: %s\n", cmd);
+        // Task_sleep(g_taskSleepDuration);
 
         // Periodically fetch threshold values from display
-        if (loopCount % 5 == 0) {
-            hrLower = queryNumericVar("HRL");
-            hrUpper = queryNumericVar("HRU");
-            rrLower = queryNumericVar("RRL");
-            rrUpper = queryNumericVar("RRU");
-            printf("[THRESHOLDS] HR: %d-%d | RR: %d-%d\n", hrLower, hrUpper, rrLower, rrUpper);
-        }
+        // if (loopCount % 5 == 0) {
+        //     hrLower = queryNumericVar("HRL");
+        //     hrUpper = queryNumericVar("HRU");
+        //     rrLower = queryNumericVar("RRL");
+        //     rrUpper = queryNumericVar("RRU");
+        //     printf("[THRESHOLDS] HR: %d-%d | RR: %d-%d\n", hrLower, hrUpper, rrLower, rrUpper);
+        // }
 
         // Check if HR or RR is out of threshold range
-        if (hr < hrLower || hr > hrUpper || rr < rrLower || rr > rrUpper) {
+        /*if (hr < hrLower || hr > hrUpper || rr < rrLower || rr > rrUpper) {
             // --- BUZZER CODE --- //
             GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_HIGH);
-            GPIO_toggle(arg0);
             printf("Buzzer ON\n");
 
             Task_sleep(g_taskSleepDuration);
@@ -117,9 +161,8 @@ void displayUart_executeTask(UArg a0, UArg a1) {
             Task_sleep(g_taskSleepDuration);
 
             GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_LOW);
-            GPIO_toggle(arg0);
             printf("Buzzer OFF\n");
-        }
+        }*/
 
         loopCount++;
         Task_sleep(MS_TO_TICKS(2000));  // Delay before next update

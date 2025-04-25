@@ -1,9 +1,8 @@
 /**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
- * @cliArgs --device "CC2651P3RGZ" --part "Default" --package "RGZ" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
- * @v2CliArgs --device "CC2651P3" --package "VQFN (RGZ)" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@8.30.01.01"
- * @versions {"tool":"1.21.1+3772"}
+ * @cliArgs --device "CC2651P3RGZ" --package "RGZ" --part "Default" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@7.41.00.17"
+ * @versions {"tool":"1.18.1+3343"}
  */
 
 /**
@@ -19,11 +18,7 @@ const GPIO4       = GPIO.addInstance();
 const GPIO5       = GPIO.addInstance();
 const GPIO6       = GPIO.addInstance();
 const GPIO7       = GPIO.addInstance();
-const GPIO8       = GPIO.addInstance();
-const GPIO9       = GPIO.addInstance();
-const GPIO10      = GPIO.addInstance();
-const PWM         = scripting.addModule("/ti/drivers/PWM", {}, false);
-const PWM1        = PWM.addInstance();
+const GPIO17      = GPIO.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
 const SD          = scripting.addModule("/ti/drivers/SD", {}, false);
 const SD1         = SD.addInstance();
@@ -77,39 +72,25 @@ GPIO5.mode            = "Output";
 GPIO5.gpioPin.$assign = "DIO_25";
 
 GPIO6.mode            = "Output";
-GPIO6.$name           = "CONFIG_DOWN_ARROW";
-GPIO6.gpioPin.$assign = "DIO_26";
+GPIO6.$name           = "CONFIG_SEL_BTN";
+GPIO6.gpioPin.$assign = "DIO_29";
 
+GPIO7.$name           = "CONFIG_DISPLAY_CS";
 GPIO7.mode            = "Output";
-GPIO7.$name           = "CONFIG_LEFT_ARROW";
-GPIO7.gpioPin.$assign = "DIO_27";
+GPIO7.outputStrength  = "High";
+GPIO7.gpioPin.$assign = "DIO_23";
 
-GPIO8.mode            = "Output";
-GPIO8.$name           = "CONFIG_RIGHT_ARROW";
-GPIO8.gpioPin.$assign = "DIO_28";
-
-GPIO9.mode            = "Output";
-GPIO9.$name           = "CONFIG_SEL_BTN";
-GPIO9.gpioPin.$assign = "DIO_29";
-
-GPIO10.$name           = "CONFIG_DISPLAY_CS";
-GPIO10.mode            = "Output";
-GPIO10.outputStrength  = "High";
-GPIO10.gpioPin.$assign = "DIO_23";
-
-PWM1.$name                            = "CONFIG_AUDIO_PWM_OUT";
-PWM1.timerObject.$name                = "CONFIG_GPTIMER_0";
-PWM1.timerObject.timer.$assign        = "GPTM0";
-PWM1.timerObject.timer.pwmPin.$assign = "DIO_24";
-PWM1.timerObject.pwmPinInstance.$name = "CONFIG_AUDIO_PWM";
+GPIO17.$name           = "CONFIG_BUZZER";
+GPIO17.mode            = "Output";
+GPIO17.outputStrength  = "High";
+GPIO17.gpioPin.$assign = "DIO_24";
 
 Power.policyFunction = "PowerCC26XX_doWFI";
 
-SD1.useFatFS             = true;
-SD1.$name                = "CONFIG_SD";
-SD1.sdCSPin.$assign      = "DIO_11";
-SD1.chipSelect.$hardware = null;
-SD1.chipSelect.$name     = "CONFIG_SD_SPI_CS";
+SD1.useFatFS         = true;
+SD1.$name            = "CONFIG_SD";
+SD1.sdCSPin.$assign  = "DIO_11";
+SD1.chipSelect.$name = "CONFIG_SD_SPI_CS";
 
 SD1.spiInstance                             = SPI1;
 SPI1.$name                                  = "CONFIG_SD_SPI";
@@ -145,8 +126,8 @@ scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SP
 scripting.suppress("Resource conflict,@@@.+?@@@ is also in use by @@@.+?@@@", SPI2.spi, "dmaTxChannel");
 
 UART21.$name              = "CONFIG_DISPLAY_UART";
-UART21.uart.txPin.$assign = "DIO_17";
-UART21.uart.rxPin.$assign = "DIO_16";
+UART21.uart.txPin.$assign = "DIO_26";
+UART21.uart.rxPin.$assign = "DIO_27";
 
 BIOS.assertsEnabled = false;
 BIOS.heapBaseAddr   = "__primary_heap_start__";
