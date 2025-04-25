@@ -37,6 +37,14 @@ void sendIntToText(const char* objName, int val) {
     printf("[SEND] %s = %d\n", objName, val);
 }
 
+// Helper to send an integer to a numeric component (e.g., n0.val=123)
+void sendIntToNumber(const char* objName, int val) {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%s.val=%d", objName, val);
+    sendCmd(buf);
+    printf("[SEND NUM] %s = %d\n", objName, val);
+}
+
 // Helper to request and parse a number value from display
 int queryNumericVar(const char* varName) {
     char cmd[32];
@@ -81,15 +89,16 @@ void displayUart_executeTask(UArg a0, UArg a1) {
         int hr = 80 + (loopCount % 10);  // e.g., 80 to 89
         int rr = 20 + (loopCount % 5);   // e.g., 20 to 24
 
-        sendIntToText("t1", hr); // Update HR to display
-        sendIntToText("t5", rr); // Update RR to display
+        sendIntToNumber("n0", hr); // Send HR to a numeric component like n4
+        sendIntToNumber("n1", rr); // Send RR to a numeric component like n5
+
 
         // Periodically fetch threshold values from display
         if (loopCount % 5 == 0) {
-            hrLower = queryNumericVar("n0");
-            hrUpper = queryNumericVar("n1");
-            rrLower = queryNumericVar("n2");
-            rrUpper = queryNumericVar("n3");
+            hrLower = queryNumericVar("HRL");
+            hrUpper = queryNumericVar("HRU");
+            rrLower = queryNumericVar("RRL");
+            rrUpper = queryNumericVar("RRU");
             printf("[THRESHOLDS] HR: %d-%d | RR: %d-%d\n", hrLower, hrUpper, rrLower, rrUpper);
         }
 
