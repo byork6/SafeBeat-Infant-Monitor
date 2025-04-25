@@ -36,7 +36,7 @@ void testGpio_executeTask(UArg arg0, UArg arg1){
         printf("testGpio Count: %d\n", i);
 
         // --- BUZZER CODE --- //
-        GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_HIGH);
+        // GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_HIGH);
         GPIO_toggle(arg0);
         printf("Buzzer ON\n");
     

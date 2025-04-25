@@ -14,7 +14,7 @@ const Board       = scripting.addModule("/ti/drivers/Board");
 const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
-const GPIO11      = GPIO.addInstance();
+const GPIO3       = GPIO.addInstance();
 const I2C         = scripting.addModule("/ti/drivers/I2C", {}, false);
 const I2C1        = I2C.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
@@ -52,12 +52,12 @@ GPIO1.gpioPin.$assign = "DIO_7";
 GPIO2.interruptTrigger = "Falling Edge";
 GPIO2.pull             = "Pull Up";
 GPIO2.$name            = "CONFIG_PWR_BTN";
-GPIO2.gpioPin.$assign  = "DIO_15";
+GPIO2.gpioPin.$assign  = "DIO_22";
 
-GPIO11.$name           = "CONFIG_BUZZER";
-GPIO11.mode            = "Output";
-GPIO11.outputStrength  = "High";
-GPIO11.gpioPin.$assign = "DIO_24";
+GPIO3.$name           = "CONFIG_BUZZER";
+GPIO3.mode            = "Output";
+GPIO3.outputStrength  = "High";
+GPIO3.gpioPin.$assign = "DIO_24";
 
 I2C1.$name              = "CONFIG_RTC_I2C";
 I2C1.i2c.sdaPin.$assign = "DIO_19";
