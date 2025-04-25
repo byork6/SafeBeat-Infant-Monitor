@@ -102,8 +102,26 @@ void displayUart_executeTask(UArg a0, UArg a1) {
             printf("[THRESHOLDS] HR: %d-%d | RR: %d-%d\n", hrLower, hrUpper, rrLower, rrUpper);
         }
 
+        // Check if HR or RR is out of threshold range
+        if (hr < hrLower || hr > hrUpper || rr < rrLower || rr > rrUpper) {
+            // --- BUZZER CODE --- //
+            GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_HIGH);
+            GPIO_toggle(arg0);
+            printf("Buzzer ON\n");
+
+            Task_sleep(g_taskSleepDuration);
+            Task_sleep(g_taskSleepDuration);
+            Task_sleep(g_taskSleepDuration);
+            Task_sleep(g_taskSleepDuration);
+
+            GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_LOW);
+            GPIO_toggle(arg0);
+            printf("Buzzer OFF\n");
+        }
+
         loopCount++;
-        Task_sleep(MS_TO_TICKS(2000));
+        Task_sleep(MS_TO_TICKS(2000));  // Delay before next update
+
     }
 }
 
