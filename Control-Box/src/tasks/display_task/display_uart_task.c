@@ -79,6 +79,8 @@ void displayUart_executeTask(UArg a0, UArg a1) {
 
     printf("[UART] UART opened successfully\n");
 
+    GPIO_write(CONFIG_BUZZER, DRIVE_GPIO_LOW);
+
     // Force startup to main page
     sendCmd("page main");
     Task_sleep(MS_TO_TICKS(500));
