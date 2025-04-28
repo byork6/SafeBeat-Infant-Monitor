@@ -103,20 +103,22 @@ void displayUart_executeTask(UArg a0, UArg a1) {
         // sendIntToNumber("n1", rr); // Send RR to a numeric component like n5
 
         // uint8_t data = 0xFF;
-        writeHex(0x74);
-        writeHex(0x35);
-        writeHex(0x2E);
-        writeHex(0x74);
-        writeHex(0x78);
-        writeHex(0x74);
-        writeHex(0x3D);
-        writeHex(0x22);
-        writeHex(0x34);
+
+        writeHex(0x6E);
         writeHex(0x30);
-        writeHex(0x22);
-        writeHex(0xFF);
-        writeHex(0xFF);
-        writeHex(0xFF);
+        writeHex(0x2E);
+        writeHex(0x76);
+        writeHex(0x61);
+        writeHex(0x6C);
+        writeHex(0x3D);
+        writeHex(0x32);
+        writeHex(0x33);
+
+        Task_sleep(MS_TO_TICKS(200));  // Delay before next update
+
+        writeHex(0xff);
+        writeHex(0xff);
+        writeHex(0xff);
 
 
         // sendCmd("n0.val=100");
@@ -166,7 +168,6 @@ void displayUart_executeTask(UArg a0, UArg a1) {
 
         loopCount++;
         Task_sleep(MS_TO_TICKS(2000));  // Delay before next update
-
     }
 }
 
